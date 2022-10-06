@@ -12,7 +12,10 @@ export class Queue<T> {
         return this.items[0]
     }
 
-    getItems(): T[] {
+    public getItems(): T[] {
         return [...this.items]
+    }
+    get length() {
+        return this.items.length
     }
 }

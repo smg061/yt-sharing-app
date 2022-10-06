@@ -1,66 +1,99 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Chatbox from "./components/Chatbox";
-import Counter from "./components/Counter";
 import Header from "./components/Header";
-import { PromiseQueue, delayFunc } from "./utils/PromiseQueue";
-import { convertYoutubeUrl } from "./utils/urlUtils";
-import ReactPlayer from 'react-player'
+import { convertYoutubeUrl, toCountDownString } from "./utils/urlUtils";
+import ReactPlayer from "react-player";
 import { Queue } from "./utils/Queue";
 
-const queue = new Queue();
+const queue = new Queue<string>();
+const currentUser = "Non-chan"
 const App = () => {
-  const [videoSrc, setVideoSrc] = useState<string>("https://www.youtube.com/embed/4WPO4nO4XXY?autoplay=1");
+  const [videoSrc, setVideoSrc] = useState<string>("https://www.youtube.com/watch?v=X2QMN0a_TrA");
   const [nextVideoCounter, setNextVideoCounter] = useState<number>(0);
+  const [currentVideoDuration, setCurrentVideoDuration] = useState<number>(0);
   const [showVideoCounter, setShowVideoCounter] = useState(false);
-  const currentTimeout = useRef(10000);
-
+  const videoIsRunning = useRef<boolean>(false);
+  const list = queue.getItems();
+  
   const enqueueVideo = (video: string) => {
-    currentTimeout.current+=10000;
-    setShowVideoCounter(true)
-    setNextVideoCounter(currentTimeout.current);
-    queue.enqueue(delayFunc<string>((video) => setVideoSrc(video), convertYoutubeUrl(video), currentTimeout.current));
-
+    if(videoIsRunning.current) {
+      const formatedUrl = convertYoutubeUrl(video)
+      if (formatedUrl !== videoSrc) {
+        
+        queue.enqueue(convertYoutubeUrl(video));
+        setShowVideoCounter(queue.length >0);
+      }
+    } else {
+      setVideoSrc(video)
+    }
   };
-  // useEffect(() => {
-  //   setNextVideoCounter(10000);
-  //   setShowVideoCounter(true)
-  //   queue.enqueue(
-  //     delayFunc<string>(
-  //       (message) => setVideoSrc(message),
-  //       convertYoutubeUrl("https://www.youtube.com/watch?v=zwUgftbSAdc"),
-  //       10000
-  //     )
-  //   );
-  // }, []);
+
+  const onDuration = (duration: number)=> {
+    setShowVideoCounter(queue.length > 0);
+    setNextVideoCounter(duration);
+    setCurrentVideoDuration(duration)
+    videoIsRunning.current = true;
+  }
+  
+  const onVideoEnd = () => {
+    videoIsRunning.current = false;
+    const src = queue.dequeue();
+    if (src){
+      setVideoSrc(src);
+      videoIsRunning.current = true;
+    } 
+  };
 
   useEffect(() => {
     if (!showVideoCounter) return;
     const interval = setInterval(() => {
-      setNextVideoCounter((prev)=> {
-        if(prev <= 1000) {
+      setNextVideoCounter((prev) => {
+        if (prev <= 1) {
           clearInterval(interval);
-          setNextVideoCounter(0)
-          setShowVideoCounter(false)
-          return 0
+          setNextVideoCounter(0);
+          setShowVideoCounter(false);
+          return 0;
         }
-        return prev-1000
-      })
+        return prev;
+      });
     }, 1000);
     return () => {
       clearInterval(interval);
-      setShowVideoCounter(false)
-      setNextVideoCounter(0)
+      setShowVideoCounter(false);
+      setNextVideoCounter(0);
     };
   }, [showVideoCounter]);
   return (
     <>
       <Header />
-      {showVideoCounter && <div className="relative left-1000 top-0 bg-slate-600 border-blue-700 w-75 h-10 hover:-border-blue-700"><h1>Non-chan queued a video. Playing video in {nextVideoCounter/1000}</h1></div>}
+      {showVideoCounter && (
+        <div className='relative left-1000 top-0 bg-slate-600 border-blue-700 w-75 h-10 hover:-border-blue-700'>
+          <h1>Non-chan queued a video. Playing video in {toCountDownString(nextVideoCounter)}</h1>
+        </div>
+      )}
+      {list.map((item, i)=> (
+        <div>
+          {`${i+1}. ${item}`}
+        </div>
+      ))}
       <div className='grid grid-cols-4'>
         <div className='grid grid-flow-row col-span-3'>
-          <ReactPlayer controls muted playing volume={50} onDuration={(duration)=> console.log(duration)} width={1280} height={720} url={videoSrc}></ReactPlayer>
+          <ReactPlayer
+            controls
+            muted
+            playing
+            volume={50}
+            onDuration={onDuration}
+            onEnded={onVideoEnd}
+            onProgress={(e)=> {
+              setNextVideoCounter(currentVideoDuration - e.playedSeconds)
+            }}
+            width={1280}
+            height={720}
+            url={videoSrc}
+          ></ReactPlayer>
         </div>
-        <Chatbox messages={[]} enqueueVideo={enqueueVideo} />
+        <Chatbox currentUser={currentUser} messages={[{user: currentUser, userId: "1", content: "Henlo"}]} enqueueVideo={enqueueVideo} />
       </div>
     </>
   );
