@@ -6,7 +6,8 @@ import ReactPlayer from "react-player";
 import { Queue } from "./utils/Queue";
 
 const queue = new Queue<string>();
-const currentUser = "Non-chan"
+const currentUser = "Non-chan";
+
 const App = () => {
   const [videoSrc, setVideoSrc] = useState<string>("https://www.youtube.com/watch?v=X2QMN0a_TrA");
   const [nextVideoCounter, setNextVideoCounter] = useState<number>(0);
