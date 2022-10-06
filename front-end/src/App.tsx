@@ -12,7 +12,11 @@ const App = () => {
   const [nextVideoCounter, setNextVideoCounter] = useState<number>(0);
   const [currentVideoDuration, setCurrentVideoDuration] = useState<number>(0);
   const [showVideoCounter, setShowVideoCounter] = useState(false);
+
+  
   const videoIsRunning = useRef<boolean>(false);
+
+
   const list = queue.getItems();
   
   const enqueueVideo = (video: string) => {
@@ -37,31 +41,12 @@ const App = () => {
   const onVideoEnd = () => {
     videoIsRunning.current = false;
     const src = queue.dequeue();
-    if (src){
+    if (typeof src === 'string'){
       setVideoSrc(src);
       videoIsRunning.current = true;
     } 
   };
 
-  useEffect(() => {
-    if (!showVideoCounter) return;
-    const interval = setInterval(() => {
-      setNextVideoCounter((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setNextVideoCounter(0);
-          setShowVideoCounter(false);
-          return 0;
-        }
-        return prev;
-      });
-    }, 1000);
-    return () => {
-      clearInterval(interval);
-      setShowVideoCounter(false);
-      setNextVideoCounter(0);
-    };
-  }, [showVideoCounter]);
   return (
     <>
       <Header />
