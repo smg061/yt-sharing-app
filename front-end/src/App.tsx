@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import { convertYoutubeUrl, toCountDownString } from "./utils/urlUtils";
 import ReactPlayer from "react-player";
 import { Queue } from "./utils/Queue";
+import { useSocket } from "./hooks/useWebSocket";
 
 const queue = new Queue<string>();
 const currentUser = "Non-chan";
@@ -14,7 +15,8 @@ const App = () => {
   const [currentVideoDuration, setCurrentVideoDuration] = useState<number>(0);
   const [showVideoCounter, setShowVideoCounter] = useState(false);
 
-  
+  const socket = useSocket()
+  console.log(socket)
   const videoIsRunning = useRef<boolean>(false);
 
 

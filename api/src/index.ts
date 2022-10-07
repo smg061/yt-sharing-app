@@ -1,23 +1,37 @@
-import express, {Express, Request, Response} from 'express';
-import http from 'http';
-import {Server} from 'socket.io';
+import express, { Express, Request, Response } from "express";
+import http from "http";
+import { Server } from "socket.io";
+import cors from "cors";
 
-
-const app : Express = express();
+const app: Express = express();
 const server = http.createServer(app);
-const io = new Server(server);
-
 const port = process.env.PORT || "3000";
 
-app.get('/', (req: Request, res: Response)=> {
-    console.log(req)
-    res.send("Hello world from ts server!")
-})
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
-io.on('connection', (socket)=> {
-    console.log(socket)
-})
+io.on("connection", (socket) => {
+  console.log(socket.id);
+  socket.join("clock-room");
+  socket.on("disconnect", (data) => console.log(data));
+});
+setInterval(() => {
+  io.to("clock-room").emit("time", new Date());
+});
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
-app.listen(port, ()=> {
-    console.log(`Listencing on ${port}`)
-})
+app.get("/", (req: Request, res: Response) => {
+  console.log(req.url);
+  res.send("Hello world from ts server!");
+});
+
+server.listen(port, () => {
+  console.log(`Listening on ${port}`);
+});

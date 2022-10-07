@@ -6,17 +6,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
-const io = new socket_io_1.Server(server);
 const port = process.env.PORT || "3000";
-app.get('/', (req, res) => {
-    console.log(req);
+const io = new socket_io_1.Server(server, {
+    cors: {
+        origin: "*",
+    },
+});
+io.on("connection", (socket) => {
+    console.log(socket.id);
+    socket.join("clock-room");
+    socket.on("disconnect", (data) => console.log(data));
+});
+setInterval(() => {
+    io.to("clock-room").emit("time", new Date());
+});
+app.use((0, cors_1.default)({
+    origin: "*",
+}));
+app.get("/", (req, res) => {
+    console.log(req.url);
     res.send("Hello world from ts server!");
 });
-io.on('connection', (socket) => {
-    console.log(socket);
-});
-app.listen(port, () => {
-    console.log(`Listeing on ${port}`);
+server.listen(port, () => {
+    console.log(`Listening on ${port}`);
 });
