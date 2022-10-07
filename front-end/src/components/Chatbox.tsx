@@ -1,11 +1,11 @@
+import React from "react";
 import { useState } from "react";
+import { useSocket } from "../hooks/useWebSocket";
 
 export type Message = { user: string; userId: string; content: string };
 type props = {
-  messages: Message[];
   enqueueVideo: (videoUrl: string) => void;
   currentUser: string;
-  sendMessage: (message: Message)=> void
 };
 
 const OtherChatMsg = ({ user, content }: { user: string; content: string }) => {
@@ -25,6 +25,7 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
   return (
     <div className='flex w-full mt-2 space-x-3 max-w-xs ml-auto justify-end'>
       <div>
+         {user}
         <div className='bg-blue-600 text-white p-3 rounded-l-lg rounded-br-lg'>
           <p className='text-sm'>{content}</p>
         </div>
@@ -34,13 +35,21 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
     </div>
   );
 };
-const Chatbox = ({ enqueueVideo, messages, currentUser, sendMessage }: props) => {
-  
+const Chatbox = ({ enqueueVideo, }: props) => {
+  const { messageQueue, sendMessage, socket } = useSocket();
+  const [currentUsername, setCurrentUsername] = useState<string>('')
   return (
+    
     <div className='flex flex-col flex-grow w-full max-w-xl bg-black shadow-xl rounded-lg overflow-hidden'>
+      <div>
+        <div>
+          Set user name:
+        </div>
+        <input value={currentUsername} onChange={(e)=> setCurrentUsername(e.target.value)}></input>
+      </div>
       <div className='flex flex-col flex-grow h-0 p-4 overflow-auto'>
-        {messages.map((message,i) =>
-          message.user === currentUser ? (
+        {messageQueue.map((message,i) =>
+          message.user === currentUsername ? (
             <OwnChatMsg key={Object.values(message).reduce((curr, prev) => curr + prev, i.toString())} {...message} />
           ) : (
             <OtherChatMsg key={Object.values(message).reduce((curr, prev) => curr + prev, i.toString())} {...message} />
@@ -49,9 +58,9 @@ const Chatbox = ({ enqueueVideo, messages, currentUser, sendMessage }: props) =>
       </div>
       <div className='bg-gray-300 p-4'>
         <input
-          className='flex items-center h-10 w-full rounded px-3 text-sm'
+          className={'flex items-center h-10 w-full rounded px-3 text-sm'}
           type='text'
-          placeholder='Type your message…'
+          placeholder={currentUsername.length === 0? 'Select a username before chatting':'Type your message…'}
           onKeyDown={(e) => {
             if (e.key === "Enter" && e.currentTarget.value.trim().length) {
               if (e.currentTarget.value.includes("!queue:")) {
@@ -59,8 +68,8 @@ const Chatbox = ({ enqueueVideo, messages, currentUser, sendMessage }: props) =>
                 enqueueVideo(videoUrl);
               } else {
                 sendMessage({
-                  user: currentUser,
-                  userId: "idk",
+                  user: currentUsername,
+                  userId: socket.id,
                   content: e.currentTarget.value,
                 })
               }
@@ -73,4 +82,4 @@ const Chatbox = ({ enqueueVideo, messages, currentUser, sendMessage }: props) =>
   );
 };
 
-export default Chatbox;
+export default React.memo(Chatbox);

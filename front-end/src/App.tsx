@@ -5,6 +5,7 @@ import { convertYoutubeUrl, toCountDownString } from "./utils/urlUtils";
 import ReactPlayer from "react-player";
 import { Queue } from "./utils/Queue";
 import { useSocket } from "./hooks/useWebSocket";
+import VideoPlayer from "./components/VideoPlayer";
 
 const queue = new Queue<string>();
 const currentUser = "Non-chan";
@@ -14,9 +15,6 @@ const App = () => {
   const [nextVideoCounter, setNextVideoCounter] = useState<number>(0);
   const [currentVideoDuration, setCurrentVideoDuration] = useState<number>(0);
   const [showVideoCounter, setShowVideoCounter] = useState(false);
-  const { messageQueue, sendMessage } = useSocket();
-
-
 
   const videoIsRunning = useRef<boolean>(false);
 
@@ -54,34 +52,24 @@ const App = () => {
     <>
       <Header />
       {showVideoCounter && (
-        <div className='relative left-1000 top-0 bg-slate-600 border-blue-700 w-75 h-10 hover:-border-blue-700'>
+        <div className="relative left-1000 top-0 bg-slate-600 border-blue-700 w-75 h-10 hover:-border-blue-700">
           <h1>Non-chan queued a video. Playing video in {toCountDownString(nextVideoCounter)}</h1>
         </div>
       )}
       {list.map((item, i) => (
-        <div>{`${i + 1}. ${item}`}</div>
+        <div key={item+i}>{`${i + 1}. ${item}`}</div>
       ))}
-      <div className='grid grid-cols-4 sm:grid-cols-4'>
-        <div className='grid grid-flow-row col-span-3'>
-        <div className="h-screen">
-          <ReactPlayer
-            controls
-            muted
-            playing
-            volume={50}
+      <div className="grid grid-cols-4 sm:grid-cols-4">
+        <div className="grid grid-flow-row col-span-3">
+          <VideoPlayer
+            currentVideoDuration={currentVideoDuration}
+            setNextVideoCounter={setNextVideoCounter}
+            videoSrc={videoSrc}
+            onVideoEnd={onVideoEnd}
             onDuration={onDuration}
-            onEnded={onVideoEnd}
-            onProgress={(e) => {
-              setNextVideoCounter(currentVideoDuration - e.playedSeconds);
-            }}
-            height={'100%'}
-            width={'100%'}
-            url={videoSrc}
-          ></ReactPlayer>
-
+          />
         </div>
-        </div>
-        <Chatbox sendMessage={sendMessage} currentUser={currentUser} messages={messageQueue} enqueueVideo={enqueueVideo} />
+        <Chatbox currentUser={currentUser} enqueueVideo={enqueueVideo} />
       </div>
     </>
   );
