@@ -10,6 +10,7 @@ export const SocketContext = createContext(socket);
 
 export const SocketProvider = (props: SocketProvider) => {
   console.log("mounted");
+  console.log(import.meta.env)
   useEffect(() => {
     socket.on("message", (data: any) => {
       console.log(data);
