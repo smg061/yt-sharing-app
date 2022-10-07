@@ -25,20 +25,31 @@ export const SocketContext = createContext(defaultState);
 
 export const SocketProvider = (props: SocketProvider) => {
   const [state, setState] = useState(defaultState)
-  useEffect(() => {
-    socket.on("message", (data: Message[]) => {
+
+  
+  useEffect(()=> {
+    const addMessage = (msg: Message)=> {
       setState((prev)=> {
         return {
           ...prev,
-          messageQueue: data
+          messageQueue: [...prev.messageQueue ,msg]
         }
       })
-    }); 
-  }, [socket]);
+    }
+    socket.on('message', addMessage)
+
+    return ()=> {
+      socket.off('message', addMessage)
+    }
+  }, [socket])
+  
+  
   
   useEffect(()=> {    
     socket.emit("connection");
   },[])
+
+
   return <SocketContext.Provider value={state}>{props.children}</SocketContext.Provider>;
 };
 
