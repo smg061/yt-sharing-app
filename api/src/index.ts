@@ -12,15 +12,17 @@ const io = new Server(server, {
     origin: "*",
   },
 });
+type Message = { user: string; userId: string; content: string };
 
+const messages: Message[] = []
 io.on("connection", (socket) => {
-  console.log(socket.id);
-  socket.join("clock-room");
+  socket.on('message', (data: Message)=> {
+    messages.push(data)
+    socket.emit('message',messages);
+  })
   socket.on("disconnect", (data) => console.log(data));
 });
-setInterval(() => {
-  io.to("clock-room").emit("time", new Date());
-});
+
 app.use(
   cors({
     origin: "*",

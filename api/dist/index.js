@@ -15,13 +15,13 @@ const io = new socket_io_1.Server(server, {
         origin: "*",
     },
 });
+const messages = [];
 io.on("connection", (socket) => {
-    console.log(socket.id);
-    socket.join("clock-room");
+    socket.on('message', (data) => {
+        messages.push(data);
+        socket.emit('message', messages);
+    });
     socket.on("disconnect", (data) => console.log(data));
-});
-setInterval(() => {
-    io.to("clock-room").emit("time", new Date());
 });
 app.use((0, cors_1.default)({
     origin: "*",
