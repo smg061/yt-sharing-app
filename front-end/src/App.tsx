@@ -10,7 +10,7 @@ const queue = new Queue<string>();
 const currentUser = "Non-chan";
 
 const App = () => {
-  const [videoSrc, setVideoSrc] = useState<string>("https://www.youtube.com/watch?v=X2QMN0a_TrA");
+  const [videoSrc, setVideoSrc] = useState<string>("https://www.youtube.com/watch?v=I_tTtAAYehs");
   const [nextVideoCounter, setNextVideoCounter] = useState<number>(0);
   const [currentVideoDuration, setCurrentVideoDuration] = useState<number>(0);
   const [showVideoCounter, setShowVideoCounter] = useState(false);
