@@ -15,11 +15,10 @@ const io = new socket_io_1.Server(server, {
         origin: "*",
     },
 });
-const messages = [];
+//cons messages: Message[] = []
 io.on("connection", (socket) => {
     socket.on('message', (data) => {
-        messages.push(data);
-        socket.emit('message', messages);
+        io.emit('message', data); //.emit('message', data)
     });
     socket.on("disconnect", (data) => console.log(data));
 });

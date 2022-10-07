@@ -14,11 +14,10 @@ const io = new Server(server, {
 });
 type Message = { user: string; userId: string; content: string };
 
-const messages: Message[] = []
+//cons messages: Message[] = []
 io.on("connection", (socket) => {
   socket.on('message', (data: Message)=> {
-    messages.push(data)
-    socket.emit('message',messages);
+    io.emit('message',data)//.emit('message', data)
   })
   socket.on("disconnect", (data) => console.log(data));
 });
