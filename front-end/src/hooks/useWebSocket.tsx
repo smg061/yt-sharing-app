@@ -4,7 +4,7 @@ import io from "socket.io-client";
 interface SocketProvider {
   children: React.ReactNode;
 }
-const socket = io(import.meta.env.WEBSOCKET_URL || "http://localhost:3000");
+const socket = io(import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:3000");
 
 export const SocketContext = createContext(socket);
 
