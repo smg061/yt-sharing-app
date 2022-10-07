@@ -1,10 +1,11 @@
 import { useState } from "react";
 
-type Message = { user: string; userId: string; content: string };
+export type Message = { user: string; userId: string; content: string };
 type props = {
   messages: Message[];
   enqueueVideo: (videoUrl: string) => void;
   currentUser: string;
+  sendMessage: (message: Message)=> void
 };
 
 const OtherChatMsg = ({ user, content }: { user: string; content: string }) => {
@@ -33,12 +34,12 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
     </div>
   );
 };
-const Chatbox = ({ enqueueVideo, messages, currentUser }: props) => {
-  const [messagesLocal, setMessagesLocal] = useState<Message[]>(messages);
+const Chatbox = ({ enqueueVideo, messages, currentUser, sendMessage }: props) => {
+  
   return (
     <div className='flex flex-col flex-grow w-full max-w-xl bg-black shadow-xl rounded-lg overflow-hidden'>
       <div className='flex flex-col flex-grow h-0 p-4 overflow-auto'>
-        {messagesLocal.map((message,i) =>
+        {messages.map((message,i) =>
           message.user === currentUser ? (
             <OwnChatMsg key={Object.values(message).reduce((curr, prev) => curr + prev, i.toString())} {...message} />
           ) : (
@@ -52,15 +53,16 @@ const Chatbox = ({ enqueueVideo, messages, currentUser }: props) => {
           type='text'
           placeholder='Type your message…'
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && e.currentTarget.value.trim().length) {
               if (e.currentTarget.value.includes("!queue:")) {
                 const videoUrl = e.currentTarget.value.split("!queue:")[1];
                 enqueueVideo(videoUrl);
               } else {
-                setMessagesLocal([
-                  ...messagesLocal,
-                  { user: currentUser, content: e.currentTarget.value, userId: "whateber" },
-                ]);
+                sendMessage({
+                  user: currentUser,
+                  userId: "idk",
+                  content: e.currentTarget.value,
+                })
               }
               e.currentTarget.value = "";
             }
