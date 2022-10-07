@@ -14,11 +14,9 @@ const App = () => {
   const [nextVideoCounter, setNextVideoCounter] = useState<number>(0);
   const [currentVideoDuration, setCurrentVideoDuration] = useState<number>(0);
   const [showVideoCounter, setShowVideoCounter] = useState(false);
-  const { socket, messageQueue, sendMessage } = useSocket();
+  const { messageQueue, sendMessage } = useSocket();
 
-  const sendMessageCb = useCallback((message: Message) => {
-    sendMessage(socket, message);
-  }, []);
+
 
   const videoIsRunning = useRef<boolean>(false);
 
@@ -63,8 +61,9 @@ const App = () => {
       {list.map((item, i) => (
         <div>{`${i + 1}. ${item}`}</div>
       ))}
-      <div className='grid grid-cols-4'>
+      <div className='grid grid-cols-4 sm:grid-cols-4'>
         <div className='grid grid-flow-row col-span-3'>
+        <div className="h-screen">
           <ReactPlayer
             controls
             muted
@@ -75,12 +74,14 @@ const App = () => {
             onProgress={(e) => {
               setNextVideoCounter(currentVideoDuration - e.playedSeconds);
             }}
-            width={1280}
-            height={720}
+            height={'100%'}
+            width={'100%'}
             url={videoSrc}
           ></ReactPlayer>
+
         </div>
-        <Chatbox sendMessage={sendMessageCb} currentUser={currentUser} messages={messageQueue} enqueueVideo={enqueueVideo} />
+        </div>
+        <Chatbox sendMessage={sendMessage} currentUser={currentUser} messages={messageQueue} enqueueVideo={enqueueVideo} />
       </div>
     </>
   );
