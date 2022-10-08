@@ -7,7 +7,7 @@ import { Queue } from "./utils/Queue";
 import { useSocket } from "./hooks/useWebSocket";
 import VideoPlayer from "./components/VideoPlayer";
 
-const queue = new Queue<string>();
+
 const currentUser = "Non-chan";
 
 const App = () => {
@@ -15,7 +15,9 @@ const App = () => {
   const [nextVideoCounter, setNextVideoCounter] = useState<number>(0);
   const [currentVideoDuration, setCurrentVideoDuration] = useState<number>(0);
   const [showVideoCounter, setShowVideoCounter] = useState(false);
-
+  const {videoQueue} = useSocket();
+  const queue = new Queue<string>(videoQueue);
+  console.log(queue)
   const videoIsRunning = useRef<boolean>(false);
 
   const list = queue.getItems();

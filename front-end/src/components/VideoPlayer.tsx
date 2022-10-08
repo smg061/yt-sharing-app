@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
+import { useSocket } from "../hooks/useWebSocket";
 
 type props = {
   onDuration: (duration: number) => void;
@@ -8,13 +9,15 @@ type props = {
   currentVideoDuration: number;
   setNextVideoCounter: (counter: number) => void;
 };
-const VideoPlayer = ({
-  onDuration,
-  onVideoEnd,
-  videoSrc,
-  setNextVideoCounter,
-  currentVideoDuration,
-}: props) => {
+const VideoPlayer = ({ onDuration, videoSrc, setNextVideoCounter, currentVideoDuration }: props) => {
+  const { onVideoEnd, currentVideo } = useSocket();
+  useEffect(()=> {
+    console.log(currentVideo)
+    if(!currentVideo) {
+      console.log("no current video,, requesting more data",currentVideo)
+      onVideoEnd()
+    }
+  },[currentVideo])
   return (
     <div className="h-screen">
       <ReactPlayer
@@ -29,7 +32,7 @@ const VideoPlayer = ({
         }}
         height={"100%"}
         width={"100%"}
-        url={videoSrc}
+        url={currentVideo}
       ></ReactPlayer>
     </div>
   );
