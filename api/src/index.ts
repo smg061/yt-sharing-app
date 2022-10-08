@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import http from "http";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import cors from "cors";
 import { Queue } from "./Queue";
 import { SOCKET_EVENT } from "./SocketService";
@@ -16,9 +16,13 @@ const io = new Server(server, {
 });
 type Message = { user: string; userId: string; content: string };
 
+const clients = new Map<string, Socket>();
+
 const videoQueue = new Queue<string>();
 let currentVideo: string | undefined | null = null;
 io.on("connection", (socket) => {
+  clients.set(socket.id, socket);
+  
   if (currentVideo) {
     socket.emit(VIDEO_ENDED, currentVideo);
   }
@@ -55,7 +59,16 @@ app.use(
 app.get("/", (_: Request, res: Response) => {
   res.send("Hello world from ts server!");
 });
-
+app.get('/health', (_, res)=> {
+  res.status(200).send("All green!")
+})
+app.get('/clearQueue', (_, res)=> {
+  currentVideo = null;
+  for (let i = 0; i < videoQueue.getItems().length; i++) {
+    videoQueue.dequeue()
+  }
+  res.status(200).send("Queue cleared!")
+})
 server.listen(port, () => {
   console.log(`Listening on ${port}`);
 });

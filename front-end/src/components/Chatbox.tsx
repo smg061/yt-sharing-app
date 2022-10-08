@@ -5,6 +5,7 @@ import { useSocket } from "../hooks/useWebSocket";
 export type Message = { user: string; userId: string; content: string };
 type props = {
   currentUser: string;
+  setCurrentUser: (user: string) => void;
 };
 
 const OtherChatMsg = ({ user, content }: { user: string; content: string }) => {
@@ -34,18 +35,18 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
     </div>
   );
 };
-const Chatbox = ({}: props) => {
+const Chatbox = ({ currentUser, setCurrentUser }: props) => {
   const { messageQueue, sendMessage, socket, queueVideo, currentVideo } = useSocket();
-  const [currentUsername, setCurrentUsername] = useState<string>("");
+
   return (
     <div className="flex flex-col flex-grow w-full max-w-xl bg-black shadow-xl rounded-lg overflow-hidden">
       <div>
         <div>Set user name:</div>
-        <input value={currentUsername} onChange={(e) => setCurrentUsername(e.target.value)}></input>
+        <input value={currentUser} onChange={(e) => setCurrentUser(e.target.value)}></input>
       </div>
       <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
         {messageQueue.map((message, i) =>
-          message.user === currentUsername ? (
+          message.user === currentUser ? (
             <OwnChatMsg
               key={Object.values(message).reduce((curr, prev) => curr + prev, i.toString())}
               {...message}
@@ -62,9 +63,7 @@ const Chatbox = ({}: props) => {
         <input
           className={"flex items-center h-10 w-full rounded px-3 text-sm"}
           type="text"
-          placeholder={
-            currentUsername.length === 0 ? "Select a username before chatting" : "Type your message…"
-          }
+          placeholder={currentUser.length === 0 ? "Select a username before chatting" : "Type your message…"}
           onKeyDown={(e) => {
             if (e.key === "Enter" && e.currentTarget.value.trim().length) {
               if (e.currentTarget.value.includes("youtube.com")) {
@@ -72,7 +71,7 @@ const Chatbox = ({}: props) => {
                 queueVideo(videoUrl);
               } else {
                 sendMessage({
-                  user: currentUsername,
+                  user: currentUser,
                   userId: socket.id,
                   content: e.currentTarget.value,
                 });

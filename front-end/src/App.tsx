@@ -11,11 +11,12 @@ import VideoPlayer from "./components/VideoPlayer";
 const currentUser = "Non-chan";
 
 const App = () => {
-  const [videoSrc, setVideoSrc] = useState<string>("https://www.youtube.com/watch?v=I_tTtAAYehs");
   const [nextVideoCounter, setNextVideoCounter] = useState<number>(0);
   const [currentVideoDuration, setCurrentVideoDuration] = useState<number>(0);
   const [showVideoCounter, setShowVideoCounter] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string>('');
   const {videoQueue} = useSocket();
+
   const queue = new Queue<string>(videoQueue);
   const videoIsRunning = useRef<boolean>(false);
   const list = queue.getItems();
@@ -45,11 +46,10 @@ const App = () => {
           <VideoPlayer
             currentVideoDuration={currentVideoDuration}
             setNextVideoCounter={setNextVideoCounter}
-            videoSrc={videoSrc}
             onDuration={onDuration}
           />
         </div>
-        <Chatbox currentUser={currentUser}  />
+        <Chatbox setCurrentUser={setCurrentUser} currentUser={currentUser}  />
       </div>
     </>
   );
