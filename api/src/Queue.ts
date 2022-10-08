@@ -1,5 +1,9 @@
 export class Queue<T> {
     constructor(public items: T[] = []) { }
+    
+    get length() {
+        return this.items.length
+    }
 
     public enqueue(item: T): number {
         return this.items.push(item)
@@ -15,7 +19,8 @@ export class Queue<T> {
     public getItems(): T[] {
         return [...this.items]
     }
-    get length() {
-        return this.items.length
+
+    public isEmpty() {
+        return this.items.length === 0
     }
 }

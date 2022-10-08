@@ -4,20 +4,24 @@ import { Server } from "socket.io";
 import cors from "cors";
 import { Queue } from "./Queue";
 import { SOCKET_EVENT } from "./SocketService";
+import { Message } from "./Models";
+
+
 const app: Express = express();
 const server = http.createServer(app);
 const port = process.env.PORT || "3000";
 
 const { NEW_MESSAGE, VIDEO_QUEUED, VIDEO_ENDED } = SOCKET_EVENT;
+const videoQueue = new Queue<string>();
+let currentVideo: string | undefined | null = null;
+
 const io = new Server(server, {
   cors: {
     origin: "*",
   },
 });
-type Message = { user: string; userId: string; content: string };
 
-const videoQueue = new Queue<string>();
-let currentVideo: string | undefined | null = null;
+
 io.on("connection", (socket) => {
   if (currentVideo) {
     socket.emit(VIDEO_ENDED, currentVideo);
@@ -33,7 +37,6 @@ io.on("connection", (socket) => {
       return;
     }
     videoQueue.enqueue(data);
-    console.log("video queue", data, videoQueue.getItems());
     io.emit(VIDEO_QUEUED, data);
   });
   socket.on(VIDEO_ENDED, () => {
