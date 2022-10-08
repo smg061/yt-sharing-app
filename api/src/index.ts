@@ -17,28 +17,29 @@ const io = new Server(server, {
 type Message = { user: string; userId: string; content: string };
 
 const videoQueue = new Queue<string>();
-let currentVideo: string;
+let currentVideo: string | undefined | null = null;
 io.on("connection", (socket) => {
-  if(currentVideo) {
-    socket.emit(VIDEO_ENDED, currentVideo )
+  if (currentVideo) {
+    socket.emit(VIDEO_ENDED, currentVideo);
   }
   socket.on(NEW_MESSAGE, (data: Message) => {
     io.emit(NEW_MESSAGE, data);
   });
-  socket.on(VIDEO_QUEUED, (data: { previousUrl: string; newUrl: string }) => {
-    if (!data.previousUrl && data.newUrl!=='') {
-      io.emit(VIDEO_ENDED, data.newUrl);
-      currentVideo = data.newUrl
-      return
+  socket.on(VIDEO_QUEUED, (data: string) => {
+    if (currentVideo === null || currentVideo === undefined) {
+      console.log('no more videos, directly sending current video', data)
+      io.emit(VIDEO_ENDED, data);
+      currentVideo = data;
+      return;
     }
-    console.log("video received", data);
-    videoQueue.enqueue(data.newUrl);
-    io.emit(VIDEO_QUEUED, data.newUrl);
+    videoQueue.enqueue(data);
+    console.log("video queue", data, videoQueue.getItems());
+    io.emit(VIDEO_QUEUED, data);
   });
   socket.on(VIDEO_ENDED, () => {
     const url = videoQueue.dequeue();
-    if(typeof url !=='undefined') {
-      currentVideo = url;
+    currentVideo = url;
+    if (typeof url !== "undefined") {
       io.emit(VIDEO_ENDED, url);
     }
   });
@@ -51,8 +52,7 @@ app.use(
   })
 );
 
-app.get("/", (req: Request, res: Response) => {
-  console.log(req.url);
+app.get("/", (_: Request, res: Response) => {
   res.send("Hello world from ts server!");
 });
 

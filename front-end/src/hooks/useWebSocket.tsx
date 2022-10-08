@@ -40,7 +40,6 @@ export const SocketProvider = (props: SocketProvider) => {
       });
     };
     const addVideo = (currentVideo: string) => {
-      console.log(currentVideo, state.videoQueue);
       setState((prev) => {
         return {
           ...prev,
@@ -78,12 +77,10 @@ export const useSocket = () => {
   const sendMessage = (message: Message) => {
     state.socket.emit(NEW_MESSAGE, message);
   };
-  const queueVideo = (newUrl: string, previousUrl: string = '') => {
-    console.log(newUrl)
-    state.socket.emit(VIDEO_QUEUED, {newUrl, previousUrl});
+  const queueVideo = (newUrl: string) => {
+    state.socket.emit(VIDEO_QUEUED, newUrl);
   };
   const onVideoEnd = ()=> {
-    console.log('video ended')
     state.socket.emit(VIDEO_ENDED, null)
   }
   return { ...state, sendMessage, queueVideo, onVideoEnd};

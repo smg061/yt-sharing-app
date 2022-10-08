@@ -17,22 +17,9 @@ const App = () => {
   const [showVideoCounter, setShowVideoCounter] = useState(false);
   const {videoQueue} = useSocket();
   const queue = new Queue<string>(videoQueue);
-  console.log(queue)
   const videoIsRunning = useRef<boolean>(false);
-
   const list = queue.getItems();
 
-  const enqueueVideo = (video: string) => {
-    if (videoIsRunning.current) {
-      const formatedUrl = convertYoutubeUrl(video);
-      if (formatedUrl !== videoSrc) {
-        queue.enqueue(convertYoutubeUrl(video));
-        setShowVideoCounter(queue.length > 0);
-      }
-    } else {
-      setVideoSrc(video);
-    }
-  };
 
   const onDuration = (duration: number) => {
     setShowVideoCounter(queue.length > 0);
@@ -41,14 +28,6 @@ const App = () => {
     videoIsRunning.current = true;
   };
 
-  const onVideoEnd = () => {
-    videoIsRunning.current = false;
-    const src = queue.dequeue();
-    if (typeof src === "string") {
-      setVideoSrc(src);
-      videoIsRunning.current = true;
-    }
-  };
 
   return (
     <>
@@ -67,11 +46,10 @@ const App = () => {
             currentVideoDuration={currentVideoDuration}
             setNextVideoCounter={setNextVideoCounter}
             videoSrc={videoSrc}
-            onVideoEnd={onVideoEnd}
             onDuration={onDuration}
           />
         </div>
-        <Chatbox currentUser={currentUser} enqueueVideo={enqueueVideo} />
+        <Chatbox currentUser={currentUser}  />
       </div>
     </>
   );

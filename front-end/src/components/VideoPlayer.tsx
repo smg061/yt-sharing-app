@@ -4,20 +4,13 @@ import { useSocket } from "../hooks/useWebSocket";
 
 type props = {
   onDuration: (duration: number) => void;
-  onVideoEnd: () => void;
   videoSrc: string;
   currentVideoDuration: number;
   setNextVideoCounter: (counter: number) => void;
 };
 const VideoPlayer = ({ onDuration, videoSrc, setNextVideoCounter, currentVideoDuration }: props) => {
   const { onVideoEnd, currentVideo } = useSocket();
-  useEffect(()=> {
-    console.log(currentVideo)
-    if(!currentVideo) {
-      console.log("no current video,, requesting more data",currentVideo)
-      onVideoEnd()
-    }
-  },[currentVideo])
+
   return (
     <div className="h-screen">
       <ReactPlayer
