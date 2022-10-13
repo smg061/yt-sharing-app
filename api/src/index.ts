@@ -2,17 +2,16 @@ import express, { Express, Request, Response } from "express";
 import http from "http";
 import { Server, Socket } from "socket.io";
 import cors from "cors";
-import { Queue } from "./Queue";
 import { SOCKET_EVENT } from "./SocketService";
-import { Message } from "./Models";
-
+import { Message } from "./types/Models";
+import { VideoQueue } from "./Models/VideoQueue";
 
 const app: Express = express();
 const server = http.createServer(app);
 const port = process.env.PORT || "3000";
 
 const { NEW_MESSAGE, VIDEO_QUEUED, VIDEO_ENDED } = SOCKET_EVENT;
-const videoQueue = new Queue<string>();
+const videoQueue = new VideoQueue();
 let currentVideo: string | undefined | null = null;
 
 const io = new Server(server, {
@@ -23,11 +22,9 @@ const io = new Server(server, {
 
 const clients = new Map<string, Socket>();
 
-
-
 io.on("connection", (socket) => {
   clients.set(socket.id, socket);
-  
+
   if (currentVideo) {
     socket.emit(VIDEO_ENDED, currentVideo);
   }
@@ -36,7 +33,7 @@ io.on("connection", (socket) => {
   });
   socket.on(VIDEO_QUEUED, (data: string) => {
     if (currentVideo === null || currentVideo === undefined) {
-      console.log('no more videos, directly sending current video', data)
+      console.log("no more videos, directly sending current video", data);
       io.emit(VIDEO_ENDED, data);
       currentVideo = data;
       return;
@@ -63,16 +60,16 @@ app.use(
 app.get("/", (_: Request, res: Response) => {
   res.send("Hello world from ts server!");
 });
-app.get('/health', (_, res)=> {
-  res.status(200).send("All green!")
-})
-app.get('/clearQueue', (_, res)=> {
+app.get("/health", (_, res) => {
+  res.status(200).send("All green!");
+});
+app.get("/clearQueue", (_, res) => {
   currentVideo = null;
   for (let i = 0; i < videoQueue.getItems().length; i++) {
-    videoQueue.dequeue()
+    videoQueue.dequeue();
   }
-  res.status(200).send("Queue cleared!")
-})
+  res.status(200).send("Queue cleared!");
+});
 server.listen(port, () => {
   console.log(`Listening on ${port}`);
 });
