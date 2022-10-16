@@ -39,12 +39,12 @@ const Chatbox = ({ currentUser, setCurrentUser }: props) => {
   const { messageQueue, sendMessage, socket, queueVideo, currentVideo } = useSocket();
 
   return (
-    <div className="flex flex-col flex-grow w-full max-w-xl bg-black shadow-xl rounded-lg overflow-hidden">
+    <div className="flex h-full flex-col flex-grow w-full max-w-xl bg-black shadow-xl rounded-lg overflow-hidden">
       <div>
         <div>Set user name:</div>
         <input value={currentUser} onChange={(e) => setCurrentUser(e.target.value)}></input>
       </div>
-      <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
+      <div className="flex flex-col flex-grow p-4 overflow-auto">
         {messageQueue.map((message, i) =>
           message.user === currentUser ? (
             <OwnChatMsg

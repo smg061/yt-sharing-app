@@ -9,24 +9,38 @@ type props = {
 };
 const VideoPlayer = ({ onDuration, setNextVideoCounter, currentVideoDuration }: props) => {
   const { onVideoEnd, currentVideo } = useSocket();
-  const [volume,setVolume] = useState<number>(0);
+  const [volume, setVolume] = useState<number>(0);
   return (
-    <div className="h-screen">
-      <div>Volume: {(volume*100).toFixed(0)}</div>
-      <input min={0} max={1} step={0.01}  value={volume} type="range" onChange={(e)=> setVolume(parseFloat(e.target.value))}></input>
-      <ReactPlayer
-        playing
-        volume={volume}
-        onDuration={onDuration}
-        onEnded={onVideoEnd}
-        onProgress={(e) => {
-          setNextVideoCounter(currentVideoDuration - e.playedSeconds);
-        }}
-        height={"100%"}
-        width={"100%"}
-        playsinline
-        url={currentVideo}
-      ></ReactPlayer>
+    <div id='videoPlayer' className='col-span-3'>
+      <div className='relative h-auto w-auto'>
+        <ReactPlayer
+          className='top-0 left-0'
+          playing
+          volume={volume}
+          onDuration={onDuration}
+          onEnded={onVideoEnd}
+          controls
+          onProgress={(e) => {
+            setNextVideoCounter(currentVideoDuration - e.playedSeconds);
+          }}
+          playsinline
+          height="720px"
+          width="1280px"
+          url={currentVideo}
+        ></ReactPlayer>
+      </div>
+        <div >
+          <div>Volume: {(volume * 100).toFixed(0)}</div>
+          <input
+            className='w-13'
+            min={0}
+            max={1}
+            step={0.01}
+            value={volume}
+            type='range'
+            onChange={(e) => setVolume(parseFloat(e.target.value))}
+          ></input>
+        </div>
     </div>
   );
 };

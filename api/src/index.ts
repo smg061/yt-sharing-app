@@ -3,12 +3,19 @@ import http from "http";
 import { Server, Socket } from "socket.io";
 import cors from "cors";
 import { SOCKET_EVENT } from "./SocketService";
-import { Message } from "./types/Models";
+import { Message } from "./types";
 import { VideoQueue } from "./Models/VideoQueue";
+import { toVideoResponse } from "./utils";
+import dotenv from 'dotenv';
+
+dotenv.config()
+
+const port = process.env.PORT || "3000";
+
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
 const app: Express = express();
 const server = http.createServer(app);
-const port = process.env.PORT || "3000";
 
 const { NEW_MESSAGE, VIDEO_QUEUED, VIDEO_ENDED } = SOCKET_EVENT;
 const videoQueue = new VideoQueue();
@@ -73,3 +80,14 @@ app.get("/clearQueue", (_, res) => {
 server.listen(port, () => {
   console.log(`Listening on ${port}`);
 });
+app.get("/videoSearch", async(req, res)=> {
+  const searchTerm = req.query?.video;
+  if(typeof searchTerm !== "string") {
+    res.status(400).send("Bad request")
+  }
+  const generalSearchUrl = `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&type=video&part=snippet&q=${searchTerm}`;
+  const result = await fetch(generalSearchUrl)
+  const data = await result.json();
+  res.status(200).send(toVideoResponse(data.items))
+
+})
