@@ -89,6 +89,7 @@ app.get("/videoSearch", async(req, res)=> {
   const generalSearchUrl = `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&type=video&part=snippet&q=${searchTerm}`;
   const result = await fetch(generalSearchUrl)
   const data = await result.json() as {items: VideoSearchResult[]}
+  console.log(searchTerm, data)
   res.status(200).send(toVideoResponse(data.items))
 
 })
