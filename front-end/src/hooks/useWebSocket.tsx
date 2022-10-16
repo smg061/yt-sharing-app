@@ -11,7 +11,7 @@ const { VIDEO_QUEUED, NEW_MESSAGE , VIDEO_ENDED} = SOCKET_EVENT;
 interface SocketProvider {
   children: React.ReactNode;
 }
-const socket = io(import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:3000");
+const socket = io(import.meta.env.VITE_API_URL || "http://localhost:3000");
 
 type SocketContextType = {
   socket: Socket;
