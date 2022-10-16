@@ -90,6 +90,6 @@ app.get("/videoSearch", async(req, res)=> {
   const result = await fetch(generalSearchUrl)
   const data = await result.json() as {items: VideoSearchResult[]}
   console.log(searchTerm, data)
-  res.status(200).send(toVideoResponse(data.items))
+  res.status(200).json(toVideoResponse(data.items))
 
 })
