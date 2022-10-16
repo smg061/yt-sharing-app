@@ -21,6 +21,7 @@ type Api = {
 const api: Api = {
     
     searchVideos: async(query: string)=> {
+        console.log(baseUrl)
         if(!query.trim().length) return []
         const response = await fetch(`${baseUrl}/videoSearch?video=${query}`);
         return await response.json()
