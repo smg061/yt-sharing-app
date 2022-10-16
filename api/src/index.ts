@@ -6,7 +6,7 @@ import { SOCKET_EVENT } from "./SocketService";
 import { Message, VideoSearchResult } from "./types";
 import { VideoQueue } from "./Models/VideoQueue";
 import { toVideoResponse } from "./utils";
-
+import fetch from 'node-fetch'
 import dotenv from 'dotenv';
 
 dotenv.config()
