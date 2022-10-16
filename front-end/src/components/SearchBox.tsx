@@ -6,7 +6,7 @@ const {setQuery, query, videos} = useVideoSearch();
 
   return (
     <div>
-        <input value={query} onChange={(e)=> setQuery(e.target.value)}></input>
+        <input placeholder="search for a video" value={query} onChange={(e)=> setQuery(e.target.value)}></input>
         <div>
             {videos.map((video)=> (
                 // <div key={video.id}>{video.title}</div>

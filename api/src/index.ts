@@ -3,9 +3,10 @@ import http from "http";
 import { Server, Socket } from "socket.io";
 import cors from "cors";
 import { SOCKET_EVENT } from "./SocketService";
-import { Message } from "./types";
+import { Message, VideoSearchResult } from "./types";
 import { VideoQueue } from "./Models/VideoQueue";
 import { toVideoResponse } from "./utils";
+
 import dotenv from 'dotenv';
 
 dotenv.config()
@@ -87,7 +88,7 @@ app.get("/videoSearch", async(req, res)=> {
   }
   const generalSearchUrl = `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&type=video&part=snippet&q=${searchTerm}`;
   const result = await fetch(generalSearchUrl)
-  const data = await result.json();
+  const data = await result.json() as {items: VideoSearchResult[]}
   res.status(200).send(toVideoResponse(data.items))
 
 })
