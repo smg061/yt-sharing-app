@@ -6,8 +6,9 @@ export enum SOCKET_EVENT {
   NEW_MESSAGE = "NEW_MESSAGE",
   VIDEO_QUEUED = "VIDEO_QUEUED",
   VIDEO_ENDED = "VIDEO_ENDED",
+  SKIP_VIDEO="SKIP_VIDEO"
 }
-const { VIDEO_QUEUED, NEW_MESSAGE , VIDEO_ENDED} = SOCKET_EVENT;
+const { VIDEO_QUEUED, NEW_MESSAGE , VIDEO_ENDED, SKIP_VIDEO} = SOCKET_EVENT;
 interface SocketProvider {
   children: React.ReactNode;
 }
@@ -83,6 +84,9 @@ export const useSocket = () => {
   const onVideoEnd = ()=> {
     state.socket.emit(VIDEO_ENDED, null)
   }
-  return { ...state, sendMessage, queueVideo, onVideoEnd};
+  const onSkip = ()=> {
+    state.socket.emit(SKIP_VIDEO, null)
+  }
+  return { ...state, sendMessage, queueVideo, onVideoEnd, onSkip};
 };
 export default {};

@@ -18,7 +18,7 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const app: Express = express();
 const server = http.createServer(app);
 
-const { NEW_MESSAGE, VIDEO_QUEUED, VIDEO_ENDED } = SOCKET_EVENT;
+const { NEW_MESSAGE, VIDEO_QUEUED, VIDEO_ENDED, SKIP_VIDEO } = SOCKET_EVENT;
 const videoQueue = new VideoQueue();
 let currentVideo: string | undefined | null = null;
 
@@ -56,6 +56,14 @@ io.on("connection", (socket) => {
       io.emit(VIDEO_ENDED, url);
     }
   });
+  socket.on(SKIP_VIDEO, () => {
+    console.log('skip video event triggered')
+    const newVideo = videoQueue.dequeue();
+    if (newVideo) {
+      currentVideo = newVideo;
+      io.emit(VIDEO_ENDED, newVideo)
+    }
+  })
   socket.on("disconnect", (data) => console.log(data));
 });
 
@@ -81,15 +89,145 @@ app.get("/clearQueue", (_, res) => {
 server.listen(port, () => {
   console.log(`Listening on ${port}`);
 });
-app.get("/videoSearch", async(req, res)=> {
+app.get("/videoSearch", async (req, res) => {
   const searchTerm = req.query?.video;
-  if(typeof searchTerm !== "string") {
+  if (typeof searchTerm !== "string") {
     res.status(400).send("Bad request")
   }
   const generalSearchUrl = `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&type=video&part=snippet&q=${searchTerm}`;
   const result = await fetch(generalSearchUrl)
-  const data = await result.json() as {items: VideoSearchResult[]}
-  console.log(searchTerm, data)
+
+  const data = await result.json() as { items: VideoSearchResult[], error: any }
+  if (data.error) {
+    // test data
+    res.status(200).json(toVideoResponse(
+      [
+        {
+          "id": {
+            kind: "",
+            videoId: "7lCDEYXw3mM"
+          },
+          "snippet": {
+            "publishedAt": "2012-06-20T22:45:24.000Z",
+            "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
+            "title": "Google I/O 101: Q&A On Using Google APIs",
+            "description": "Antonio Fuentes speaks to us and takes questions on working with Google APIs and OAuth 2.0.",
+            "thumbnails": {
+              "default": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/default.jpg",
+                "width": 0,
+                height: 0,
+
+              },
+              "medium": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/mqdefault.jpg",
+                "width": 0,
+                height: 0,
+              },
+              "high": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/hqdefault.jpg",
+                "width": 0,
+                height: 0,
+              }
+            },
+            channelTitle: ""
+          }
+        },
+        {
+          "id": {
+            kind: "",
+            videoId: "7lCDEYXw3mM"
+          },
+          "snippet": {
+            "publishedAt": "2012-06-20T22:45:24.000Z",
+            "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
+            "title": "Google I/O 101: Q&A On Using Google APIs",
+            "description": "Antonio Fuentes speaks to us and takes questions on working with Google APIs and OAuth 2.0.",
+            "thumbnails": {
+              "default": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/default.jpg",
+                "width": 0,
+                height: 0,
+
+              },
+              "medium": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/mqdefault.jpg",
+                "width": 0,
+                height: 0,
+              },
+              "high": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/hqdefault.jpg",
+                "width": 0,
+                height: 0,
+              }
+            },
+            channelTitle: ""
+          }
+        },
+        {
+          "id": {
+            kind: "",
+            videoId: "7lCDEYXw3mM"
+          },
+          "snippet": {
+            "publishedAt": "2012-06-20T22:45:24.000Z",
+            "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
+            "title": "Google I/O 101: Q&A On Using Google APIs",
+            "description": "Antonio Fuentes speaks to us and takes questions on working with Google APIs and OAuth 2.0.",
+            "thumbnails": {
+              "default": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/default.jpg",
+                "width": 0,
+                height: 0,
+
+              },
+              "medium": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/mqdefault.jpg",
+                "width": 0,
+                height: 0,
+              },
+              "high": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/hqdefault.jpg",
+                "width": 0,
+                height: 0,
+              }
+            },
+            channelTitle: ""
+          }
+        },{
+          "id": {
+            kind: "",
+            videoId: "7lCDEYXw3mM"
+          },
+          "snippet": {
+            "publishedAt": "2012-06-20T22:45:24.000Z",
+            "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
+            "title": "Google I/O 101: Q&A On Using Google APIs",
+            "description": "Antonio Fuentes speaks to us and takes questions on working with Google APIs and OAuth 2.0.",
+            "thumbnails": {
+              "default": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/default.jpg",
+                "width": 0,
+                height: 0,
+
+              },
+              "medium": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/mqdefault.jpg",
+                "width": 0,
+                height: 0,
+              },
+              "high": {
+                "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/hqdefault.jpg",
+                "width": 0,
+                height: 0,
+              }
+            },
+            channelTitle: ""
+          }
+        }
+      ]))
+      return
+  }
   res.status(200).json(toVideoResponse(data.items))
 
 })

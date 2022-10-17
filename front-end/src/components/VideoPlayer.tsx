@@ -4,10 +4,9 @@ import { useSocket } from "../hooks/useWebSocket";
 
 type props = {
   onDuration: (duration: number) => void;
-  currentVideoDuration: number;
   setNextVideoCounter: (counter: number) => void;
 };
-const VideoPlayer = ({ onDuration, setNextVideoCounter, currentVideoDuration }: props) => {
+const VideoPlayer = ({ onDuration, setNextVideoCounter }: props) => {
   const { onVideoEnd, currentVideo } = useSocket();
   const [volume, setVolume] = useState<number>(0);
   return (
@@ -20,9 +19,6 @@ const VideoPlayer = ({ onDuration, setNextVideoCounter, currentVideoDuration }: 
           onDuration={onDuration}
           onEnded={onVideoEnd}
           controls
-          onProgress={(e) => {
-            setNextVideoCounter(currentVideoDuration - e.playedSeconds);
-          }}
           playsinline
           height="720px"
           width="1280px"

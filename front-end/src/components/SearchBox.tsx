@@ -5,11 +5,12 @@ const SearchBox = () => {
 const {setQuery, query, videos} = useVideoSearch();
 
   return (
-    <div>
-        <input placeholder="search for a video" value={query} onChange={(e)=> setQuery(e.target.value)}></input>
-        <div>
+    <div className="grid w-1/4 ">
+      <div className="w-full">
+        <input className="w-full" placeholder="search for a video" value={query} onChange={(e)=> setQuery(e.target.value)}></input>
+      </div>
+        <div className="w-full h-60 overflow-y-scroll ">
             {videos.map((video)=> (
-                // <div key={video.id}>{video.title}</div>
                 <VideoCard videoInfo={video} key={video.id}/>
             ))}
         </div>
