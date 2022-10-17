@@ -130,7 +130,7 @@ app.get("/videoSearch", async (req, res) => {
                 height: 0,
               }
             },
-            channelTitle: ""
+            channelTitle: "Test Title"
           }
         },
         {
@@ -161,7 +161,7 @@ app.get("/videoSearch", async (req, res) => {
                 height: 0,
               }
             },
-            channelTitle: ""
+            channelTitle: "Test Title"
           }
         },
         {
@@ -192,7 +192,7 @@ app.get("/videoSearch", async (req, res) => {
                 height: 0,
               }
             },
-            channelTitle: ""
+            channelTitle: "Test Title"
           }
         },{
           "id": {
@@ -222,7 +222,7 @@ app.get("/videoSearch", async (req, res) => {
                 height: 0,
               }
             },
-            channelTitle: ""
+            channelTitle: "Test Title"
           }
         }
       ]))
