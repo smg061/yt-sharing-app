@@ -36,10 +36,10 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
   );
 };
 const Chatbox = ({ currentUser, setCurrentUser }: props) => {
-  const { messageQueue, sendMessage, socket, queueVideo, currentVideo } = useSocket();
+  const { messageQueue, sendMessage, socket, queueVideo } = useSocket();
 
   return (
-    <div className="flex h-full flex-col flex-grow w-full max-w-xl bg-black shadow-xl rounded-lg overflow-hidden">
+    <div className="flex h-full w-full flex-col flex-grow max-w-xl bg-black shadow-xl rounded-lg overflow-hidden">
       <div>
         <div>Set user name:</div>
         <input value={currentUser} onChange={(e) => setCurrentUser(e.target.value)}></input>
