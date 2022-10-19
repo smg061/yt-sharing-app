@@ -1,17 +1,14 @@
 import { useState, createContext, useEffect, useContext, useReducer } from "react";
 import io, { Socket } from "socket.io-client";
 import { Message } from "../components/Chatbox";
+import { SOCKET_EVENT } from "./types";
 
-export enum SOCKET_EVENT {
-  NEW_MESSAGE = "NEW_MESSAGE",
-  VIDEO_QUEUED = "VIDEO_QUEUED",
-  VIDEO_ENDED = "VIDEO_ENDED",
-  SKIP_VIDEO = "SKIP_VIDEO",
-}
 const { VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO } = SOCKET_EVENT;
-interface SocketProvider {
+
+type SocketProvider = {
   children: React.ReactNode;
-}
+};
+
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:3000");
 
 type SocketContextType = {
@@ -24,57 +21,23 @@ export const SocketContext = createContext(defaultState);
 
 export const SocketProvider = (props: SocketProvider) => {
   const socket = defaultState.socket;
-
   return <SocketContext.Provider value={{ socket }}>{props.children}</SocketContext.Provider>;
 };
 
-type StateType = {
-  messageQueue: Message[];
+type SocketState = {
   videoQueue: string[];
   currentVideo: string;
-  id: string,
+  id: string;
 };
 
-export const useChat = ()=> {
-  const socket = useContext(SocketContext).socket;
-
-  const [state, setState] = useState<Message[]>([]);
-
-  useEffect(()=> {
-    const addMessage = (msg: Message) => {
-      setState((prev) => {
-        return {
-          ...prev,
-          messageQueue: [...prev, msg],
-        };
-      });
-    };
-
-    socket.on(NEW_MESSAGE, addMessage);
-
-    return ()=> {
-      socket.off(NEW_MESSAGE, addMessage)
-    }
-  },[])
-
-}
 export const useSocket = () => {
   const socket = useContext(SocketContext).socket;
-  const [state, setState] = useState<StateType>({
-    messageQueue: [],
+  const [state, setState] = useState<SocketState>({
     videoQueue: [],
     currentVideo: "",
-    id:socket.id,
+    id: socket.id,
   });
   useEffect(() => {
-    const addMessage = (msg: Message) => {
-      setState((prev) => {
-        return {
-          ...prev,
-          messageQueue: [...prev.messageQueue, msg],
-        };
-      });
-    };
     const addVideo = (currentVideo: string) => {
       setState((prev) => {
         return {
@@ -91,11 +54,9 @@ export const useSocket = () => {
         };
       });
     };
-    socket.on(NEW_MESSAGE, addMessage);
     socket.on(VIDEO_QUEUED, addVideo);
     socket.on(VIDEO_ENDED, setCurrentVideo);
     return () => {
-      socket.off(NEW_MESSAGE, addMessage);
       socket.off(VIDEO_QUEUED, addVideo);
       socket.off(VIDEO_ENDED, setCurrentVideo);
     };

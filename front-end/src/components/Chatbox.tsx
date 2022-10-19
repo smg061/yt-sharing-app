@@ -1,6 +1,6 @@
 import React from "react";
-import { useState } from "react";
-import { useSocket } from "../hooks/useWebSocket";
+import { useChat } from "../hooks/useChat";
+
 
 export type Message = { user: string; userId: string; content: string };
 type props = {
@@ -36,7 +36,7 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
   );
 };
 const Chatbox = ({ currentUser, setCurrentUser }: props) => {
-  const { messageQueue, sendMessage, queueVideo, currentVideo ,id} = useSocket();
+  const { messageQueue, sendMessage ,id, queueVideo} = useChat();
 
   return (
     <div className="flex h-full flex-col flex-grow w-full max-w-xl bg-black shadow-xl rounded-lg overflow-hidden">
