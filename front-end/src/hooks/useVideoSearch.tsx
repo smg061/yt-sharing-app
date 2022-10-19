@@ -11,7 +11,6 @@ export const useVideoSearch = () => {
     let cancel = false;
     const fetchVideos = async () => {
       const response = await api.searchVideos(query);
-      console.log(response)
       setVideos(response);
     };
     if (cancel) return;
