@@ -36,7 +36,7 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
   );
 };
 const Chatbox = ({ currentUser, setCurrentUser }: props) => {
-  const { messageQueue, sendMessage, socket, queueVideo, currentVideo } = useSocket();
+  const { messageQueue, sendMessage, queueVideo, currentVideo ,id} = useSocket();
 
   return (
     <div className="flex h-full flex-col flex-grow w-full max-w-xl bg-black shadow-xl rounded-lg overflow-hidden">
@@ -72,7 +72,7 @@ const Chatbox = ({ currentUser, setCurrentUser }: props) => {
               } else {
                 sendMessage({
                   user: currentUser,
-                  userId: socket.id,
+                  userId: id,
                   content: e.currentTarget.value,
                 });
               }
