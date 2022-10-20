@@ -20,8 +20,5 @@
   "homepage": "https://github.com/smg061/yt-sharing-app#readme",
   "devDependencies": {
     "concurrently": "^7.4.0"
-  },
-  "dependencies": {
-    "react-query": "^3.39.2"
   }
 }
