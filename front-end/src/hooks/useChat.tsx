@@ -1,17 +1,16 @@
 import { useContext, useEffect, useState } from "react";
-import { Message } from "../components/Chatbox";
-import { SOCKET_EVENT } from "./types";
+import { SOCKET_EVENT, Message } from "./types";
 import { SocketContext } from "./useWebSocket";
 
 const { VIDEO_QUEUED, NEW_MESSAGE } = SOCKET_EVENT;
 
 export const useChat = () => {
-  const socket = useContext(SocketContext).socket;
-  const [state, setState] = useState<Message[]>([]);
+  const { socket } = useContext(SocketContext);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     const addMessage = (msg: Message) => {
-      setState((prev) => {
+      setMessages((prev) => {
         return [...prev, msg];
       });
     };
@@ -28,7 +27,7 @@ export const useChat = () => {
     socket.emit(VIDEO_QUEUED, video);
   };
   return {
-    messageQueue: state,
+    messageQueue: messages,
     id: socket.id,
     sendMessage,
     queueVideo,

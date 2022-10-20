@@ -1,13 +1,18 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import { SocketProvider } from './hooks/useWebSocket'
-import './index.css'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { SocketProvider } from "./hooks/useWebSocket";
+import { QueryClient, QueryClientProvider } from "react-query";
+import "./index.css";
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <SocketProvider>
-    <App />
-    </SocketProvider>
+    <QueryClientProvider client={queryClient}>
+      <SocketProvider>
+        <App />
+      </SocketProvider>
+    </QueryClientProvider>
   </React.StrictMode>
-)
+);

@@ -1,7 +1,6 @@
 import { useState, createContext, useEffect, useContext, useReducer } from "react";
 import io, { Socket } from "socket.io-client";
-import { Message } from "../components/Chatbox";
-import { SOCKET_EVENT } from "./types";
+import { SOCKET_EVENT, Message } from "./types";
 
 const { VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO } = SOCKET_EVENT;
 
@@ -11,7 +10,7 @@ type SocketProvider = {
 
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:3000");
 
-type SocketContextType = {
+export type SocketContextType = {
   socket: Socket;
 };
 const defaultState: SocketContextType = {
@@ -31,7 +30,7 @@ type SocketState = {
 };
 
 export const useSocket = () => {
-  const socket = useContext(SocketContext).socket;
+  const { socket } = useContext(SocketContext);
   const [state, setState] = useState<SocketState>({
     videoQueue: [],
     currentVideo: "",
@@ -78,4 +77,42 @@ export const useSocket = () => {
     socket.emit(SKIP_VIDEO, null);
   };
   return { ...state, sendMessage, queueVideo, onVideoEnd, onSkip };
+};
+
+// work in progress
+export const useVideoQueue = () => {
+  const { socket } = useContext(SocketContext);
+  const [state, setState] = useState({
+    videoQueue: Array<string>(),
+    currentVideo: "",
+  });
+  useEffect(() => {
+    const addVideo = (currentVideo: string) => {
+      setState((prev) => {
+        return {
+          ...prev,
+          videoQueue: [...prev.videoQueue, currentVideo],
+        };
+      });
+    };
+    const setCurrentVideo = (url: string) => {
+      setState((prev) => {
+        return {
+          ...prev,
+          currentVideo: url,
+        };
+      });
+    };
+    socket.on(VIDEO_QUEUED, addVideo);
+    socket.on(VIDEO_ENDED, setCurrentVideo);
+    return () => {
+      socket.off(VIDEO_QUEUED, addVideo);
+      socket.off(VIDEO_ENDED, setCurrentVideo);
+    };
+  }, [socket]);
+
+  return {
+    videoQueue: state.videoQueue,
+    currentVideo: state.currentVideo,
+  };
 };

@@ -1,3 +1,5 @@
+export type Message = { user: string; userId: string; content: string };
+
 export enum SOCKET_EVENT {
     NEW_MESSAGE = "NEW_MESSAGE",
     VIDEO_QUEUED = "VIDEO_QUEUED",

@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -32,16 +9,17 @@ const socket_io_1 = require("socket.io");
 const cors_1 = __importDefault(require("cors"));
 const SocketService_1 = require("./SocketService");
 const VideoQueue_1 = require("./Models/VideoQueue");
-const utils_1 = require("./utils");
 const dotenv_1 = __importDefault(require("dotenv"));
-const fetch = import ("node-fetch")
+const VideoSearchService_1 = require("./Services/VideoSearchService");
+const scrape_youtube_1 = require("scrape-youtube");
 dotenv_1.default.config();
 const port = process.env.PORT || "3000";
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+//const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
-const { NEW_MESSAGE, VIDEO_QUEUED, VIDEO_ENDED } = SocketService_1.SOCKET_EVENT;
+const { NEW_MESSAGE, VIDEO_QUEUED, VIDEO_ENDED, SKIP_VIDEO } = SocketService_1.SOCKET_EVENT;
 const videoQueue = new VideoQueue_1.VideoQueue();
+const videoSearchService = new VideoSearchService_1.YTScrapeVideoSearchService(scrape_youtube_1.youtube);
 let currentVideo = null;
 const io = new socket_io_1.Server(server, {
     cors: {
@@ -74,6 +52,14 @@ io.on("connection", (socket) => {
             io.emit(VIDEO_ENDED, url);
         }
     });
+    socket.on(SKIP_VIDEO, () => {
+        console.log('skip video event triggered');
+        const newVideo = videoQueue.dequeue();
+        if (newVideo) {
+            currentVideo = newVideo;
+            io.emit(VIDEO_ENDED, newVideo);
+        }
+    });
     socket.on("disconnect", (data) => console.log(data));
 });
 app.use((0, cors_1.default)({
@@ -92,16 +78,15 @@ app.get("/clearQueue", (_, res) => {
     }
     res.status(200).send("Queue cleared!");
 });
-server.listen(port, () => {
-    console.log(`Listening on ${port}`);
-});
 app.get("/videoSearch", async (req, res) => {
     const searchTerm = req.query?.video;
-    if (typeof searchTerm !== "string") {
+    if (typeof searchTerm !== 'string') {
         res.status(400).send("Bad request");
+        return;
     }
-    const generalSearchUrl = `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&type=video&part=snippet&q=${searchTerm}`;
-    const result = await fetch(generalSearchUrl);
-    const data = await result.json();
-    res.status(200).send((0, utils_1.toVideoResponse)(data.items));
+    const results = await videoSearchService.searchVideos(searchTerm);
+    res.status(200).json(results);
+});
+server.listen(port, () => {
+    console.log(`Listening on ${port}`);
 });

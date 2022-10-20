@@ -1,6 +1,6 @@
 export type Message = { user: string; userId: string; content: string };
 
-type ThumbnailQuality = "default" | "medium" | "high"
+export type ThumbnailQuality = "default" | "medium" | "high"
 
 type Thumbnail = {
     url: string,

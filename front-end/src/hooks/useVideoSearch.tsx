@@ -1,28 +1,28 @@
 import { useEffect, useState } from "react";
 import api, { VideoResult } from "../utils/api";
 import { useDebounce } from "./useDebounce";
+import { useQuery } from "react-query";
+
+const kebabCase = (str: string) =>
+  str
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/[\s_]+/g, "-")
+    .toLowerCase();
 
 export const useVideoSearch = () => {
   const [query, setQuery] = useState<string>("");
-  const [videos, setVideos] = useState<VideoResult[]>([]);
   const debouncedQuery = useDebounce(query, 500);
-
-  useEffect(() => {
-    let cancel = false;
-    const fetchVideos = async () => {
-      const response = await api.searchVideos(query);
-      setVideos(response);
-    };
-    if (cancel) return;
-    fetchVideos();
-    return () => {
-      cancel = true;
-    };
-  }, [debouncedQuery]);
+  const { isLoading, data, error } = useQuery(
+    [kebabCase(debouncedQuery), debouncedQuery],
+    () => api.searchVideos(debouncedQuery),
+    { staleTime: Infinity, refetchOnWindowFocus: false, keepPreviousData: true }
+  );
 
   return {
-    videos,
+    videos: data ?? [],
     query,
     setQuery,
+    error,
+    isLoading,
   };
 };

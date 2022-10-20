@@ -1,16 +1,11 @@
-import React from "react";
+import { useRef } from "react";
 import { useChat } from "../hooks/useChat";
-
-export type Message = { user: string; userId: string; content: string };
-type props = {
-  currentUser: string;
-  setCurrentUser: (user: string) => void;
-};
 
 const OtherChatMsg = ({ user, content }: { user: string; content: string }) => {
   return (
     <div className='flex w-full mt-2 space-x-3 max-w-xs'>
       <div className='flex-shrink-0 h-10 w-10 rounded-full bg-gray-300'></div>
+      {user}
       <div>
         <div className='bg-gray-300 p-3 rounded-r-lg rounded-bl-lg'>
           <p className='text-sm'>{content}</p>
@@ -34,14 +29,16 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
     </div>
   );
 };
-const Chatbox = ({ currentUser, setCurrentUser }: props) => {
+
+const Chatbox = () => {
   const { messageQueue, sendMessage, id, queueVideo } = useChat();
+  const userName = useRef<string>("");
 
   return (
     <div className='flex h-full w-full flex-col flex-grow max-w-xl bg-black shadow-xl rounded-lg overflow-hidden'>
       <div>
         <div>Set user name:</div>
-        <input value={currentUser} onChange={(e) => setCurrentUser(e.target.value)}></input>
+        <input defaultValue={userName.current} onChange={(e) => (userName.current = e.target.value)}></input>
       </div>
       <div className='flex flex-col flex-grow p-4 overflow-auto'>
         {messageQueue.map((message, i) =>
@@ -56,7 +53,7 @@ const Chatbox = ({ currentUser, setCurrentUser }: props) => {
         <input
           className={"flex items-center h-10 w-full rounded px-3 text-sm"}
           type='text'
-          placeholder={currentUser.length === 0 ? "Select a username before chatting" : "Type your message…"}
+          placeholder={userName.current.length === 0 ? "Select a username before chatting" : "Type your message…"}
           onKeyDown={(e) => {
             if (e.key === "Enter" && e.currentTarget.value.trim().length) {
               if (e.currentTarget.value.includes("youtube.com/watch")) {
@@ -64,7 +61,7 @@ const Chatbox = ({ currentUser, setCurrentUser }: props) => {
                 queueVideo(videoUrl);
               } else {
                 sendMessage({
-                  user: currentUser,
+                  user: userName.current,
                   userId: id,
                   content: e.currentTarget.value,
                 });
