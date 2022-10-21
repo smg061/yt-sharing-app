@@ -1,8 +1,9 @@
 import { useVideoSearch } from "../hooks/useVideoSearch";
+import { useSocket } from "../hooks/useWebSocket";
 import VideoCard from "./VideoCard";
 const SearchBox = () => {
   const { setQuery, query, videos } = useVideoSearch();
-
+  const {queueVideo} = useSocket();
   return (
     <div className='grid h-[15vh]'>
       <div className='w-full'>
@@ -15,7 +16,7 @@ const SearchBox = () => {
       </div>
       <div className='w-full h-60 overflow-y-scroll '>
         {videos.map((video) => (
-          <VideoCard videoInfo={video} key={video.id} />
+          <VideoCard queueVideo={queueVideo} videoInfo={video} key={video.id} />
         ))}
       </div>
     </div>

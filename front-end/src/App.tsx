@@ -1,18 +1,13 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import Chatbox from "./components/Chatbox";
 import Header from "./components/Header";
-import { toCountDownString } from "./utils/urlUtils";
-import { Queue } from "./utils/Queue";
 import { useSocket } from "./hooks/useWebSocket";
 import VideoPlayer from "./components/VideoPlayer";
 import SearchBox from "./components/SearchBox";
 
 const App = () => {
   const [nextVideoCounter, setNextVideoCounter] = useState<number>(0);
-  const { onSkip } = useSocket();
-
-  //const queue = new Queue<string>(videoQueue);
-  //const list = queue.getItems();
+  const {onSkip} = useSocket();
 
   const onDuration = (duration: number) => {
     // setShowVideoCounter(queue.length > 0);

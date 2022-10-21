@@ -1,12 +1,11 @@
-import { useSocket } from "../hooks/useWebSocket";
 import { VideoResult } from "../utils/api";
 
 type props = {
   videoInfo: VideoResult;
+  queueVideo: (video: string)=> void
 };
 
-const VideoCard = ({ videoInfo }: props) => {
-  const { queueVideo } = useSocket();
+const VideoCard = ({ videoInfo, queueVideo }: props) => {
   return (
     <div className='flex w-full h-24'>
       <div className='flex flex-col md:flex-row md:max-w-xl rounded-lg bg-black shadow-lg w-full'>

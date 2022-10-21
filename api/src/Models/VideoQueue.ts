@@ -9,4 +9,7 @@ export class VideoQueue extends Queue<string> {
   get currentVideo() {
     return this._currentVideo;
   }
+  set currentVideo(v: string | null | undefined) {
+    this._currentVideo = v;
+  }
 }

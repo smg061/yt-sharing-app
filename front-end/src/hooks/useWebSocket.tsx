@@ -16,6 +16,9 @@ export type SocketContextType = {
 const defaultState: SocketContextType = {
   socket,
 };
+
+type EventMap<T> = Map<string, (args:T)=> void>
+
 export const SocketContext = createContext(defaultState);
 
 export const SocketProvider = (props: SocketProvider) => {
@@ -29,6 +32,7 @@ type SocketState = {
   id: string;
 };
 
+
 export const useSocket = () => {
   const { socket } = useContext(SocketContext);
   const [state, setState] = useState<SocketState>({
@@ -38,6 +42,7 @@ export const useSocket = () => {
   });
   useEffect(() => {
     const addVideo = (currentVideo: string) => {
+      console.log("addVideo called")
       setState((prev) => {
         return {
           ...prev,
@@ -46,6 +51,7 @@ export const useSocket = () => {
       });
     };
     const setCurrentVideo = (url: string) => {
+      console.log("setCurrentVideo called")
       setState((prev) => {
         return {
           ...prev,
@@ -59,7 +65,7 @@ export const useSocket = () => {
       socket.off(VIDEO_QUEUED, addVideo);
       socket.off(VIDEO_ENDED, setCurrentVideo);
     };
-  }, [socket]);
+  }, []);
 
   useEffect(() => {
     socket.emit("connection");
@@ -73,46 +79,28 @@ export const useSocket = () => {
   const onVideoEnd = () => {
     socket.emit(VIDEO_ENDED, null);
   };
+
   const onSkip = () => {
-    socket.emit(SKIP_VIDEO, null);
+    socket.emit("SKIP_VIDEO", null);
   };
+
   return { ...state, sendMessage, queueVideo, onVideoEnd, onSkip };
 };
 
-// work in progress
-export const useVideoQueue = () => {
-  const { socket } = useContext(SocketContext);
-  const [state, setState] = useState({
-    videoQueue: Array<string>(),
-    currentVideo: "",
-  });
-  useEffect(() => {
-    const addVideo = (currentVideo: string) => {
-      setState((prev) => {
-        return {
-          ...prev,
-          videoQueue: [...prev.videoQueue, currentVideo],
-        };
-      });
-    };
-    const setCurrentVideo = (url: string) => {
-      setState((prev) => {
-        return {
-          ...prev,
-          currentVideo: url,
-        };
-      });
-    };
-    socket.on(VIDEO_QUEUED, addVideo);
-    socket.on(VIDEO_ENDED, setCurrentVideo);
-    return () => {
-      socket.off(VIDEO_QUEUED, addVideo);
-      socket.off(VIDEO_ENDED, setCurrentVideo);
-    };
-  }, [socket]);
 
-  return {
-    videoQueue: state.videoQueue,
-    currentVideo: state.currentVideo,
-  };
-};
+export function useRegisterSocketEvent<T>(eventMap: EventMap<T>) {
+  const {socket} = useContext(SocketContext);
+  useEffect(()=> {
+    eventMap.forEach((func, key)=> {
+      socket.on(key, func)
+    })
+   
+    return ()=> {
+      eventMap.forEach((func, key)=> {
+        socket.off(key, func)
+      })
+    }
+  }, [])
+  
+}
+

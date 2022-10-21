@@ -7,7 +7,7 @@ const { VIDEO_QUEUED, NEW_MESSAGE } = SOCKET_EVENT;
 export const useChat = () => {
   const { socket } = useContext(SocketContext);
   const [messages, setMessages] = useState<Message[]>([]);
-
+  console.log(socket)
   useEffect(() => {
     const addMessage = (msg: Message) => {
       setMessages((prev) => {
