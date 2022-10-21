@@ -56,16 +56,18 @@ export class YTScrapeVideoSearchService   {
 
 export class YTAPIVideoSearchService  {
 
-    constructor(private API_KEY?: string) {
+    private baseSearchURL: string;
+
+    constructor(API_KEY?: string) {
         if (typeof API_KEY === 'undefined') {
             throw new Error('Failed to provide API key to ' + YTAPIVideoSearchService)
         }
-        //this.baseSearchURL = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&type=video&part=snippet&q=`;
+        this.baseSearchURL = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&type=video&part=snippet&q=`;
     }
     public toString() {
         return 'YTAPIVideoSearchService'
     }
-    toVideoResponse(data?: VideoSearchResult[]): VideoInfo[] {
+    private toVideoResponse(data?: VideoSearchResult[]): VideoInfo[] {
         if (!data) return [];
         return data.map((video) => {
             return {
@@ -77,8 +79,7 @@ export class YTAPIVideoSearchService  {
         })
     }
     public async searchVideos(query: string): Promise<VideoInfo[]> {
-        const searchUrl = `https://www.googleapis.com/youtube/v3/search?key=${this.API_KEY}&type=video&part=snippet&q=${query}`
-
+        const searchUrl =`${this.baseSearchURL}${query}`
         const result = await fetch(searchUrl)
         const data = await result.json() as { items: VideoSearchResult[], error: any }
         if (data.error) {
@@ -230,4 +231,3 @@ const testData = [
         }
     }
 ]
-export default YTAPIVideoSearchService

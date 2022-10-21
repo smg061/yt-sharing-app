@@ -6,7 +6,7 @@ import { SOCKET_EVENT } from "./SocketService";
 import { Message,  } from "./types";
 import { VideoQueue } from "./Models/VideoQueue";
 import dotenv from 'dotenv';
-import VideoSearchService, { YTScrapeVideoSearchService } from "./Services/VideoSearchService";
+import {VideoSearchService, YTScrapeVideoSearchService } from "./Services/VideoSearchService";
 import { youtube as youtubeSearch } from 'scrape-youtube';
 
 dotenv.config()
@@ -21,7 +21,7 @@ const server = http.createServer(app);
 const { NEW_MESSAGE, VIDEO_QUEUED, VIDEO_ENDED, SKIP_VIDEO } = SOCKET_EVENT;
 const videoQueue = new VideoQueue();
 
-const videoSearchService = new YTScrapeVideoSearchService(youtubeSearch) as VideoSearchService
+const videoSearchService: VideoSearchService  = new YTScrapeVideoSearchService(youtubeSearch)
 
 let currentVideo: string | undefined | null = null;
 
