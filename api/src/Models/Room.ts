@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { Message } from "../types";
 import { SOCKET_EVENT } from "../SocketEvents";
 import { VideoQueue } from "./VideoQueue";
-const { NEW_MESSAGE, CONNECT, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP } = SOCKET_EVENT
+const { NEW_MESSAGE, CONNECT, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP, SKIPPING_IN_PROGRESS } = SOCKET_EVENT
 
 export class Room {
     private name: string;
@@ -81,13 +81,14 @@ export class Room {
                 if (newVideo && !this.skipPending) {
                     this.skipPending = true;
                     this.videoQueue.currentVideo = newVideo;
+                    this.io.emit(SKIPPING_IN_PROGRESS);
                     setTimeout(() => {
                         // emit relevant event and reset state
                         // 5 secs in the future
+                        this.usersWhoVoted = [];
                         this.io.emit(VIDEO_ENDED, newVideo)
                         this.skipPending = false
                         this.skipCurrentVideoVotes = 0;
-                        this.usersWhoVoted.splice(0,this.usersWhoVoted.length)
                     }, 5000)
                 }
             }

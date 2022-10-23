@@ -12,14 +12,14 @@ dotenv.config()
 const port = process.env.PORT || "3000";
 const app: Express = express();
 const server = http.createServer(app);
-const videoSearchService: VideoSearchService = new YTScrapeVideoSearchService(youtubeSearch)
-
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URI || "*",
   },
 });
 
+
+const videoSearchService: VideoSearchService = new YTScrapeVideoSearchService(youtubeSearch);
 const room = new Room("testRoom", io)
 //const clients = new Map<string, Socket>();
 

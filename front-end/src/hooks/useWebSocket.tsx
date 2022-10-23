@@ -37,7 +37,7 @@ export const useSocket = () => {
     currentVideo: "",
     id: socket.id,
   });
-  
+
   useEffect(() => {
     const addVideo = (currentVideo: string) => {
       setState((prev) => {
@@ -55,16 +55,16 @@ export const useSocket = () => {
         };
       });
     };
-    const setId = ()=> {
-      setState((prev)=> ({...prev, id:socket.id}))
-    }
+    const setId = () => {
+      setState((prev) => ({ ...prev, id: socket.id }));
+    };
     socket.on(VIDEO_QUEUED, addVideo);
     socket.on(VIDEO_ENDED, setCurrentVideo);
-    socket.on('connect',setId)
+    socket.on("connect", setId);
     return () => {
       socket.off(VIDEO_QUEUED, addVideo);
       socket.off(VIDEO_ENDED, setCurrentVideo);
-      socket.off('connect', setId)
+      socket.off("connect", setId);
     };
   }, [socket.id]);
 
@@ -90,16 +90,15 @@ export const useEmitSocketEvents = () => {
   const onSkip = () => {
     socket.emit(SKIP_VIDEO, null);
   };
-  const voteToSkip = ()=> {
-    socket.emit(VOTE_TO_SKIP, socket.id)
-  }
-  
+  const voteToSkip = () => {
+    socket.emit(VOTE_TO_SKIP, socket.id);
+  };
 
   return {
     queueVideo,
     onVideoEnd,
     onSkip,
     sendMessage,
-    voteToSkip
+    voteToSkip,
   };
 };
