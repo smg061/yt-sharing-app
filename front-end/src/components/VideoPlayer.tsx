@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
-import { useSocket } from "../hooks/useWebSocket";
+import { useEmitSocketEvents, useSocket } from "../hooks/useWebSocket";
 
 type props = {
   onDuration: (duration: number) => void;
-  setNextVideoCounter: (counter: number) => void;
 };
-const VideoPlayer = ({ onDuration, setNextVideoCounter }: props) => {
-  const { onVideoEnd, currentVideo } = useSocket();
+const VideoPlayer = ({ onDuration }: props) => {
+  const { onVideoEnd } = useEmitSocketEvents();
+  const { currentVideo } = useSocket();
   const [volume, setVolume] = useState<number>(0);
   return (
     <div id='videoPlayer' className='col-span-3'>

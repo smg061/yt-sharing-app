@@ -40,7 +40,7 @@ const Chatbox = () => {
         <div>Set user name:</div>
         <input defaultValue={userName.current} onChange={(e) => (userName.current = e.target.value)}></input>
       </div>
-      <div className='flex flex-col flex-grow p-4 overflow-auto'>
+      <div className='flex flex-col h-[110vh]  p-4 overflow-scroll'>
         {messageQueue.map((message, i) =>
           message.userId === id ? (
             <OwnChatMsg key={Object.values(message).reduce((curr, prev) => curr + prev, i.toString())} {...message} />

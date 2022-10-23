@@ -5,7 +5,8 @@ type QueuedPromise = {
     reject: (reason?: any) => void
 }
 export class PromiseQueue {
-    constructor(private queue: QueuedPromise[] = [], private promisePending: boolean = false) { }
+    private promisePending: boolean = false;
+    constructor(private queue: QueuedPromise[] = []) { }
 
     enqueue(promise: () => Promise<any>) {
         return new Promise<any>((resolve, reject) => {
@@ -55,6 +56,5 @@ export function delayFunc<T>(func: (args: T) => void, args: T, delay: number) {
             resolve()
         }, delay)
     })
-    return()=> p
+    return () => p
 }
-export function toQueuedPromise() { }

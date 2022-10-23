@@ -13,19 +13,19 @@ export type VideoResult = {
     channelTitle: string,
 }
 type Api = {
-    searchVideos:(query: string)=> Promise<VideoResult[]>,
-    queueVideo: (videoId: string)=> Promise<any>,
+    searchVideos: (query: string) => Promise<VideoResult[]>,
+    queueVideo: (videoId: string) => Promise<any>,
 }
 
 
 const api: Api = {
-    
-    searchVideos: async(query: string)=> {
-        if(!query.trim().length) return []
+
+    searchVideos: async (query: string) => {
+        if (!query.trim().length) return []
         const response = await fetch(`${baseUrl}/videoSearch?video=${query}`);
         return await response.json()
-    }, 
-    queueVideo: async(videoId:string)=> {
+    },
+    queueVideo: async (videoId: string) => {
         const response = await fetch(`${baseUrl}/queueVideo?id=${videoId}`)
         return await response.json();
     }

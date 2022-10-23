@@ -1,26 +1,28 @@
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { Message } from "../types";
 import { SOCKET_EVENT } from "../SocketEvents";
 import { VideoQueue } from "./VideoQueue";
-const { NEW_MESSAGE, USER_CONNECTED, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED } = SOCKET_EVENT
+const { NEW_MESSAGE, CONNECT, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP } = SOCKET_EVENT
 
 export class Room {
-    private readonly name: string;
-    public users: any[];
+    private name: string;
     private io: Server;
-    private videoQueue: VideoQueue
+    private videoQueue: VideoQueue = new VideoQueue();
+    private skipCurrentVideoVotes: number = 0;
+    private skipPending: boolean = false;
+    private connectedUsers: Map<string, Socket> = new Map();
+    private usersWhoVoted: string[] = [];
+
     constructor(name: string, io: Server) {
         this.name = name;
-        this.users = [];
         this.io = io;
-        this.videoQueue = new VideoQueue();
     }
 
-    public listenOnRoom() {
-        this.io.on('connection', (socket) => {
+    public listenForEvents() {
+        this.io.on(CONNECT, (socket: Socket) => {
+            this.connectedUsers.set(socket.id, socket);
             console.log(`User with connection id of ${socket.id} joined room ${this.name}`)
-            socket.emit(USER_CONNECTED, () => {
-            })
+
             socket.on(NEW_MESSAGE, (data: Message) => {
                 this.io.emit(NEW_MESSAGE, data)
             })
@@ -36,7 +38,6 @@ export class Room {
                     return;
                 }
                 this.videoQueue.enqueue(data);
-                console.log(this.videoQueue.getItems())
                 this.io.emit(VIDEO_QUEUED, data);
             });
             socket.on(VIDEO_ENDED, () => {
@@ -46,15 +47,57 @@ export class Room {
                     this.io.emit(VIDEO_ENDED, url);
                 }
             });
-            socket.on(SKIP_VIDEO, () => {
-                console.log('skip video event triggered')
+            this.handleSkipEvents(socket);
+            socket.on("disconnect", () => {
+                this.connectedUsers.delete(socket.id)
+            });
+        })
+    }
+
+    private handleSkipEvents(socket: Socket) {
+        socket.on(VOTE_TO_SKIP, (data: string) => {
+            // if there's no video, if the user is not in connected user (weird paranoia)
+            // or if the user already voted (is there a better way to track this?)
+            // do not continue
+            if (!this.videoQueue.currentVideo ||
+                !this.connectedUsers.has(data)
+            ) {
+                console.log(`Id of ${data} is not present in current users or there is no current video to skip ${this.videoQueue.currentVideo}`);
+                return;
+            }
+            if (this.usersWhoVoted.includes(data)) {
+                console.log("You voted already ya cheeky bastad. Bugger off " + socket.id);
+                return;
+            }
+            this.usersWhoVoted.push(socket.id)
+            this.skipCurrentVideoVotes += 1;
+            this.io.emit(VOTE_TO_SKIP, { currentVotes: this.skipCurrentVideoVotes, totalUsers: this.connectedUsers.size });
+            const proportion = this.skipCurrentVideoVotes / this.connectedUsers.size;
+            if (proportion >= 0.5) {
+                console.log("more than half of users chose to skip this video!")
                 const newVideo = this.videoQueue.dequeue();
-                if (newVideo) {
+                // only do it if there's a video and 
+                // no pending skips exist
+                if (newVideo && !this.skipPending) {
+                    this.skipPending = true;
                     this.videoQueue.currentVideo = newVideo;
-                    this.io.emit(VIDEO_ENDED, newVideo)
+                    setTimeout(() => {
+                        // emit relevant event and reset state
+                        // 5 secs in the future
+                        this.io.emit(VIDEO_ENDED, newVideo)
+                        this.skipPending = false
+                        this.skipCurrentVideoVotes = 0;
+                        this.usersWhoVoted.splice(0,this.usersWhoVoted.length)
+                    }, 5000)
                 }
-            })
-            socket.on("disconnect", (data) => console.log(data));
+            }
+        })
+        socket.on(SKIP_VIDEO, () => {
+            const newVideo = this.videoQueue.dequeue();
+            if (newVideo) {
+                this.videoQueue.currentVideo = newVideo;
+                this.io.emit(VIDEO_ENDED, newVideo)
+            }
         })
     }
     public clearQueue() {

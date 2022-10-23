@@ -1,9 +1,9 @@
 import { useVideoSearch } from "../hooks/useVideoSearch";
-import { useSocket } from "../hooks/useWebSocket";
+import { useEmitSocketEvents } from "../hooks/useWebSocket";
 import VideoCard from "./VideoCard";
 const SearchBox = () => {
   const { setQuery, query, videos } = useVideoSearch();
-  const {queueVideo} = useSocket();
+  const { queueVideo } = useEmitSocketEvents();
   return (
     <div className='grid h-[15vh]'>
       <div className='w-full'>

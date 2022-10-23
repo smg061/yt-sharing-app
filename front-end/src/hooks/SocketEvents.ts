@@ -1,4 +1,3 @@
-
 export enum SOCKET_EVENT {
     CONNECT="connection",
     USER_DISCONNECTED= "USER_DISCONNECTED",
@@ -8,6 +7,5 @@ export enum SOCKET_EVENT {
     VIDEO_ENDED = "VIDEO_ENDED",
     SKIP_VIDEO="SKIP_VIDEO",
     VOTE_TO_SKIP="VOTE_TO_SKIP",
-
-} 
-
+  } 
+  

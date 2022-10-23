@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { SOCKET_EVENT, Message } from "./types";
+import { SOCKET_EVENT } from "./SocketEvents";
+import { Message } from "./types";
 import { SocketContext } from "./useWebSocket";
 
 const { VIDEO_QUEUED, NEW_MESSAGE } = SOCKET_EVENT;
@@ -7,7 +8,8 @@ const { VIDEO_QUEUED, NEW_MESSAGE } = SOCKET_EVENT;
 export const useChat = () => {
   const { socket } = useContext(SocketContext);
   const [messages, setMessages] = useState<Message[]>([]);
-  console.log(socket)
+  const [id, setId] = useState(socket.id);
+
   useEffect(() => {
     const addMessage = (msg: Message) => {
       setMessages((prev) => {
@@ -15,10 +17,14 @@ export const useChat = () => {
       });
     };
     socket.on(NEW_MESSAGE, addMessage);
+    socket.on('connection', ()=> {
+      console.log('connection')
+      setId(socket.id)
+    })
     return () => {
       socket.off(NEW_MESSAGE, addMessage);
     };
-  }, []);
+  }, [socket, socket.id]);
 
   const sendMessage = (msg: Message) => {
     socket.emit(NEW_MESSAGE, msg);
@@ -28,7 +34,7 @@ export const useChat = () => {
   };
   return {
     messageQueue: messages,
-    id: socket.id,
+    id,
     sendMessage,
     queueVideo,
   };

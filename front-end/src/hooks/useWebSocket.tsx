@@ -1,8 +1,8 @@
 import { useState, createContext, useEffect, useContext, useReducer } from "react";
 import io, { Socket } from "socket.io-client";
-import { SOCKET_EVENT, Message } from "./types";
-
-const { VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO } = SOCKET_EVENT;
+import { SOCKET_EVENT } from "./SocketEvents";
+import { Message } from "./types";
+const { VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, VOTE_TO_SKIP } = SOCKET_EVENT;
 
 type SocketProvider = {
   children: React.ReactNode;
@@ -17,8 +17,6 @@ const defaultState: SocketContextType = {
   socket,
 };
 
-type EventMap<T> = Map<string, (args:T)=> void>
-
 export const SocketContext = createContext(defaultState);
 
 export const SocketProvider = (props: SocketProvider) => {
@@ -32,7 +30,6 @@ type SocketState = {
   id: string;
 };
 
-
 export const useSocket = () => {
   const { socket } = useContext(SocketContext);
   const [state, setState] = useState<SocketState>({
@@ -40,9 +37,9 @@ export const useSocket = () => {
     currentVideo: "",
     id: socket.id,
   });
+  
   useEffect(() => {
     const addVideo = (currentVideo: string) => {
-      console.log("addVideo called")
       setState((prev) => {
         return {
           ...prev,
@@ -51,7 +48,6 @@ export const useSocket = () => {
       });
     };
     const setCurrentVideo = (url: string) => {
-      console.log("setCurrentVideo called")
       setState((prev) => {
         return {
           ...prev,
@@ -59,17 +55,28 @@ export const useSocket = () => {
         };
       });
     };
+    const setId = ()=> {
+      setState((prev)=> ({...prev, id:socket.id}))
+    }
     socket.on(VIDEO_QUEUED, addVideo);
     socket.on(VIDEO_ENDED, setCurrentVideo);
+    socket.on('connect',setId)
     return () => {
       socket.off(VIDEO_QUEUED, addVideo);
       socket.off(VIDEO_ENDED, setCurrentVideo);
+      socket.off('connect', setId)
     };
-  }, []);
+  }, [socket.id]);
 
   useEffect(() => {
     socket.emit("connection");
   }, []);
+
+  return { ...state };
+};
+
+export const useEmitSocketEvents = () => {
+  const { socket } = useContext(SocketContext);
   const sendMessage = (message: Message) => {
     socket.emit(NEW_MESSAGE, message);
   };
@@ -81,26 +88,18 @@ export const useSocket = () => {
   };
 
   const onSkip = () => {
-    socket.emit("SKIP_VIDEO", null);
+    socket.emit(SKIP_VIDEO, null);
   };
-
-  return { ...state, sendMessage, queueVideo, onVideoEnd, onSkip };
-};
-
-
-export function useRegisterSocketEvent<T>(eventMap: EventMap<T>) {
-  const {socket} = useContext(SocketContext);
-  useEffect(()=> {
-    eventMap.forEach((func, key)=> {
-      socket.on(key, func)
-    })
-   
-    return ()=> {
-      eventMap.forEach((func, key)=> {
-        socket.off(key, func)
-      })
-    }
-  }, [])
+  const voteToSkip = ()=> {
+    socket.emit(VOTE_TO_SKIP, socket.id)
+  }
   
-}
 
+  return {
+    queueVideo,
+    onVideoEnd,
+    onSkip,
+    sendMessage,
+    voteToSkip
+  };
+};
