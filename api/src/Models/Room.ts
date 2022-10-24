@@ -1,11 +1,45 @@
 import { Server, Socket } from "socket.io";
-import { Message } from "../types";
+import { Message, VideoInfo } from "../types";
 import { SOCKET_EVENT } from "../SocketEvents";
 import { VideoQueue } from "./VideoQueue";
 const { NEW_MESSAGE, CONNECT, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP, SKIPPING_IN_PROGRESS } = SOCKET_EVENT
 
+
+export class RoomsManager {
+
+    private rooms: Map<string, Room> = new Map();
+    private io: Server;
+    private maxId: number = 0;
+    constructor(io: Server) {
+        this.io = io;
+    }
+
+
+    private getId() {
+       return `room-${this.maxId++}`;
+    }
+    get length() {
+        return this.rooms.size;
+    }
+
+    public addRoom(roomName: string) {
+        const id = this.getId();
+        this.rooms.set(id, new Room(roomName, id, this.io));
+        return this.rooms.get(id)
+        //this.rooms.get(id)?.listenForEvents();
+    }
+
+    public listRooms() {
+        const roomRepr = [];
+        for (let [id, room] of this.rooms) {
+            roomRepr.push({id, name: room.name, })
+        }
+        return roomRepr;
+    }
+}
 export class Room {
-    private name: string;
+    public name: string;
+    private id : string;
     private io: Server;
     private videoQueue: VideoQueue = new VideoQueue();
     private skipCurrentVideoVotes: number = 0;
@@ -13,38 +47,42 @@ export class Room {
     private connectedUsers: Map<string, Socket> = new Map();
     private usersWhoVoted: string[] = [];
 
-    constructor(name: string, io: Server) {
+    constructor(name: string, id: string, io: Server) {
         this.name = name;
         this.io = io;
+        this.id = id;
     }
 
+    private convertIdToYtURL(id: string) {
+        return `https:www.youtube.com/watch?v=${id}`
+    }
     public listenForEvents() {
         this.io.on(CONNECT, (socket: Socket) => {
             this.connectedUsers.set(socket.id, socket);
-            console.log(`User with connection id of ${socket.id} joined room ${this.name}`)
+            console.log(`User with connection id of ${socket.id} joined room ${this.id} ${this.name}`)
 
             socket.on(NEW_MESSAGE, (data: Message) => {
                 this.io.emit(NEW_MESSAGE, data)
             })
             if (this.videoQueue.currentVideo) {
-                socket.emit(VIDEO_ENDED, this.videoQueue.currentVideo);
+                socket.emit(VIDEO_ENDED, this.convertIdToYtURL(this.videoQueue.currentVideo.id));
             }
-            socket.on(VIDEO_QUEUED, (data: string) => {
+            socket.on(VIDEO_QUEUED, (data: VideoInfo) => {
                 console.log('video queue request: ', data)
                 if (this.videoQueue.currentVideo === null || this.videoQueue.currentVideo === undefined) {
                     console.log("no more videos, directly sending current video", data);
-                    this.io.emit(VIDEO_ENDED, data);
+                    this.io.emit(VIDEO_ENDED, this.convertIdToYtURL(data.id));
                     this.videoQueue.currentVideo = data;
                     return;
                 }
                 this.videoQueue.enqueue(data);
-                this.io.emit(VIDEO_QUEUED, data);
+                this.io.emit(VIDEO_QUEUED, this.convertIdToYtURL(data.id));
             });
             socket.on(VIDEO_ENDED, () => {
-                const url = this.videoQueue.dequeue();
-                this.videoQueue.currentVideo = url;
-                if (typeof url !== "undefined") {
-                    this.io.emit(VIDEO_ENDED, url);
+                const video = this.videoQueue.dequeue();
+                this.videoQueue.currentVideo = video;
+                if (typeof video !== "undefined") {
+                    this.io.emit(VIDEO_ENDED, this.convertIdToYtURL(video.id));
                 }
             });
             this.handleSkipEvents(socket);
@@ -86,7 +124,7 @@ export class Room {
                         // emit relevant event and reset state
                         // 5 secs in the future
                         this.usersWhoVoted = [];
-                        this.io.emit(VIDEO_ENDED, newVideo)
+                        this.io.emit(VIDEO_ENDED, this.convertIdToYtURL(newVideo.id))
                         this.skipPending = false
                         this.skipCurrentVideoVotes = 0;
                     }, 5000)
@@ -95,7 +133,7 @@ export class Room {
         })
         socket.on(SKIP_VIDEO, () => {
             const newVideo = this.videoQueue.dequeue();
-            if (newVideo) {
+            if (typeof newVideo !== 'undefined') {
                 this.videoQueue.currentVideo = newVideo;
                 this.io.emit(VIDEO_ENDED, newVideo)
             }

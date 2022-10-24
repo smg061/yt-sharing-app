@@ -1,5 +1,7 @@
 import { useRef } from "react";
 import { useChat } from "../hooks/useChat";
+import useVoteToSkip from "../hooks/useVoteToSkip";
+import { useEmitSocketEvents } from "../hooks/useWebSocket";
 
 const OtherChatMsg = ({ user, content }: { user: string; content: string }) => {
   return (
@@ -32,13 +34,31 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
 
 const Chatbox = () => {
   const { messageQueue, sendMessage, id, queueVideo } = useChat();
+  const { onSkip } = useEmitSocketEvents();
+  const { voteToSkip, allowedToVote } = useVoteToSkip();
   const userName = useRef<string>("");
 
   return (
     <div className='flex h-full w-full flex-col flex-grow max-w-xl bg-black shadow-xl rounded-lg overflow-hidden'>
-      <div>
-        <div>Set user name:</div>
-        <input defaultValue={userName.current} onChange={(e) => (userName.current = e.target.value)}></input>
+      <div className="grid grid-cols-2">
+        <div className="">
+          <div>Set user name:</div>
+          <input defaultValue={userName.current} onChange={(e) => (userName.current = e.target.value)}></input>
+        </div>
+        <div className="flex">
+          <button onClick={onSkip} className='bg-blue-500 h-full hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
+            Skip video
+          </button>   
+          <button
+            onClick={voteToSkip}
+            disabled={!allowedToVote}
+            className={`text-white font-bold py-2 px-4 rounded ${
+              allowedToVote ? " bg-blue-500 hover:bg-blue-700" : "bg-red-500 hover:bg-red-400"
+            }`}
+          >
+            Vote to skip
+          </button>
+        </div>
       </div>
       <div className='flex flex-col h-[110vh]  p-4 overflow-scroll'>
         {messageQueue.map((message, i) =>

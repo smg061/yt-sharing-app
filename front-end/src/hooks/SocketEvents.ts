@@ -1,5 +1,5 @@
 export enum SOCKET_EVENT {
-    CONNECT="connection",
+    CONNECT="connect",
     USER_DISCONNECTED= "USER_DISCONNECTED",
     ROOM_CREATED="ROOM_CREATED",
     NEW_MESSAGE = "NEW_MESSAGE",

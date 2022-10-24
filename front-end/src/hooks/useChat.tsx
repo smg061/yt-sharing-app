@@ -3,7 +3,7 @@ import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
 import { SocketContext } from "./useWebSocket";
 
-const { VIDEO_QUEUED, NEW_MESSAGE } = SOCKET_EVENT;
+const { VIDEO_QUEUED, NEW_MESSAGE, CONNECT } = SOCKET_EVENT;
 
 export const useChat = () => {
   const { socket } = useContext(SocketContext);
@@ -17,7 +17,7 @@ export const useChat = () => {
       });
     };
     socket.on(NEW_MESSAGE, addMessage);
-    socket.on('connection', ()=> {
+    socket.on(CONNECT, ()=> {
       console.log('connection')
       setId(socket.id)
     })

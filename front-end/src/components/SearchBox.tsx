@@ -14,7 +14,7 @@ const SearchBox = () => {
           onChange={(e) => setQuery(e.target.value)}
         ></input>
       </div>
-      <div className='w-full h-60 overflow-y-scroll '>
+      <div className='w-full grid h-96 gap-2 overflow-y-scroll '>
         {videos.map((video) => (
           <VideoCard queueVideo={queueVideo} videoInfo={video} key={video.id} />
         ))}

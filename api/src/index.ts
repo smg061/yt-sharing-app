@@ -5,7 +5,7 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import { VideoSearchService, YTScrapeVideoSearchService } from "./Services/VideoSearchService";
 import { youtube as youtubeSearch } from 'scrape-youtube';
-import { Room } from "./Models/Room";
+import { RoomsManager } from "./Models/Room";
 
 dotenv.config()
 
@@ -20,11 +20,9 @@ const io = new Server(server, {
 
 
 const videoSearchService: VideoSearchService = new YTScrapeVideoSearchService(youtubeSearch);
-const room = new Room("testRoom", io)
-//const clients = new Map<string, Socket>();
 
-
-room.listenForEvents()
+const roomManager = new RoomsManager(io);
+roomManager.addRoom('testRoom')?.listenForEvents();
 
 app.use(
   cors({
@@ -41,7 +39,7 @@ app.get("/health", (_, res) => {
 });
 
 app.get("/clearQueue", (_, res) => {
-  room.clearQueue();
+ // room.clearQueue();
   res.status(200).send("Queue cleared!");
 });
 
@@ -56,7 +54,9 @@ app.get("/videoSearch", async (req, res) => {
   res.status(200).json(results)
 
 })
-
+app.get('/listRooms', (_, res)=> {
+  res.status(200).json(roomManager.listRooms())
+})
 server.listen(port, () => {
   console.log(`Listening on ${port}`);
 });

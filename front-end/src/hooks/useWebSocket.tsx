@@ -1,5 +1,6 @@
 import { useState, createContext, useEffect, useContext, useReducer } from "react";
 import io, { Socket } from "socket.io-client";
+import { VideoResult } from "../utils/api";
 import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
 const { VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, VOTE_TO_SKIP } = SOCKET_EVENT;
@@ -40,6 +41,7 @@ export const useSocket = () => {
 
   useEffect(() => {
     const addVideo = (currentVideo: string) => {
+      console.log({currentVideo})
       setState((prev) => {
         return {
           ...prev,
@@ -47,7 +49,9 @@ export const useSocket = () => {
         };
       });
     };
+    
     const setCurrentVideo = (url: string) => {
+      console.log({url})
       setState((prev) => {
         return {
           ...prev,
@@ -80,8 +84,8 @@ export const useEmitSocketEvents = () => {
   const sendMessage = (message: Message) => {
     socket.emit(NEW_MESSAGE, message);
   };
-  const queueVideo = (newUrl: string) => {
-    socket.emit(VIDEO_QUEUED, newUrl);
+  const queueVideo = (video: VideoResult) => {
+    socket.emit(VIDEO_QUEUED, video);
   };
   const onVideoEnd = () => {
     socket.emit(VIDEO_ENDED, null);

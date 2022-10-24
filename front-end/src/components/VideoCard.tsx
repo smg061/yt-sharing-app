@@ -2,31 +2,33 @@ import { VideoResult } from "../utils/api";
 
 type props = {
   videoInfo: VideoResult;
-  queueVideo: (video: string)=> void
+  queueVideo: (video: VideoResult)=> void
 };
 
 const VideoCard = ({ videoInfo, queueVideo }: props) => {
   return (
-    <div className='flex w-full h-24'>
-      <div className='flex flex-col md:flex-row md:max-w-xl rounded-lg bg-black shadow-lg w-full'>
+    <div className='grid grid-cols-8 h-24 overflow-hidden '>
+       <div className="col-span-2">
         <img
-          className='md:h-auto object-cover md:w-48 rounded-t-lg md:rounded-none md:rounded-l-lg'
+          className='md:h-auto object -cover md:w-48 rounded-t-lg md:rounded-none md:rounded-l-lg'
           src={videoInfo.thumbnail.url}
           alt=''
         />
-        <div className='p-6 flex flex-col justify-start'>
-          <h5 className='text-white-900 text-md font-small mb-2'>{videoInfo.title}</h5>
-          {/* <p className='text-white-700 text-base '>{videoInfo.description}</p> */}
+       </div>
+        <div className='p-6 col-span-4 justify-start'>
+          <h5 className='text-white-900  text-xs  mb-2'>{videoInfo.title}</h5>
           <p className='text-white-600 text-xs'>{videoInfo.channelTitle}</p>
         </div>
+        <div className="col-span-2">
         <button
           type='button'
           className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-          onClick={() => queueVideo(`https://www.youtube.com/watch?v=${videoInfo.id}`)}
+          onClick={() => queueVideo(videoInfo)}
         >
           Add video to queue
         </button>
-      </div>
+
+        </div>
     </div>
   );
 };
