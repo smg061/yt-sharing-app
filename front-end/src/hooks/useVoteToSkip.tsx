@@ -38,7 +38,7 @@ const useVoteToSkip = () => {
   const [totalUsers, setTotalUsers] = useState<number>(1);
   const [allowedToVote, setAllowedToVote] = useState<boolean>(true);
   const [showMessage, setShowMessage] = useState<boolean>(false);
-  const {timer, startTimer, stopTimer} = useCountDown(0);
+  const {timer, startTimer} = useCountDown(0);
   const voteToSkip = () => {
     setAllowedToVote(false);
     socket.emit(VOTE_TO_SKIP, socket.id);

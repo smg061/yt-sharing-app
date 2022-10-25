@@ -76,7 +76,7 @@ export const useSocket = () => {
     socket.emit("connection");
   }, []);
 
-  return { ...state };
+  return state;
 };
 
 export const useEmitSocketEvents = () => {

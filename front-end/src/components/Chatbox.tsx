@@ -32,7 +32,6 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
 
 const Chatbox = () => {
   const { messageQueue, sendMessage, id, queueVideo } = useChat();
-  const { onSkip } = useEmitSocketEvents();
   const { voteToSkip, allowedToVote } = useVoteToSkip();
   const userName = useRef<string>("");
 

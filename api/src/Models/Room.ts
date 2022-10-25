@@ -87,7 +87,8 @@ export class Room {
             });
             this.handleSkipEvents(socket);
             socket.on("disconnect", () => {
-                this.connectedUsers.delete(socket.id)
+                this.connectedUsers.delete(socket.id);
+                this.usersWhoVoted = this.usersWhoVoted.filter(x=> x!== socket.id)
             });
         })
     }
@@ -104,7 +105,7 @@ export class Room {
                 return;
             }
             if (this.usersWhoVoted.includes(data)) {
-                console.log("You voted already ya cheeky bastad. Bugger off " + socket.id);
+                console.log("You voted already ya cheeky bastard. Bugger off " + socket.id);
                 return;
             }
             this.usersWhoVoted.push(socket.id)
