@@ -46,9 +46,9 @@ const Chatbox = () => {
           <input defaultValue={userName.current} onChange={(e) => (userName.current = e.target.value)}></input>
         </div>
         <div className="flex">
-          <button onClick={onSkip} className='bg-blue-500 h-full hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
+          {/* <button onClick={onSkip} className='bg-blue-500 h-full hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
             Skip video
-          </button>   
+          </button>    */}
           <button
             onClick={voteToSkip}
             disabled={!allowedToVote}

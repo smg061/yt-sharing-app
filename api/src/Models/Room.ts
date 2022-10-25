@@ -13,26 +13,22 @@ export class RoomsManager {
     constructor(io: Server) {
         this.io = io;
     }
-
-
     private getId() {
        return `room-${this.maxId++}`;
     }
     get length() {
         return this.rooms.size;
     }
-
     public addRoom(roomName: string) {
         const id = this.getId();
         this.rooms.set(id, new Room(roomName, id, this.io));
         return this.rooms.get(id)
         //this.rooms.get(id)?.listenForEvents();
     }
-
     public listRooms() {
         const roomRepr = [];
         for (let [id, room] of this.rooms) {
-            roomRepr.push({id, name: room.name, })
+            roomRepr.push({id, name: room.name, numberOfUsers: room.length })
         }
         return roomRepr;
     }
@@ -51,6 +47,10 @@ export class Room {
         this.name = name;
         this.io = io;
         this.id = id;
+    }
+
+    get length() {
+        return this.connectedUsers.size;
     }
 
     private convertIdToYtURL(id: string) {

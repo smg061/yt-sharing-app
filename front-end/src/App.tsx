@@ -17,12 +17,10 @@ const App = () => {
   return (
     <>
       <Header />
-
-      <div className='grid grid-cols-4 grid-rows-1 sm:grid-rows-2'>
+      <div className='grid grid-cols-4 grid-rows-1'>
         <VideoPlayer onDuration={onDuration} />
         <div>
           <div className='h-1/2 col-span-1 rows-span-1'>
-          
             <Chatbox />
             <SearchBox />
           </div>

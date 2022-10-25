@@ -19,6 +19,7 @@
 
 .react-player {
   padding-top: 56.25%;
+  background-color: aqua;
 }
 .react-player > div {
   position: absolute; 
