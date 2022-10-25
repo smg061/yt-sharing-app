@@ -5,7 +5,7 @@ const SearchBox = () => {
   const { setQuery, query, videos } = useVideoSearch();
   const { queueVideo } = useEmitSocketEvents();
   return (
-    <div className='grid h-[15vh]'>
+    <div className='grid relative h-full w-full overflow-scroll z-10'>
       <div className='w-full'>
         <input
           className='w-full'

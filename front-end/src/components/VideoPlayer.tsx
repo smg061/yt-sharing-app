@@ -19,9 +19,9 @@ const VideoPlayer = ({ onDuration }: props) => {
           onDuration={onDuration}
           onEnded={onVideoEnd}
           playsinline
-          url={currentVideo}
+          url={currentVideo?.id ?`https://www.youtube.com/watch?v=${currentVideo.id}`: ''}
           width='75%'
-          height='75%'
+          height='85%'
         ></ReactPlayer>
       </div>
       <div className='absolute bottom-48'>

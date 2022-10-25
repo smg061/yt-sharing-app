@@ -53,9 +53,9 @@ export class Room {
         return this.connectedUsers.size;
     }
 
-    private convertIdToYtURL(id: string) {
-        return `https:www.youtube.com/watch?v=${id}`
-    }
+    // private convertIdToYtURL(id: string) {
+    //     return `https:www.youtube.com/watch?v=${id}`
+    // }
     public listenForEvents() {
         this.io.on(CONNECT, (socket: Socket) => {
             this.connectedUsers.set(socket.id, socket);
@@ -65,24 +65,24 @@ export class Room {
                 this.io.emit(NEW_MESSAGE, data)
             })
             if (this.videoQueue.currentVideo) {
-                socket.emit(VIDEO_ENDED, this.convertIdToYtURL(this.videoQueue.currentVideo.id));
+                socket.emit(VIDEO_ENDED, (this.videoQueue.currentVideo));
             }
             socket.on(VIDEO_QUEUED, (data: VideoInfo) => {
                 console.log('video queue request: ', data)
                 if (this.videoQueue.currentVideo === null || this.videoQueue.currentVideo === undefined) {
                     console.log("no more videos, directly sending current video", data);
-                    this.io.emit(VIDEO_ENDED, this.convertIdToYtURL(data.id));
+                    this.io.emit(VIDEO_ENDED, (data));
                     this.videoQueue.currentVideo = data;
                     return;
                 }
                 this.videoQueue.enqueue(data);
-                this.io.emit(VIDEO_QUEUED, this.convertIdToYtURL(data.id));
+                this.io.emit(VIDEO_QUEUED, data);
             });
             socket.on(VIDEO_ENDED, () => {
                 const video = this.videoQueue.dequeue();
                 this.videoQueue.currentVideo = video;
                 if (typeof video !== "undefined") {
-                    this.io.emit(VIDEO_ENDED, this.convertIdToYtURL(video.id));
+                    this.io.emit(VIDEO_ENDED, video);
                 }
             });
             this.handleSkipEvents(socket);
@@ -125,7 +125,7 @@ export class Room {
                         // emit relevant event and reset state
                         // 5 secs in the future
                         this.usersWhoVoted = [];
-                        this.io.emit(VIDEO_ENDED, this.convertIdToYtURL(newVideo.id))
+                        this.io.emit(VIDEO_ENDED, (newVideo))
                         this.skipPending = false
                         this.skipCurrentVideoVotes = 0;
                     }, 5000)

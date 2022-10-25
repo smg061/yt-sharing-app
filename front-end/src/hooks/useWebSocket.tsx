@@ -26,21 +26,19 @@ export const SocketProvider = (props: SocketProvider) => {
 };
 
 type SocketState = {
-  videoQueue: string[];
-  currentVideo: string;
-  id: string;
+  videoQueue: VideoResult[];
+  currentVideo: VideoResult | null;
 };
 
 export const useSocket = () => {
   const { socket } = useContext(SocketContext);
   const [state, setState] = useState<SocketState>({
     videoQueue: [],
-    currentVideo: "",
-    id: socket.id,
+    currentVideo: null,
   });
 
   useEffect(() => {
-    const addVideo = (currentVideo: string) => {
+    const addVideo = (currentVideo: VideoResult) => {
       console.log({currentVideo})
       setState((prev) => {
         return {
@@ -50,7 +48,7 @@ export const useSocket = () => {
       });
     };
     
-    const setCurrentVideo = (url: string) => {
+    const setCurrentVideo = (url: VideoResult) => {
       console.log({url})
       setState((prev) => {
         return {
@@ -59,16 +57,12 @@ export const useSocket = () => {
         };
       });
     };
-    const setId = () => {
-      setState((prev) => ({ ...prev, id: socket.id }));
-    };
+
     socket.on(VIDEO_QUEUED, addVideo);
     socket.on(VIDEO_ENDED, setCurrentVideo);
-    socket.on("connect", setId);
     return () => {
       socket.off(VIDEO_QUEUED, addVideo);
       socket.off(VIDEO_ENDED, setCurrentVideo);
-      socket.off("connect", setId);
     };
   }, [socket.id]);
 

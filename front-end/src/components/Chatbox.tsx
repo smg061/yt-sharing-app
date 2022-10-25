@@ -1,7 +1,9 @@
 import { useRef } from "react";
 import { useChat } from "../hooks/useChat";
 import useVoteToSkip from "../hooks/useVoteToSkip";
-import { useEmitSocketEvents } from "../hooks/useWebSocket";
+import { useSocket } from "../hooks/useWebSocket";
+import SearchBox from "./SearchBox";
+import VideoQueue from "./VideoQueue";
 
 const OtherChatMsg = ({ user, content }: { user: string; content: string }) => {
   return (
@@ -36,7 +38,7 @@ const Chatbox = () => {
   const userName = useRef<string>("");
 
   return (
-    <div className='flex h-full w-full flex-col flex-grow max-w-xl bg-black shadow-xl rounded-lg overflow-hidden'>
+    <div className='grid h-[82vh] bg-black shadow-xl rounded-lg overflow-hidden'>
       <div className="grid grid-cols-2">
         <div className="">
           <div>Set user name:</div>
@@ -56,8 +58,11 @@ const Chatbox = () => {
             Vote to skip
           </button>
         </div>
+
       </div>
-      <div className='flex flex-col h-[110vh]  p-4 overflow-scroll'>
+        <SearchBox />
+
+      <div className='flex flex-col p-4 overflow-auto'>
         {messageQueue.map((message, i) =>
           message.userId === id ? (
             <OwnChatMsg key={Object.values(message).reduce((curr, prev) => curr + prev, i.toString())} {...message} />

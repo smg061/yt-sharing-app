@@ -24,9 +24,11 @@ const SingleCard = ({ videoInfo }: { videoInfo: VideoResult }) => {
   );
 };
 const VideoQueue = ({ data }: props) => {
+  const [expandList, setExpandList] = useState<boolean>(false);
   return (
     <div>
-      {data.map((video) => (
+      <div className="hover:bg-violet-400 hover:cursor-pointer" onClick={()=> setExpandList((v)=>!v)}>Current Queue (click to expand)</div>
+      {expandList && data.map((video) => (
         <SingleCard videoInfo={video} />
       ))}
     </div>
