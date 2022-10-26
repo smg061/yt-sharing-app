@@ -1,9 +1,8 @@
 import { useState } from "react";
+import { useSocket } from "../hooks/useWebSocket";
 import { VideoResult } from "../utils/api";
 
-type props = {
-  data: VideoResult[];
-};
+
 
 const SingleCard = ({ videoInfo }: { videoInfo: VideoResult }) => {
   return (
@@ -23,12 +22,14 @@ const SingleCard = ({ videoInfo }: { videoInfo: VideoResult }) => {
     </div>
   );
 };
-const VideoQueue = ({ data }: props) => {
+const VideoQueue = () => {
+  const { videoQueue } = useSocket();
+
   const [expandList, setExpandList] = useState<boolean>(false);
   return (
     <div>
       <div className="hover:bg-violet-400 hover:cursor-pointer" onClick={()=> setExpandList((v)=>!v)}>Current Queue (click to expand)</div>
-      {expandList && data.map((video) => (
+      {expandList && videoQueue.map((video) => (
         <SingleCard videoInfo={video} />
       ))}
     </div>

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ReactPlayer from "react-player";
 import { useEmitSocketEvents, useSocket } from "../hooks/useWebSocket";
 
 type props = {
-  onDuration: (duration: number) => void;
+  onDuration?: (duration: number) => void;
 };
 const VideoPlayer = ({ onDuration }: props) => {
   const { onVideoEnd } = useEmitSocketEvents();
