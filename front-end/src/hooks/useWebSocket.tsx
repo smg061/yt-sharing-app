@@ -41,27 +41,26 @@ type SocketState = {
 export const useSocket = () => {
   const { socket } = useContext(SocketContext);
   const id = useUserId();
-  const idSubmitted = useRef<boolean>(false)
   const [state, setState] = useState<SocketState>({
     videoQueue: [],
     currentVideo: null,
   });
 
   useEffect(() => {
-    const addVideo = (currentVideo: VideoResult) => {
+    const addVideo = (currentVideo: VideoResult[]) => {
       setState((prev) => {
         return {
           ...prev,
-          videoQueue: [...prev.videoQueue, currentVideo],
+          videoQueue: currentVideo
         };
       });
     };
     
-    const setCurrentVideo = (url: VideoResult) => {
+    const setCurrentVideo = (newVideo: VideoResult) => {
       setState((prev) => {
         return {
           ...prev,
-          currentVideo: url,
+          currentVideo: newVideo,
         };
       });
     };

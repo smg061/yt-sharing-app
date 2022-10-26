@@ -85,7 +85,7 @@ export class Room {
                     return;
                 }
                 this.videoQueue.enqueue(data);
-                this.emitEventScoped(VIDEO_QUEUED, data);
+                this.emitEventScoped(VIDEO_QUEUED, this.videoQueue.getItems());
             });
             socket.on(VIDEO_ENDED, () => {
                 const video = this.videoQueue.dequeue();
