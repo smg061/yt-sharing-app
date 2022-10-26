@@ -19,6 +19,10 @@ export class RoomsManager {
     get length() {
         return this.rooms.size;
     }
+    public getRoomById(id:string) {
+        const room = this.rooms.get(id);
+        return room;
+    }
     public addRoom(roomName: string) {
         const id = this.getId();
         const room = new Room(roomName, id, this.io);
@@ -166,6 +170,12 @@ export class Room {
         for (let i = 0; i < this.videoQueue.getItems().length; i++) {
             this.videoQueue.dequeue();
         }
-
+    }
+    public listUsers() {
+        const users = []
+        for (let [key, val] of this.connectedUsers) {
+            users.push({userId: key, connectionId: val.id})
+        }
+        return users
     }
 }

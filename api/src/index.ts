@@ -57,6 +57,20 @@ app.get("/videoSearch", async (req, res) => {
 app.get('/listRooms', (_, res)=> {
   res.status(200).json(roomManager.listRooms())
 })
+app.get('/listUsers', (req,res)=> {
+  const roomId = req.query.roomId;
+  if(typeof roomId !== 'string') {
+    res.sendStatus(400);
+    return;
+  }
+  const room = roomManager.getRoomById(roomId);
+  const users = room?.listUsers();
+  if(users) {
+    res.status(200).json(users)
+  } else {
+    res.sendStatus(404)
+  }
+})
 server.listen(port, () => {
   console.log(`Listening on ${port}`);
 });
