@@ -111,6 +111,11 @@ export class Room {
 
     private removeUser(socketId: string) { 
         let userId = ''; // userId is the value provided from session storage
+        for (const [id, socket] of this.connectedUsers) {
+            if(socket.id === socketId) {
+                userId = id;
+            }
+        }
         if(userId.length) {
             console.info(`user with socket id ${socketId} and user id ${userId} was removed`)
             this.connectedUsers.delete(userId);
