@@ -66,7 +66,6 @@ export class Room {
     public listenForEvents() {
         if (this.eventsAreRegistered) throw new Error(`Tried to listen to listen to events twice for room ${this.id}`);
         this.io.on(CONNECT, (socket: Socket) => {
-            console.log(`User with connection id of ${socket.id} joined room ${this.id} ${this.name}`)
             socket.join(this.id);
             socket.on(USER_CONNECT, (data: {userId: string})=> {
                 console.log(`User with local id of ${data.userId} joined room ${this.id} ${this.name}`)
@@ -103,19 +102,11 @@ export class Room {
     }
 
     private removeUser(socketId: string) { 
-        console.log(`atempting to remove user with id ${socketId}`)
         let userId = ''; // userId is the value provided from session storage
-        for (let [key,val] of this.connectedUsers.entries()) {
-            if (val.id === socketId) {
-                userId = key;
-            }
-            console.log(key, val.id)
-        }
         if(userId.length) {
             console.info(`user with socket id ${socketId} and user id ${userId} was removed`)
             this.connectedUsers.delete(userId);
             this.usersWhoVoted = this.usersWhoVoted.filter(x=> x!== userId);
-
         }
     }
     private handleSkipEvents(socket: Socket) {
@@ -127,9 +118,6 @@ export class Room {
                 !this.connectedUsers.has(data)
             ) {
                 console.log(`Id of ${data} is not present in current users or there is no current video to skip ${this.videoQueue.currentVideo}`);
-                for (let [key, val] of this.connectedUsers.entries()) {
-                    console.log(`${key}- ${val}`)
-                }
                 return;
             }
             if (this.usersWhoVoted.includes(data)) {
@@ -140,7 +128,6 @@ export class Room {
             this.usersWhoVoted.push(data)
 
             this.skipCurrentVideoVotes += 1;
-            console.log({votes:this.skipCurrentVideoVotes, totalUsers: this.connectedUsers.size})
             this.emitEventScoped(VOTE_TO_SKIP, { currentVotes: this.skipCurrentVideoVotes, totalUsers: this.connectedUsers.size });
             const proportion = this.skipCurrentVideoVotes / this.connectedUsers.size;
             if (proportion >= 0.51) {

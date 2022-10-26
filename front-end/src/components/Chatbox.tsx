@@ -36,6 +36,7 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
 const Chatbox = () => {
   const { messageQueue, sendMessage, id, queueVideo } = useChat();
   const { voteToSkip, allowedToVote } = useVoteToSkip();
+  const {videoQueue} = useSocket();
   const userName = useRef<string>("");
   const chatRef = useChatScroll(messageQueue.length);
   return (
@@ -48,9 +49,9 @@ const Chatbox = () => {
         <div className='justify-self-end self-center col-span-2'>
           <button
             onClick={voteToSkip}
-            disabled={!allowedToVote}
+            disabled={!allowedToVote || videoQueue.length === 0}
             className={`text-white font-bold py-2 px-4 rounded ${
-              allowedToVote ? " bg-violet-400 hover:bg-violet-500" : "bg-gray-500 hover:bg-gray-400"
+              allowedToVote && videoQueue.length ? " bg-violet-400 hover:bg-violet-500" : "bg-gray-500 hover:bg-gray-400"
             }`}
           >
             Vote to skip

@@ -3,8 +3,8 @@ import io, { Socket } from "socket.io-client";
 import { VideoResult } from "../utils/api";
 import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
-import {useUserId} from './useUserId'
-const {USER_CONNECT, VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, USER_DISCONNECTED } = SOCKET_EVENT;
+import { useUserId } from "./useUserId";
+const { USER_CONNECT, VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, USER_DISCONNECTED } = SOCKET_EVENT;
 
 type SocketProvider = {
   children: React.ReactNode;
@@ -24,12 +24,11 @@ export const SocketContext = createContext(defaultState);
 export const SocketProvider = (props: SocketProvider) => {
   const socket = defaultState.socket;
   const id = useUserId();
-  useEffect(()=> {
-    if(id.trim().length){
-      socket.emit(USER_CONNECT, {userId: id})
+  useEffect(() => {
+    if (id.trim().length) {
+      socket.emit(USER_CONNECT, { userId: id });
     }
-
-  },[id])
+  }, [id]);
   return <SocketContext.Provider value={{ socket }}>{props.children}</SocketContext.Provider>;
 };
 
@@ -51,16 +50,18 @@ export const useSocket = () => {
       setState((prev) => {
         return {
           ...prev,
-          videoQueue: currentVideo
+          videoQueue: currentVideo,
         };
       });
     };
-    
+
     const setCurrentVideo = (newVideo: VideoResult) => {
       setState((prev) => {
         return {
           ...prev,
           currentVideo: newVideo,
+          // returns a list with everything except the first element
+          videoQueue: prev.videoQueue.splice(1,prev.videoQueue.length-2)
         };
       });
     };
