@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { Message, VideoInfo } from "../types";
 import { SOCKET_EVENT } from "../SocketEvents";
 import { VideoQueue } from "./VideoQueue";
-const { NEW_MESSAGE, CONNECT, USER_CONNECT, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP, SKIPPING_IN_PROGRESS } = SOCKET_EVENT
+const { NEW_MESSAGE, SET_QUEUE_ON_CONNECT, CONNECT, USER_CONNECT, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP, SKIPPING_IN_PROGRESS } = SOCKET_EVENT
 
 
 export class RoomsManager {
@@ -67,6 +67,10 @@ export class Room {
         if (this.eventsAreRegistered) throw new Error(`Tried to listen to listen to events twice for room ${this.id}`);
         this.io.on(CONNECT, (socket: Socket) => {
             socket.join(this.id);
+            if(this.videoQueue.length) {
+                console.log('sending a bunch of videos your way!!!')
+                socket.emit(SET_QUEUE_ON_CONNECT, this.videoQueue.getItems())
+            }
             socket.on(USER_CONNECT, (data: {userId: string})=> {
                 console.log(`User with local id of ${data.userId} joined room ${this.id} ${this.name}`)
                 this.connectedUsers.set(data.userId, socket);

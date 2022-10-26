@@ -4,7 +4,7 @@ import { VideoResult } from "../utils/api";
 import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
 import { useUserId } from "./useUserId";
-const { USER_CONNECT, VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, USER_DISCONNECTED } = SOCKET_EVENT;
+const { USER_CONNECT, SET_QUEUE_ON_CONNECT, VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, USER_DISCONNECTED } = SOCKET_EVENT;
 
 type SocketProvider = {
   children: React.ReactNode;
@@ -46,11 +46,11 @@ export const useSocket = () => {
   });
 
   useEffect(() => {
-    const addVideo = (currentVideo: VideoResult[]) => {
+    const addVideo = (currentVideos: VideoResult[]) => {
       setState((prev) => {
         return {
           ...prev,
-          videoQueue: currentVideo,
+          videoQueue: currentVideos,
         };
       });
     };
@@ -61,16 +61,21 @@ export const useSocket = () => {
           ...prev,
           currentVideo: newVideo,
           // returns a list with everything except the first element
-          videoQueue: prev.videoQueue.splice(1,prev.videoQueue.length-2)
+          videoQueue: prev.videoQueue.filter((_,i)=> i!==0)
         };
       });
     };
-    socket.on(VIDEO_QUEUED, addVideo);
-    socket.on(VIDEO_ENDED, setCurrentVideo);
 
+    socket.on(VIDEO_QUEUED, addVideo);
+    // identical result, but only happends when user first connects i.e. if they join in an
+    // already occuring queue
+    socket.on(SET_QUEUE_ON_CONNECT, addVideo)
+    socket.on(VIDEO_ENDED, setCurrentVideo);
     return () => {
       socket.off(VIDEO_QUEUED, addVideo);
       socket.off(VIDEO_ENDED, setCurrentVideo);
+      socket.off(SET_QUEUE_ON_CONNECT, addVideo)
+
     };
   }, [id]);
 
