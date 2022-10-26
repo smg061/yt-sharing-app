@@ -1,14 +1,14 @@
 import { nanoid } from "nanoid";
 import { useEffect, useState } from "react"
 
-export const useId = ()=> {
+export const useUserId = ()=> {
     const [id, setId] = useState<string>('');
 
     useEffect(()=> {
-        const idFromStorage = localStorage.getItem('userId');
-        if(!idFromStorage) {
+        const idFromStorage = sessionStorage.getItem('userId');
+        if(!idFromStorage?.length) {
             const generatedId = nanoid();
-            localStorage.setItem('userId', id);
+            sessionStorage.setItem('userId', generatedId);
             setId(generatedId)
         } else {
             setId(idFromStorage);

@@ -5,7 +5,7 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import { VideoSearchService, YTScrapeVideoSearchService } from "./Services/VideoSearchService";
 import { youtube as youtubeSearch } from 'scrape-youtube';
-import { RoomsManager } from "./Models/Room";
+import { RoomsManager } from "./Domain/Room";
 
 dotenv.config()
 

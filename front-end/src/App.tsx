@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import { useSocket } from "./hooks/useWebSocket";
 import VideoPlayer from "./components/VideoPlayer";
 import VideoQueue from "./components/VideoQueue";
-
+import './App.css'
 const App = () => {
   const onDuration = (duration: number) => {
     // setShowVideoCounter(queue.length > 0);
@@ -15,7 +15,7 @@ const App = () => {
   return (
     <>
       <Header />
-      <div className='grid grid-cols-4 grid-rows-1'>
+      <div className='grid grid-cols-4 grid-rows-1 rounded-l'>
         <VideoPlayer onDuration={onDuration} />
         <div>
           <VideoQueue data={videoQueue} />

@@ -1,9 +1,10 @@
-import { useState, createContext, useEffect, useContext, useReducer } from "react";
+import { useState, createContext, useEffect, useContext, useReducer, useRef } from "react";
 import io, { Socket } from "socket.io-client";
 import { VideoResult } from "../utils/api";
 import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
-const { VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, VOTE_TO_SKIP } = SOCKET_EVENT;
+import {useUserId} from './useUserId'
+const {USER_CONNECT, VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, USER_DISCONNECTED } = SOCKET_EVENT;
 
 type SocketProvider = {
   children: React.ReactNode;
@@ -22,6 +23,13 @@ export const SocketContext = createContext(defaultState);
 
 export const SocketProvider = (props: SocketProvider) => {
   const socket = defaultState.socket;
+  const id = useUserId();
+  useEffect(()=> {
+    if(id.trim().length){
+      socket.emit(USER_CONNECT, {userId: id})
+    }
+
+  },[id])
   return <SocketContext.Provider value={{ socket }}>{props.children}</SocketContext.Provider>;
 };
 
@@ -32,6 +40,8 @@ type SocketState = {
 
 export const useSocket = () => {
   const { socket } = useContext(SocketContext);
+  const id = useUserId();
+  const idSubmitted = useRef<boolean>(false)
   const [state, setState] = useState<SocketState>({
     videoQueue: [],
     currentVideo: null,
@@ -39,7 +49,6 @@ export const useSocket = () => {
 
   useEffect(() => {
     const addVideo = (currentVideo: VideoResult) => {
-      console.log({currentVideo})
       setState((prev) => {
         return {
           ...prev,
@@ -49,7 +58,6 @@ export const useSocket = () => {
     };
     
     const setCurrentVideo = (url: VideoResult) => {
-      console.log({url})
       setState((prev) => {
         return {
           ...prev,
@@ -57,18 +65,18 @@ export const useSocket = () => {
         };
       });
     };
-
     socket.on(VIDEO_QUEUED, addVideo);
     socket.on(VIDEO_ENDED, setCurrentVideo);
+
     return () => {
       socket.off(VIDEO_QUEUED, addVideo);
       socket.off(VIDEO_ENDED, setCurrentVideo);
     };
-  }, [socket.id]);
+  }, [id]);
 
   useEffect(() => {
     socket.emit("connection");
-  }, []);
+  }, [id]);
 
   return state;
 };
@@ -88,15 +96,11 @@ export const useEmitSocketEvents = () => {
   const onSkip = () => {
     socket.emit(SKIP_VIDEO, null);
   };
-  const voteToSkip = () => {
-    socket.emit(VOTE_TO_SKIP, socket.id);
-  };
 
   return {
     queueVideo,
     onVideoEnd,
     onSkip,
     sendMessage,
-    voteToSkip,
   };
 };

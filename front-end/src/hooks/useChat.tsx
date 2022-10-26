@@ -1,13 +1,14 @@
-import { useContext, useEffect, useId, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
 import { SocketContext } from "./useWebSocket";
+import { useUserId } from "./useUserId";
 const { VIDEO_QUEUED, NEW_MESSAGE, CONNECT } = SOCKET_EVENT;
 
 export const  useChat = () => {
   const { socket } = useContext(SocketContext);
   const [messages, setMessages] = useState<Message[]>([]);
-  const id = useId();
+  const id = useUserId();
 
   useEffect(() => {
     const addMessage = (msg: Message) => {
