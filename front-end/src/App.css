@@ -7,3 +7,13 @@
     font-size: 100%;
     vertical-align: baseline;
 }
+.react-player {
+    width: 75% !important;
+    height: 85% !important;
+}
+@media only screen and (max-width: 680px) {
+    .react-player {
+        width: 100%!important;
+        height: 35% !important;
+    }
+  }

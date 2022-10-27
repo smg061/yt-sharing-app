@@ -61,7 +61,7 @@ export const useSocket = () => {
           ...prev,
           currentVideo: newVideo,
           // returns a list with everything except the first element
-          videoQueue: prev.videoQueue.filter((_,i)=> i!==0)
+         // videoQueue: prev.videoQueue.filter((_,i)=> i!==0)
         };
       });
     };
