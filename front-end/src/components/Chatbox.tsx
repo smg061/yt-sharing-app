@@ -36,22 +36,29 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
 const Chatbox = () => {
   const { messageQueue, sendMessage, id, queueVideo } = useChat();
   const { voteToSkip, allowedToVote } = useVoteToSkip();
-  const {videoQueue} = useSocket();
+  const { videoQueue } = useSocket();
   const userName = useRef<string>("");
   const chatRef = useChatScroll(messageQueue.length);
   return (
-    <div className='grid h-[85vh]  grid-rows-[0.5fr_5fr_1fr] grid-flow-row bg-black shadow-xl rounded-lg overflow-hidden'>
-      <div className='grid grid-cols-6 grid-rows-1 relative bg-slate-600 top-12 items-center'>
+    <div className='grid h-[50vh] sm:h-[82vh]  w-full grid-rows-[0.5fr_5fr_1fr] grid-flow-row bg-black shadow-xl rounded-lg overflow-hidden'>
+      <div className='grid grid-cols-6 grid-rows-1 relative bg-slate-600 top-9 sm:top-9 items-center'>
         <div className='flex bg-slate-600 gap-4 col-span-4'>
           <div className=''>User name:</div>
-          <input placeholder='Please set a user name' className="h-1/2 self-center" defaultValue={userName.current} onChange={(e) => (userName.current = e.target.value)}></input>
+          <input
+            placeholder='Please set a user name'
+            className='h-1/2 self-center'
+            defaultValue={userName.current}
+            onChange={(e) => (userName.current = e.target.value)}
+          ></input>
         </div>
         <div className='justify-self-end px-2 self-center col-span-2'>
           <button
             onClick={voteToSkip}
             disabled={!allowedToVote || videoQueue.length === 0}
             className={`text-white font-bold text-sm py-2 px-4 rounded  ${
-              allowedToVote && videoQueue.length ? " bg-violet-400 hover:bg-violet-500" : "bg-gray-500 hover:bg-gray-400"
+              allowedToVote && videoQueue.length
+                ? " bg-violet-400 hover:bg-violet-500"
+                : "bg-gray-500 hover:bg-gray-400"
             }`}
           >
             Vote to skip
