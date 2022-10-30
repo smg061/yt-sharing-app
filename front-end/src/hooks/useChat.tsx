@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
-import { SocketContext } from "./useWebSocket";
+import { useSocket } from "./useWebSocket";
 import { useUserId } from "./useUserId";
 const { NEW_MESSAGE } = SOCKET_EVENT;
 
-export const  useChat = () => {
-  const { socket } = useContext(SocketContext);
+export const useChat = () => {
+  const { socket } = useSocket();
   const [messages, setMessages] = useState<Message[]>([]);
   const id = useUserId();
 

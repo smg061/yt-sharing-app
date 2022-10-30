@@ -1,28 +1,27 @@
 import { useState, createContext, useEffect, useContext } from "react";
-import io, { Socket } from "socket.io-client";
+import io from "socket.io-client";
 import { VideoInfo } from "../utils/api";
 import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
 import { useUserId } from "./useUserId";
-const { USER_CONNECT, SET_QUEUE_ON_CONNECT, VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, USER_DISCONNECTED } =
-  SOCKET_EVENT;
 
-type SocketProvider = {
+const { USER_CONNECT, SET_QUEUE_ON_CONNECT, VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO } = SOCKET_EVENT;
+
+type SocketProviderProps = {
   children: React.ReactNode;
 };
 
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:3000");
 
-export type SocketContextType = {
-  socket: Socket;
-};
-const defaultState: SocketContextType = {
+const defaultState = {
   socket,
 };
 
-export const SocketContext = createContext(defaultState);
+export type SocketContextType = typeof defaultState;
 
-export const SocketProvider = (props: SocketProvider) => {
+export const SocketContext = createContext<SocketContextType>(defaultState);
+
+export const SocketProvider = (props: SocketProviderProps) => {
   const socket = defaultState.socket;
   const id = useUserId();
   useEffect(() => {
@@ -40,8 +39,8 @@ type SocketState = {
 
 export const useSocket = () => {
   const socket = useContext(SocketContext);
-  return socket
-}
+  return socket;
+};
 export const useVideoQueue = () => {
   const { socket } = useContext(SocketContext);
   const id = useUserId();

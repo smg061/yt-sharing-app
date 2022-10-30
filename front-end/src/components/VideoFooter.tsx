@@ -21,7 +21,7 @@ const VideoFooter = () => {
   }, []);
 
   return (
-    <div className='flex absolute items-center justify-start gap-1 opacity-50 top-80 w-3/4 h-12 z-20 sm:top-[90vh] mx-2 '>
+    <div className='flex absolute items-center justify-start gap-1 opacity-50 top-96 w-3/4 h-12 z-¸20 sm:top-[90vh] mx-2 '>
       <EyeOpenIcon height={20} width={20} />
       <p>{userCount} </p>
     </div>
