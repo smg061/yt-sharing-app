@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { Message, VideoInfo } from "../types";
 import { SOCKET_EVENT } from "../SocketEvents";
 import { VideoQueue } from "./VideoQueue";
-const { NEW_MESSAGE, SET_QUEUE_ON_CONNECT, CONNECT, USER_CONNECT, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP, SKIPPING_IN_PROGRESS } = SOCKET_EVENT
+const { NEW_MESSAGE, SET_QUEUE_ON_CONNECT, CONNECT, USER_CONNECT, USER_DISCONNECTED, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP, SKIPPING_IN_PROGRESS } = SOCKET_EVENT
 
 
 export class RoomsManager {
@@ -78,6 +78,7 @@ export class Room {
             socket.on(USER_CONNECT, (data: { userId: string }) => {
                 console.log(`User with local id of ${data.userId} joined room ${this.id} ${this.name}`)
                 this.connectedUsers.set(data.userId, socket);
+                this.emitEventScoped(USER_CONNECT, this.connectedUsers.size)
             })
             socket.on(NEW_MESSAGE, (data: Message) => {
                 this.emitEventScoped(NEW_MESSAGE, data)
@@ -120,6 +121,7 @@ export class Room {
             console.info(`user with socket id ${socketId} and user id ${userId} was removed`)
             this.connectedUsers.delete(userId);
             this.usersWhoVoted = this.usersWhoVoted.filter(x => x !== userId);
+            this.emitEventScoped(USER_DISCONNECTED, this.connectedUsers.size);
         }
     }
     private handleSkipEvents(socket: Socket) {

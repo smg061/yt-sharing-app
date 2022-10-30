@@ -1,4 +1,4 @@
-import { useState, createContext, useEffect, useContext, } from "react";
+import { useState, createContext, useEffect, useContext } from "react";
 import io, { Socket } from "socket.io-client";
 import { VideoInfo } from "../utils/api";
 import { SOCKET_EVENT } from "./SocketEvents";
@@ -39,6 +39,10 @@ type SocketState = {
 };
 
 export const useSocket = () => {
+  const socket = useContext(SocketContext);
+  return socket
+}
+export const useVideoQueue = () => {
   const { socket } = useContext(SocketContext);
   const id = useUserId();
   const [state, setState] = useState<SocketState>({

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSocket } from "../hooks/useWebSocket";
+import { useVideoQueue } from "../hooks/useWebSocket";
 import { VideoInfo } from "../utils/api";
 
 const SingleCard = ({ videoInfo }: { videoInfo: VideoInfo }) => {
@@ -21,7 +21,7 @@ const SingleCard = ({ videoInfo }: { videoInfo: VideoInfo }) => {
   );
 };
 const VideoQueue = () => {
-  const { videoQueue } = useSocket();
+  const { videoQueue } = useVideoQueue();
 
   const [expandList, setExpandList] = useState<boolean>(false);
   return (

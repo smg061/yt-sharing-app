@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useChat } from "../hooks/useChat";
 import { useChatScroll } from "../hooks/useChatScroll";
 import useVoteToSkip from "../hooks/useVoteToSkip";
-import { useSocket } from "../hooks/useWebSocket";
+import { useVideoQueue } from "../hooks/useWebSocket";
 import SearchBox from "./SearchBox";
 import VideoQueue from "./VideoQueue";
 
@@ -36,8 +36,8 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
 const Chatbox = () => {
   const { messageQueue, sendMessage, id } = useChat();
   const { voteToSkip, allowedToVote } = useVoteToSkip();
-  const { videoQueue } = useSocket();
-  const userName = useRef<string>("");
+  const { videoQueue } = useVideoQueue();
+  const userName = useRef<string>('');
   const chatRef = useChatScroll(messageQueue.length);
   return (
     <div className='grid h-[50vh] sm:h-[82vh]  w-full grid-rows-[0.5fr_5fr_1fr] grid-flow-row bg-black shadow-xl rounded-lg overflow-hidden'>
@@ -87,11 +87,11 @@ const Chatbox = () => {
               //   const videoUrl = e.currentTarget.value;
               //   queueVideo(videoUrl);
               // } else {
-                sendMessage({
-                  user: userName.current,
-                  userId: id,
-                  content: e.currentTarget.value,
-                });
+              sendMessage({
+                user: userName.current,
+                userId: id,
+                content: e.currentTarget.value,
+              });
               //}
               e.currentTarget.value = "";
             }

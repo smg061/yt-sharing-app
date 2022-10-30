@@ -1,14 +1,15 @@
-import { useState, Suspense } from "react";
-import ReactPlayer from "react-player";
-import { useEmitSocketEvents, useSocket } from "../hooks/useWebSocket";
+import { useState, Suspense, lazy } from "react";
+import { useEmitSocketEvents, useVideoQueue } from "../hooks/useWebSocket";
+import VideoFooter from "./VideoFooter";
+import ReactPlayer from 'react-player'
 
 type props = {
   onDuration?: (duration: number) => void;
 };
-const isTouchScreen =  navigator.maxTouchPoints && navigator.maxTouchPoints > 0
+const isTouchScreen = navigator.maxTouchPoints && navigator.maxTouchPoints > 0;
 const VideoPlayer = ({ onDuration }: props) => {
   const { onVideoEnd } = useEmitSocketEvents();
-  const { currentVideo } = useSocket();
+  const { currentVideo } = useVideoQueue();
   const [volume, setVolume] = useState<number>(0);
 
   return (
@@ -26,18 +27,21 @@ const VideoPlayer = ({ onDuration }: props) => {
             url={currentVideo?.id ? `https://www.youtube.com/watch?v=${currentVideo.id}` : ""}
           ></ReactPlayer>
         </div>
-        {!isTouchScreen && <div className='absolute top-72  sm:top-3/4 sm:py-24'>
-          <div>Volume: {(volume * 100).toFixed(0)}</div>
-          <input
-            className='w-13'
-            min={0}
-            max={1}
-            step={0.01}
-            value={volume}
-            type='range'
-            onChange={(e) => setVolume(parseFloat(e.target.value))}
-          ></input>
-        </div>}
+        {!isTouchScreen && (
+          <div className='absolute top-72  sm:top-3/4 sm:py-24'>
+            <div>Volume: {(volume * 100).toFixed(0)}</div>
+            <input
+              className='w-13'
+              min={0}
+              max={1}
+              step={0.01}
+              value={volume}
+              type='range'
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+            ></input>
+          </div>
+        )}
+        <VideoFooter/>
       </div>
     </Suspense>
   );

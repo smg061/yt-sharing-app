@@ -8,7 +8,7 @@ const Header = () => {
     <div className='rounded-lg left-0 top-0 grid sm:grid-cols-3 grid-rows-1 w-screen bg-slate-600'>
       <div className='flex items-center justify-start rows-span-1 rounded'>
         <div className='w-36 grid'>
-          <div onMouseOver={() => setUwu(false)} onMouseLeave={() => setUwu(true)}>
+          <div className='flex align-center justify-center' onMouseOver={() => setUwu(false)} onMouseLeave={() => setUwu(true)}>
             <p className='text-6xl mx-px rounded hover:bg-violet-400'>
               {uwu ? "uwu" : "owo"}
               <span className='text-sm mx-[-1px]'>.io</span>
