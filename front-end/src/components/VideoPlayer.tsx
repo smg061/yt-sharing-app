@@ -1,10 +1,11 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, Suspense } from "react";
 import ReactPlayer from "react-player";
 import { useEmitSocketEvents, useSocket } from "../hooks/useWebSocket";
 
 type props = {
   onDuration?: (duration: number) => void;
 };
+const isTouchScreen =  navigator.maxTouchPoints && navigator.maxTouchPoints > 0
 const VideoPlayer = ({ onDuration }: props) => {
   const { onVideoEnd } = useEmitSocketEvents();
   const { currentVideo } = useSocket();
@@ -18,13 +19,14 @@ const VideoPlayer = ({ onDuration }: props) => {
             className='react-player absolute'
             playing
             volume={volume}
+            controls={!!isTouchScreen}
             onDuration={onDuration}
             onEnded={onVideoEnd}
             playsinline
             url={currentVideo?.id ? `https://www.youtube.com/watch?v=${currentVideo.id}` : ""}
           ></ReactPlayer>
         </div>
-        <div className='absolute top-72  sm:top-3/4 sm:py-24'>
+        {!isTouchScreen && <div className='absolute top-72  sm:top-3/4 sm:py-24'>
           <div>Volume: {(volume * 100).toFixed(0)}</div>
           <input
             className='w-13'
@@ -35,7 +37,7 @@ const VideoPlayer = ({ onDuration }: props) => {
             type='range'
             onChange={(e) => setVolume(parseFloat(e.target.value))}
           ></input>
-        </div>
+        </div>}
       </div>
     </Suspense>
   );

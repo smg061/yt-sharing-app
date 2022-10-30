@@ -28,4 +28,5 @@ export type VideoInfo = {
     description?: string,
     thumbnail: Thumbnail,
     channelTitle: string,
+    duration:number,
 }

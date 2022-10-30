@@ -19,7 +19,7 @@ export class RoomsManager {
     get length() {
         return this.rooms.size;
     }
-    public getRoomById(id:string) {
+    public getRoomById(id: string) {
         const room = this.rooms.get(id);
         return room;
     }
@@ -71,12 +71,11 @@ export class Room {
         if (this.eventsAreRegistered) throw new Error(`Tried to listen to listen to events twice for room ${this.id}`);
         this.io.on(CONNECT, (socket: Socket) => {
             socket.join(this.id);
-            if(this.videoQueue.currentVideo) {
-
+            if (this.videoQueue.currentVideo) {
                 console.log('sending a bunch of videos your way!!!')
                 socket.emit(SET_QUEUE_ON_CONNECT, [this.videoQueue.currentVideo, ...this.videoQueue.getItems()])
-            } 
-            socket.on(USER_CONNECT, (data: {userId: string})=> {
+            }
+            socket.on(USER_CONNECT, (data: { userId: string }) => {
                 console.log(`User with local id of ${data.userId} joined room ${this.id} ${this.name}`)
                 this.connectedUsers.set(data.userId, socket);
             })
@@ -110,17 +109,17 @@ export class Room {
         this.eventsAreRegistered = true;
     }
 
-    private removeUser(socketId: string) { 
+    private removeUser(socketId: string) {
         let userId = ''; // userId is the value provided from session storage
         for (const [id, socket] of this.connectedUsers) {
-            if(socket.id === socketId) {
+            if (socket.id === socketId) {
                 userId = id;
             }
         }
-        if(userId.length) {
+        if (userId.length) {
             console.info(`user with socket id ${socketId} and user id ${userId} was removed`)
             this.connectedUsers.delete(userId);
-            this.usersWhoVoted = this.usersWhoVoted.filter(x=> x!== userId);
+            this.usersWhoVoted = this.usersWhoVoted.filter(x => x !== userId);
         }
     }
     private handleSkipEvents(socket: Socket) {
@@ -128,11 +127,13 @@ export class Room {
             // if there's no video, if the user is not in connected user (weird paranoia)
             // or if the user already voted (is there a better way to track this?)
             // do not continue
-            if (!this.videoQueue.currentVideo ||
-                !this.connectedUsers.has(data)
-            ) {
-                console.log(`Id of ${data} is not present in current users or there is no current video to skip ${this.videoQueue.currentVideo}`);
+            if (!this.videoQueue.currentVideo) {
+                console.log(`there is no current video to skip ${this.videoQueue.currentVideo}`);
                 return;
+            }
+            if (!this.connectedUsers.has(data)) {
+                console.log(`Id of ${data} is not present in current users`);
+                //return;
             }
             if (this.usersWhoVoted.includes(data)) {
                 console.log("You voted already ya cheeky bastard. Bugger off " + socket.id);
@@ -140,7 +141,6 @@ export class Room {
             }
             // add to keep track of users who voted
             this.usersWhoVoted.push(data)
-
             this.skipCurrentVideoVotes += 1;
             this.emitEventScoped(VOTE_TO_SKIP, { currentVotes: this.skipCurrentVideoVotes, totalUsers: this.connectedUsers.size });
             const proportion = this.skipCurrentVideoVotes / this.connectedUsers.size;
@@ -180,7 +180,7 @@ export class Room {
     public listUsers() {
         const users = []
         for (let [key, val] of this.connectedUsers) {
-            users.push({userId: key, connectionId: val.id})
+            users.push({ userId: key, connectionId: val.id })
         }
         return users
     }

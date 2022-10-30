@@ -25,6 +25,7 @@ export class YTScrapeVideoSearchService   {
                     width: 0,
                     height: 0,
                 },
+                duration: video.duration,
                 channelTitle: video.channel.name,
             }
         })
@@ -47,7 +48,8 @@ export class YTScrapeVideoSearchService   {
                     width: 0,
                     height: 0
                 },
-                channelTitle: ""
+                channelTitle: "",
+                duration: 0,
             }
             return res
         })
@@ -74,7 +76,9 @@ export class YTAPIVideoSearchService  {
                 id: video.id.videoId,
                 title: video.snippet.title,
                 thumbnail: video.snippet.thumbnails['default'] || video.snippet.thumbnails['medium'],
-                channelTitle: video.snippet.channelTitle
+                channelTitle: video.snippet.channelTitle,
+                // not implemented
+                duration: 0,
             }
         })
     }
@@ -98,7 +102,8 @@ export class YTAPIVideoSearchService  {
                     width: 0,
                     height: 0
                 },
-                channelTitle: ""
+                channelTitle: "",
+                duration: 0,
             }
             return res
         })

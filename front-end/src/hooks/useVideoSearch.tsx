@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api, { VideoResult } from "../utils/api";
+import api, { VideoInfo } from "../utils/api";
 import { useDebounce } from "./useDebounce";
 import { useQuery } from "react-query";
 

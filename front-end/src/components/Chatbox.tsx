@@ -34,7 +34,7 @@ const OwnChatMsg = ({ user, content }: { user: string; content: string }) => {
 };
 
 const Chatbox = () => {
-  const { messageQueue, sendMessage, id, queueVideo } = useChat();
+  const { messageQueue, sendMessage, id } = useChat();
   const { voteToSkip, allowedToVote } = useVoteToSkip();
   const { videoQueue } = useSocket();
   const userName = useRef<string>("");
@@ -83,16 +83,16 @@ const Chatbox = () => {
           placeholder={userName.current.length === 0 ? "Select a username before chatting" : "Type your message…"}
           onKeyDown={(e) => {
             if (e.key === "Enter" && e.currentTarget.value.trim().length) {
-              if (e.currentTarget.value.includes("youtube.com/watch")) {
-                const videoUrl = e.currentTarget.value;
-                queueVideo(videoUrl);
-              } else {
+              // if (e.currentTarget.value.includes("youtube.com/watch")) {
+              //   const videoUrl = e.currentTarget.value;
+              //   queueVideo(videoUrl);
+              // } else {
                 sendMessage({
                   user: userName.current,
                   userId: id,
                   content: e.currentTarget.value,
                 });
-              }
+              //}
               e.currentTarget.value = "";
             }
           }}

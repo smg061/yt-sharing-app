@@ -3,7 +3,7 @@ import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
 import { SocketContext } from "./useWebSocket";
 import { useUserId } from "./useUserId";
-const { VIDEO_QUEUED, NEW_MESSAGE, CONNECT } = SOCKET_EVENT;
+const { NEW_MESSAGE } = SOCKET_EVENT;
 
 export const  useChat = () => {
   const { socket } = useContext(SocketContext);
@@ -25,13 +25,10 @@ export const  useChat = () => {
   const sendMessage = (msg: Message) => {
     socket.emit(NEW_MESSAGE, msg);
   };
-  const queueVideo = (video: string) => {
-    socket.emit(VIDEO_QUEUED, video);
-  };
+
   return {
     messageQueue: messages,
     id,
     sendMessage,
-    queueVideo,
   };
 };

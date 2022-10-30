@@ -5,21 +5,20 @@ type Thumbnail = {
     width: number,
     height: number
 }
-export type VideoResult = {
+export type VideoInfo = {
     id: string,
     title: string,
     description?: string,
     thumbnail: Thumbnail,
     channelTitle: string,
+    duration: number,
 }
 type Api = {
-    searchVideos: (query: string) => Promise<VideoResult[]>,
+    searchVideos: (query: string) => Promise<VideoInfo[]>,
     queueVideo: (videoId: string) => Promise<any>,
 }
 
-
 const api: Api = {
-
     searchVideos: async (query: string) => {
         if (!query.trim().length) return []
         const response = await fetch(`${baseUrl}/videoSearch?video=${query}`);
