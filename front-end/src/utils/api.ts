@@ -16,7 +16,10 @@ export type VideoInfo = {
 type Api = {
     searchVideos: (query: string) => Promise<VideoInfo[]>,
     queueVideo: (videoId: string) => Promise<any>,
+    createRoom: (roomName: string)=> Promise<{roomId: string}>,
+    listRooms: ()=> Promise<{id: string, name: string, numberOfUsers: number, currentlyPlaying: string}[]>
 }
+
 
 const api: Api = {
     searchVideos: async (query: string) => {
@@ -27,7 +30,17 @@ const api: Api = {
     queueVideo: async (videoId: string) => {
         const response = await fetch(`${baseUrl}/queueVideo?id=${videoId}`)
         return await response.json();
-    }
+    },
+    createRoom: async (roomName)=> {
+        return new Promise((res, rej) => {
+            res({roomId: 'room-1'})
+        })
+    },
+    listRooms: async()=> {
+        const response = await fetch(`${baseUrl}/listRooms`)
+        return await response.json();
+    },
+    
 }
 
 

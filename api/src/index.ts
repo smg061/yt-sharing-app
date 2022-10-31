@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { VideoSearchService, YTScrapeVideoSearchService } from "./Services/VideoSearchService";
 import { youtube as youtubeSearch } from 'scrape-youtube';
 import { RoomsManager } from "./Domain/Room";
+import { CreateRoomRequest } from "./types";
 
 dotenv.config()
 
@@ -69,6 +70,20 @@ app.get('/listUsers', (req,res)=> {
     res.status(200).json(users)
   } else {
     res.sendStatus(404)
+  }
+})
+
+app.post('/createRoom', (req: CreateRoomRequest, res)=> {
+  const {roomName} = req.body;
+  try {
+    const room = roomManager.addRoom(roomName);
+    res.status(200).json({
+      roomId: room.id,
+    })
+  }
+  catch(e) {
+    res.sendStatus(400)
+    return;
   }
 })
 server.listen(port, () => {

@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export type Message = { user: string; userId: string; content: string };
 
 export type ThumbnailQuality = "default" | "medium" | "high"
@@ -29,4 +31,10 @@ export type VideoInfo = {
     thumbnail: Thumbnail,
     channelTitle: string,
     duration:number,
+}
+
+export interface CreateRoomRequest extends Request  {
+    body: {
+        roomName: string,
+    }
 }

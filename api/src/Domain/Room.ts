@@ -33,7 +33,7 @@ export class RoomsManager {
     public listRooms() {
         const roomRepr = [];
         for (let [id, room] of this.rooms) {
-            roomRepr.push({ id, name: room.name, numberOfUsers: room.length, currentlyPlaying: room.currentlyPlaying?.description ?? '' })
+            roomRepr.push({ id, name: room.name, numberOfUsers: room.length, currentlyPlaying: room.currentlyPlaying?.title ?? '' })
         }
         return roomRepr;
     }
