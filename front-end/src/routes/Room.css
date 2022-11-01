@@ -1,0 +1,11 @@
+:root {
+	--background: #242424;
+	--slate-white: theme('colors.slate.500');
+}
+
+#rooms-screen {
+	background: var(--background);
+	background-image: radial-gradient(var(--slate-white) 1px, transparent 10%);
+	background-size: 40px 40px;
+	background-position: -19px -10px;
+}

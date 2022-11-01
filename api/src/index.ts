@@ -75,10 +75,8 @@ app.get('/listUsers', (req,res)=> {
 })
 
 app.post('/createRoom', (req: CreateRoomRequest, res)=> {
-  console.log(req.body)
   const {roomName} = req.body;
   try {
-    console.log(roomName)
     const room = roomManager.addRoom(roomName);
     res.status(200).json({
       roomId: room.id,

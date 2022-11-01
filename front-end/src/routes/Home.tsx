@@ -3,7 +3,7 @@ import { PlusIcon } from "@radix-ui/react-icons";
 import api from "../utils/api";
 import RoomTile from "../components/RoomTile";
 import { useRef } from "react";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 const Home = () => {
   const { data: rooms, isLoading } = useQuery("rooms", api.listRooms, {
     refetchOnMount: false,
@@ -11,15 +11,11 @@ const Home = () => {
     staleTime: 3000,
   });
   const navigate = useNavigate();
-  
+
   const roomName = useRef<string>("");
-  //   const createRoom = async (roomName: string) => {
-  //     const res = await api.createRoom(roomName);
-  //     console.log(res);
-  //   };
+
   const createRoom = async (roomName: string) => {
     const res = await api.createRoom(roomName);
-    //window.location.replace(`/rooms?roomId=${res.roomId}`);
     navigate(`/rooms?roomId=${res.roomId}`);
   };
   if (isLoading) {
@@ -27,7 +23,7 @@ const Home = () => {
   }
   return (
     <>
-      <section className='flex justify-center'>
+      <section id="rooms-screen"className='flex h-[93vh] justify-center'>
         {rooms && (
           <div className='flex flex-wrap flex-row w-1/2 mb-4 my-12 items-center gap-4 justify-between'>
             {rooms.map((room) => (

@@ -100,10 +100,11 @@ export const useEmitSocketEvents = () => {
   const sendMessage = (data: { payload: Message; roomId: string }) => {
     socket.emit(NEW_MESSAGE, { payload: data.payload, roomId: roomId });
   };
-  const queueVideo = ( payload: VideoInfo) => {
+  const queueVideo = (payload: VideoInfo) => {
     socket.emit(VIDEO_QUEUED, { payload: payload, roomId: roomId });
   };
   const onVideoEnd = () => {
+    console.log(roomId)
     socket.emit(VIDEO_ENDED, roomId);
   };
 
@@ -111,7 +112,6 @@ export const useEmitSocketEvents = () => {
     socket.emit(SKIP_VIDEO, roomId);
   };
   const joinRoom = ({ roomId, userId }: { roomId: string; userId: string }) => {
-    console.log("emitting join event with", roomId, userId);
     socket.emit(JOIN_ROOM, { roomId, userId });
   };
   return {

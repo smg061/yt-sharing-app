@@ -20,9 +20,6 @@ export class RoomsManager {
         return this.rooms.size;
     }
 
-    private emitEventScoped<T>(event: SOCKET_EVENT, payload: T, id: string) {
-        this.io.to(id).emit(event, payload)
-    }
     public getRoomById(id: string) {
         const room = this.rooms.get(id);
         return room;
@@ -51,26 +48,24 @@ export class RoomsManager {
             })
 
             socket.on(VIDEO_QUEUED, (data: { payload: VideoInfo, roomId: string }) => {
-                console.log()
                 const room = this.rooms.get(data.roomId);
-                console.log(`queued video ${JSON.stringify(data)}`)
                 if (!room) return;
+                const {roomId, payload} = data;
                 if (room.videoQueue.currentVideo === null || room.videoQueue.currentVideo === undefined) {
-                    console.log('sending this single video to client')
-                    this.io.to(data.roomId).emit(VIDEO_ENDED, (data.payload));
-                    room.videoQueue.currentVideo = data.payload;
+                    this.io.to(roomId).emit(VIDEO_ENDED, (payload));
+                    room.videoQueue.currentVideo = payload;
                     return;
                 }
                 room.videoQueue.enqueue(data.payload);
-                this.io.to(data.roomId).emit(VIDEO_QUEUED, room.videoQueue.getItems());
+                this.io.to(roomId).emit(VIDEO_QUEUED, room.videoQueue.getItems());
             });
-            socket.on(VIDEO_ENDED, ({ roomId }: { roomId: string }) => {
+            socket.on(VIDEO_ENDED, (roomId : string ) => {
                 const room = this.rooms.get(roomId)
                 if (!room) return;
                 const video = room.videoQueue.dequeue();
                 room.videoQueue.currentVideo = video;
                 if (typeof video !== "undefined") {
-                    this.emitEventScoped(VIDEO_ENDED, video, roomId);
+                    this.io.to(roomId).emit(VIDEO_ENDED, video);
                 }
             });
             this.handleSkipEvents(socket)
@@ -84,21 +79,14 @@ export class RoomsManager {
         socket.on(VOTE_TO_SKIP, (data: {userId: string, roomId: string}) => {
             const {roomId, userId} = data;
             const room = this.rooms.get(roomId);
-            console.log('voting to skip...')
-            console.log(roomId, room)
             if(!room) return;
             // if there's no video or if the user already voted (is there a better way to track this?)
             // do not continue
             if (!room.videoQueue.currentVideo) {
-                console.log(`there is no current video to skip ${room.videoQueue.currentVideo}`);
                 return;
             }
-            // if (!room.connectedUsers.has(userId)) {
-            //     
-            //     //return;
-            // }
+     
             if (room.usersWhoVoted.includes(userId)) {
-               // console.log("You voted already ya cheeky bastard. Bugger off " + socket.id);
                 return;
             }
             // add to keep track of users who voted
@@ -147,7 +135,6 @@ export class RoomsManager {
         const id = this.getId();
         const room = new NewRoom(roomName, id,);
         this.rooms.set(id, room);
-        //room.listenForEvents();
         return room
     }
 
@@ -163,7 +150,6 @@ export class RoomsManager {
 export class NewRoom {
     public name: string;
     public id: string;
-    //private eventsAreRegistered: boolean = false;
     public videoQueue: VideoQueue = new VideoQueue();
     public skipCurrentVideoVotes: number = 0;
     public skipPending: boolean = false;
@@ -182,8 +168,6 @@ export class NewRoom {
     get currentlyPlaying() {
         return this.videoQueue.currentVideo
     }
-
-    // emits event only to the current room
 
     public removeUser(socketId: string) {
         let userId = ''; // userId is the value provided from session storage

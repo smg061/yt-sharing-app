@@ -12,7 +12,6 @@ export const useChat = () => {
 
   useEffect(() => {
     const addMessage = (data: {payload: Message, roomId: string}) => {
-      console.log(`received data ${JSON.stringify(data)}`)
       setMessages((prev) => {
         return [...prev, data.payload];
       });
