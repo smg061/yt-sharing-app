@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with Vectornator (http://vectornator.io/) -->
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 512 512" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<clipPath id="TextBounds">
+<rect height="228" width="411.051" x="62.8855" y="170.053"/>
+</clipPath>
+</defs>
+<g id="Layer-2" vectornator:layerName="Layer 2">
+<path d="M219.956 235.413L315.061 235.413L315.061 300.214L219.956 300.214L219.956 235.413Z" fill="#e2e2e2" fill-rule="nonzero" opacity="1" stroke="#4f5963" stroke-linecap="butt" stroke-linejoin="round" stroke-width="300"/>
+</g>
+<g id="Layer-1" vectornator:layerName="Layer 1">
+<g fill="#c482d2" opacity="1" stroke="none">
+<path clip-path="url(#TextBounds)" d="M126.755 334.383C156.995 334.383 172.493 320.208 172.493 287.889L172.493 205.107L158.507 205.107L158.507 287.133C158.507 314.349 148.301 322.476 127.322 322.476C106.343 322.476 95.0035 314.16 95.0035 287.322L95.0035 205.107L79.8835 205.107L79.8835 288.078C79.8835 319.641 96.8935 334.383 126.755 334.383Z"/>
+<path clip-path="url(#TextBounds)" d="M224.846 332.115L239.588 332.115L268.694 230.622L269.072 230.622L297.422 332.115L311.975 332.115L343.538 205.296L329.93 205.296L304.982 308.679L304.793 308.679L275.309 205.296L263.213 205.296L233.54 308.679L232.973 308.679L208.025 205.296L193.094 205.296L224.846 332.115Z"/>
+<path clip-path="url(#TextBounds)" d="M411.389 334.383C441.629 334.383 457.127 320.208 457.127 287.889L457.127 205.107L443.141 205.107L443.141 287.133C443.141 314.349 432.935 322.476 411.956 322.476C390.977 322.476 379.637 314.16 379.637 287.322L379.637 205.107L364.517 205.107L364.517 288.078C364.517 319.641 381.527 334.383 411.389 334.383Z"/>
+</g>
+</g>
+</svg>
