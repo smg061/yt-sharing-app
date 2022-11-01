@@ -3,12 +3,15 @@ import { PlusIcon } from "@radix-ui/react-icons";
 import api from "../utils/api";
 import RoomTile from "../components/RoomTile";
 import { useRef } from "react";
+import {useNavigate} from 'react-router-dom'
 const Home = () => {
   const { data: rooms, isLoading } = useQuery("rooms", api.listRooms, {
     refetchOnMount: false,
     refetchOnWindowFocus: true,
     staleTime: 3000,
   });
+  const navigate = useNavigate();
+  
   const roomName = useRef<string>("");
   //   const createRoom = async (roomName: string) => {
   //     const res = await api.createRoom(roomName);
@@ -16,8 +19,8 @@ const Home = () => {
   //   };
   const createRoom = async (roomName: string) => {
     const res = await api.createRoom(roomName);
-    window.location.replace(`/rooms?roomId=${res.roomId}`);
-    //navigate(`/rooms?roomId=${res.roomId}`);
+    //window.location.replace(`/rooms?roomId=${res.roomId}`);
+    navigate(`/rooms?roomId=${res.roomId}`);
   };
   if (isLoading) {
     return <></>;

@@ -25,8 +25,6 @@ const io = new Server(server, {
 const videoSearchService: VideoSearchService = new YTScrapeVideoSearchService(youtubeSearch);
 
 const roomManager = new RoomsManager(io);
-roomManager.addRoom('testRoom')
-roomManager.addRoom('another one')
 roomManager.listenForEvents();
 app.use(
   cors({
