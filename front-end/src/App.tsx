@@ -17,7 +17,8 @@ const App = () => {
           <Route path='/rooms'>
             <Route index element={<Room />} />
           </Route>
-          <Route index element={<Home/>} />
+          <Route index element={<Home />} />
+          <Route path='*' element={<Home />} />
         </Routes>
       </QueryClientProvider>
     </>
