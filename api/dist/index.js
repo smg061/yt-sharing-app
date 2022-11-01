@@ -7,61 +7,25 @@ const express_1 = __importDefault(require("express"));
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
 const cors_1 = __importDefault(require("cors"));
-const SocketService_1 = require("./SocketService");
-const VideoQueue_1 = require("./Models/VideoQueue");
 const dotenv_1 = __importDefault(require("dotenv"));
 const VideoSearchService_1 = require("./Services/VideoSearchService");
 const scrape_youtube_1 = require("scrape-youtube");
+const Room_1 = require("./Domain/Room");
 dotenv_1.default.config();
 const port = process.env.PORT || "3000";
-//const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 const server = http_1.default.createServer(app);
-const { NEW_MESSAGE, VIDEO_QUEUED, VIDEO_ENDED, SKIP_VIDEO } = SocketService_1.SOCKET_EVENT;
-const videoQueue = new VideoQueue_1.VideoQueue();
-const videoSearchService = new VideoSearchService_1.YTScrapeVideoSearchService(scrape_youtube_1.youtube);
-let currentVideo = null;
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: "*",
+        origin: process.env.CLIENT_URI || "*",
     },
 });
-const clients = new Map();
-io.on("connection", (socket) => {
-    clients.set(socket.id, socket);
-    if (currentVideo) {
-        socket.emit(VIDEO_ENDED, currentVideo);
-    }
-    socket.on(NEW_MESSAGE, (data) => {
-        io.emit(NEW_MESSAGE, data);
-    });
-    socket.on(VIDEO_QUEUED, (data) => {
-        if (currentVideo === null || currentVideo === undefined) {
-            console.log("no more videos, directly sending current video", data);
-            io.emit(VIDEO_ENDED, data);
-            currentVideo = data;
-            return;
-        }
-        videoQueue.enqueue(data);
-        io.emit(VIDEO_QUEUED, data);
-    });
-    socket.on(VIDEO_ENDED, () => {
-        const url = videoQueue.dequeue();
-        currentVideo = url;
-        if (typeof url !== "undefined") {
-            io.emit(VIDEO_ENDED, url);
-        }
-    });
-    socket.on(SKIP_VIDEO, () => {
-        console.log('skip video event triggered');
-        const newVideo = videoQueue.dequeue();
-        if (newVideo) {
-            currentVideo = newVideo;
-            io.emit(VIDEO_ENDED, newVideo);
-        }
-    });
-    socket.on("disconnect", (data) => console.log(data));
-});
+const videoSearchService = new VideoSearchService_1.YTScrapeVideoSearchService(scrape_youtube_1.youtube);
+const roomManager = new Room_1.RoomsManager(io);
+//roomManager.addRoom('testRoom')
+roomManager.listenForEvents();
 app.use((0, cors_1.default)({
     origin: process.env.CLIENT_URI || "*",
 }));
@@ -72,10 +36,7 @@ app.get("/health", (_, res) => {
     res.status(200).send("All green!");
 });
 app.get("/clearQueue", (_, res) => {
-    currentVideo = null;
-    for (let i = 0; i < videoQueue.getItems().length; i++) {
-        videoQueue.dequeue();
-    }
+    // room.clearQueue();
     res.status(200).send("Queue cleared!");
 });
 app.get("/videoSearch", async (req, res) => {
@@ -86,6 +47,39 @@ app.get("/videoSearch", async (req, res) => {
     }
     const results = await videoSearchService.searchVideos(searchTerm);
     res.status(200).json(results);
+});
+app.get('/listRooms', (_, res) => {
+    res.status(200).json(roomManager.listRooms());
+});
+app.get('/listUsers', (req, res) => {
+    const roomId = req.query.roomId;
+    if (typeof roomId !== 'string') {
+        res.sendStatus(400);
+        return;
+    }
+    const room = roomManager.getRoomById(roomId);
+    const users = room?.listUsers();
+    if (users) {
+        res.status(200).json(users);
+    }
+    else {
+        res.sendStatus(404);
+    }
+});
+app.post('/createRoom', (req, res) => {
+    console.log(req.body);
+    const { roomName } = req.body;
+    try {
+        console.log(roomName);
+        const room = roomManager.addRoom(roomName);
+        res.status(200).json({
+            roomId: room.id,
+        });
+    }
+    catch (e) {
+        res.sendStatus(400);
+        return;
+    }
 });
 server.listen(port, () => {
     console.log(`Listening on ${port}`);

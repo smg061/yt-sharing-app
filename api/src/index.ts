@@ -12,6 +12,8 @@ dotenv.config()
 
 const port = process.env.PORT || "3000";
 const app: Express = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -23,8 +25,9 @@ const io = new Server(server, {
 const videoSearchService: VideoSearchService = new YTScrapeVideoSearchService(youtubeSearch);
 
 const roomManager = new RoomsManager(io);
-roomManager.addRoom('testRoom')?.listenForEvents();
-
+roomManager.addRoom('testRoom')
+roomManager.addRoom('another one')
+roomManager.listenForEvents();
 app.use(
   cors({
     origin: process.env.CLIENT_URI || "*",
@@ -74,8 +77,10 @@ app.get('/listUsers', (req,res)=> {
 })
 
 app.post('/createRoom', (req: CreateRoomRequest, res)=> {
+  console.log(req.body)
   const {roomName} = req.body;
   try {
+    console.log(roomName)
     const room = roomManager.addRoom(roomName);
     res.status(200).json({
       roomId: room.id,

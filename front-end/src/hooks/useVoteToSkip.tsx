@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { SocketContext } from "./useWebSocket";
 import { SOCKET_EVENT } from "./SocketEvents";
 import {useUserId} from './useUserId';
+import useRoomId from "./useRoomId";
 const { VOTE_TO_SKIP, VIDEO_ENDED, SKIPPING_IN_PROGRESS} = SOCKET_EVENT;
 
 const useCountDown = ( start :number) => {
@@ -41,9 +42,11 @@ const useVoteToSkip = () => {
   const [showMessage, setShowMessage] = useState<boolean>(false);
   const {timer, startTimer} = useCountDown(0);
   const id = useUserId();
+  const roomId = useRoomId();
+
   const voteToSkip = () => {
     setAllowedToVote(false);
-    socket.emit(VOTE_TO_SKIP, id);
+    socket.emit(VOTE_TO_SKIP, {userId: id, roomId});
   };
 
   useEffect(() => {
@@ -52,7 +55,7 @@ const useVoteToSkip = () => {
       setTotalUsers(data.totalUsers);
       setShowMessage(true);
       setInterval(() => {
-        setShowMessage(false);
+        setShowMessage(false)
       }, 10_000);
     };
     const resetVotes = () => {

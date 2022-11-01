@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import { useChat } from "../hooks/useChat";
 import { useChatScroll } from "../hooks/useChatScroll";
+import useRoomId from "../hooks/useRoomId";
 import useVoteToSkip from "../hooks/useVoteToSkip";
 import { useVideoQueue } from "../hooks/useWebSocket";
 import SearchBox from "./SearchBox";
-import VideoQueue from "./VideoQueue";
 
 const OtherChatMsg = ({ user, content }: { user: string; content: string }) => {
   return (
@@ -37,8 +37,9 @@ const Chatbox = () => {
   const { messageQueue, sendMessage, id } = useChat();
   const { voteToSkip, allowedToVote } = useVoteToSkip();
   const { videoQueue } = useVideoQueue();
-  const userName = useRef<string>('');
+  const userName = useRef<string>("");
   const chatRef = useChatScroll(messageQueue.length);
+  const roomId = useRoomId();
   return (
     <div className='grid h-[50vh] sm:h-[82vh]  w-full grid-rows-[0.5fr_5fr_1fr] grid-flow-row bg-black shadow-xl rounded-lg overflow-hidden'>
       <div className='grid grid-cols-6 grid-rows-1 relative bg-slate-600 top-9 sm:top-9 items-center'>
@@ -88,11 +89,13 @@ const Chatbox = () => {
               //   queueVideo(videoUrl);
               // } else {
               sendMessage({
-                user: userName.current,
-                userId: id,
-                content: e.currentTarget.value,
+                payload: {
+                  user: userName.current,
+                  userId: id,
+                  content: e.currentTarget.value,
+                },
+                roomId: roomId,
               });
-              //}
               e.currentTarget.value = "";
             }
           }}

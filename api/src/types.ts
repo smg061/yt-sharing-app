@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-export type Message = { user: string; userId: string; content: string };
+export type Message = { user: string; userId: string; content: string, };
 
 export type ThumbnailQuality = "default" | "medium" | "high"
 

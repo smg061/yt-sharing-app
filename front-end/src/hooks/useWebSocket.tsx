@@ -3,9 +3,11 @@ import io from "socket.io-client";
 import { VideoInfo } from "../utils/api";
 import { SOCKET_EVENT } from "./SocketEvents";
 import { Message } from "./types";
+import useRoomId from "./useRoomId";
 import { useUserId } from "./useUserId";
 
-const { USER_CONNECT, SET_QUEUE_ON_CONNECT, VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO } = SOCKET_EVENT;
+const { USER_CONNECT, SET_QUEUE_ON_CONNECT, VIDEO_QUEUED, NEW_MESSAGE, VIDEO_ENDED, SKIP_VIDEO, JOIN_ROOM } =
+  SOCKET_EVENT;
 
 type SocketProviderProps = {
   children: React.ReactNode;
@@ -24,11 +26,12 @@ export const SocketContext = createContext<SocketContextType>(defaultState);
 export const SocketProvider = (props: SocketProviderProps) => {
   const socket = defaultState.socket;
   const id = useUserId();
+  const roomId = useRoomId();
   useEffect(() => {
     if (id.trim().length) {
-      socket.emit(USER_CONNECT, { userId: id });
+      socket.emit(USER_CONNECT, { userId: id, roomId: roomId });
     }
-  }, [id]);
+  }, [id, roomId]);
   return <SocketContext.Provider value={{ socket }}>{props.children}</SocketContext.Provider>;
 };
 
@@ -41,6 +44,7 @@ export const useSocket = () => {
   const socket = useContext(SocketContext);
   return socket;
 };
+
 export const useVideoQueue = () => {
   const { socket } = useContext(SocketContext);
   const id = useUserId();
@@ -91,24 +95,30 @@ export const useVideoQueue = () => {
 
 export const useEmitSocketEvents = () => {
   const { socket } = useContext(SocketContext);
-  const sendMessage = (message: Message) => {
-    socket.emit(NEW_MESSAGE, message);
+  const roomId = useRoomId();
+
+  const sendMessage = (data: { payload: Message; roomId: string }) => {
+    socket.emit(NEW_MESSAGE, { payload: data.payload, roomId: roomId });
   };
-  const queueVideo = (video: VideoInfo) => {
-    socket.emit(VIDEO_QUEUED, video);
+  const queueVideo = ( payload: VideoInfo) => {
+    socket.emit(VIDEO_QUEUED, { payload: payload, roomId: roomId });
   };
   const onVideoEnd = () => {
-    socket.emit(VIDEO_ENDED, null);
+    socket.emit(VIDEO_ENDED, roomId);
   };
 
   const onSkip = () => {
-    socket.emit(SKIP_VIDEO, null);
+    socket.emit(SKIP_VIDEO, roomId);
   };
-
+  const joinRoom = ({ roomId, userId }: { roomId: string; userId: string }) => {
+    console.log("emitting join event with", roomId, userId);
+    socket.emit(JOIN_ROOM, { roomId, userId });
+  };
   return {
     queueVideo,
     onVideoEnd,
     onSkip,
     sendMessage,
+    joinRoom,
   };
 };

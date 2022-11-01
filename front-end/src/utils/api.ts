@@ -16,8 +16,8 @@ export type VideoInfo = {
 type Api = {
     searchVideos: (query: string) => Promise<VideoInfo[]>,
     queueVideo: (videoId: string) => Promise<any>,
-    createRoom: (roomName: string)=> Promise<{roomId: string}>,
-    listRooms: ()=> Promise<{id: string, name: string, numberOfUsers: number, currentlyPlaying: string}[]>
+    createRoom: (roomName: string) => Promise<{ roomId: string }>,
+    listRooms: () => Promise<{ id: string, name: string, numberOfUsers: number, currentlyPlaying: string }[]>
 }
 
 
@@ -31,16 +31,23 @@ const api: Api = {
         const response = await fetch(`${baseUrl}/queueVideo?id=${videoId}`)
         return await response.json();
     },
-    createRoom: async (roomName)=> {
-        return new Promise((res, rej) => {
-            res({roomId: 'room-1'})
-        })
+    createRoom: async (roomName) => {
+        if (!roomName.trim().length) {
+            throw new Error('Error: tried making a room with an empty name')
+        }
+        const response = await fetch(`${baseUrl}/createroom`, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }, method: "POST", body: JSON.stringify({ roomName: roomName })
+        });
+        return await response.json();
     },
-    listRooms: async()=> {
+    listRooms: async () => {
         const response = await fetch(`${baseUrl}/listRooms`)
         return await response.json();
     },
-    
+
 }
 
 

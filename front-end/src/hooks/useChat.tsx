@@ -11,9 +11,10 @@ export const useChat = () => {
   const id = useUserId();
 
   useEffect(() => {
-    const addMessage = (msg: Message) => {
+    const addMessage = (data: {payload: Message, roomId: string}) => {
+      console.log(`received data ${JSON.stringify(data)}`)
       setMessages((prev) => {
-        return [...prev, msg];
+        return [...prev, data.payload];
       });
     };
     socket.on(NEW_MESSAGE, addMessage);
@@ -22,8 +23,8 @@ export const useChat = () => {
     };
   }, [socket, socket.id]);
 
-  const sendMessage = (msg: Message) => {
-    socket.emit(NEW_MESSAGE, msg);
+  const sendMessage = (data: {payload: Message, roomId:string}) => {
+    socket.emit(NEW_MESSAGE, data);
   };
 
   return {

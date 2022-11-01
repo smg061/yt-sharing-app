@@ -14,8 +14,10 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <Header />
         <Routes>
-          <Route index element={<Room />} />
-          <Route path='/listRooms' element={<Home/>} />
+          <Route path='/rooms'>
+            <Route index element={<Room />} />
+          </Route>
+          <Route index element={<Home/>} />
         </Routes>
       </QueryClientProvider>
     </>

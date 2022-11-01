@@ -22,7 +22,7 @@ const Header = () => {
         </div>
         <div className='mx-2 flex items-center h-full rounded '>
           <a className='hover:bg-violet-400 rounded' href=''>
-            Rooms <span className='text-xs'>(coming soon)</span>
+            Rooms <span className='text-xs'></span>
           </a>
         </div>
       </div>
