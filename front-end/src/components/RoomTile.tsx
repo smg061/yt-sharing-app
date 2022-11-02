@@ -7,7 +7,7 @@ type props = Awaited<ReturnType<typeof api.listRooms>>[number] & {
 };
 const RoomTile = ({ name, id, currentlyPlaying, numberOfUsers }: props) => {
   return (
-    <div className='grid grid-rows-6 w-1/4 bg-slate-700 text-slate-100 font-bold text-center p-4 rounded-lg'>
+    <div className='grid grid-rows-6 w-64 bg-slate-700 text-slate-100 font-bold text-center p-4 rounded-lg  h-64 transform  hover:bg-slate-600 transition duration-700 hover:scale-105'>
       <div>{name}</div>
       <div className='flex items-center justify-center'>
         <PersonIcon />
@@ -20,7 +20,7 @@ const RoomTile = ({ name, id, currentlyPlaying, numberOfUsers }: props) => {
             Currently playing:
           </div>
           <div className='flex align-center justify-center'>
-            <p className='text-center text-ellipsis overflow-hidden'>{currentlyPlaying}</p>
+            <p className='text-center sm:text-sm text-ellipsis overflow-hidden'>{currentlyPlaying}</p>
           </div>
         </div>
       </div>

@@ -29,7 +29,7 @@ const Home = () => {
             {rooms.map((room) => (
               <RoomTile key={room.id + room.name} {...room} />
             ))}
-            <div className='flex flex-col items-center gap-2 justify-center bg-slate-700 text-slate-100 w-48 text-lg font-bold text-center p-10 rounded-lg'>
+            <div className='flex flex-col items-center gap-2 justify-center bg-slate-700 text-slate-100 w-48 text-lg font-bold text-center p-10 rounded-lg ransform hover:bg-slate-600 transition duration-700 hover:scale-105'>
               <p>Create room</p>
               <div className=''>
                 <input

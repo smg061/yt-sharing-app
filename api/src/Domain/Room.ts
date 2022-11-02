@@ -2,14 +2,15 @@ import { Server, Socket } from "socket.io";
 import { Message, VideoInfo } from "../types";
 import { SOCKET_EVENT } from "../SocketEvents";
 import { VideoQueue } from "./VideoQueue";
-const { NEW_MESSAGE, SET_QUEUE_ON_CONNECT, CONNECT, USER_CONNECT, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP, SKIPPING_IN_PROGRESS, JOIN_ROOM } = SOCKET_EVENT
+const { NEW_MESSAGE, SET_QUEUE_ON_CONNECT, CONNECT, USER_CONNECT, USER_DISCONNECTED, SKIP_VIDEO, VIDEO_ENDED, VIDEO_QUEUED, VOTE_TO_SKIP, SKIPPING_IN_PROGRESS, JOIN_ROOM } = SOCKET_EVENT
 
 
 export class RoomsManager {
 
-    private rooms: Map<string, NewRoom> = new Map();
+    private rooms: Map<string, Room> = new Map();
     private io: Server;
     private maxId: number = 0;
+    private userRoomsMap: Map<string, string> = new Map();
     constructor(io: Server) {
         this.io = io;
     }
@@ -29,6 +30,8 @@ export class RoomsManager {
             socket.on(JOIN_ROOM, ({ roomId }: { userId: string, roomId: string }) => {
                 console.log(`${socket.id} joined ${roomId}`)
                 socket.join(roomId);
+                this.userRoomsMap.set(socket.id, roomId)
+                console.log(this.userRoomsMap)
             })
             socket.on(USER_CONNECT, (data: { userId: string, roomId: string }) => {
                 const room = this.rooms.get(data.roomId);
@@ -70,7 +73,13 @@ export class RoomsManager {
             });
             this.handleSkipEvents(socket)
             socket.on("disconnect", () => {
-                this.removeUser(socket.id);
+                const roomId = this.userRoomsMap.get(socket.id);
+                if(!roomId) return;
+                const room = this.rooms.get(roomId);
+                if(!room) return;
+                room.removeUser(socket.id);
+                this.io.to(roomId).emit(USER_DISCONNECTED, room.connectedUsers.size)
+                this.userRoomsMap.delete(socket.id)
             });
         })
 
@@ -126,14 +135,10 @@ export class RoomsManager {
             }
         })
     }
-    private removeUser(socketId: string) {
-        this.rooms.forEach((room) => {
-            room.removeUser(socketId);
-        })
-    }
+
     public addRoom(roomName: string) {
         const id = this.getId();
-        const room = new NewRoom(roomName, id,);
+        const room = new Room(roomName, id,);
         this.rooms.set(id, room);
         return room
     }
@@ -147,7 +152,7 @@ export class RoomsManager {
     }
 }
 
-export class NewRoom {
+export class Room {
     public name: string;
     public id: string;
     public videoQueue: VideoQueue = new VideoQueue();
@@ -169,7 +174,7 @@ export class NewRoom {
         return this.videoQueue.currentVideo
     }
 
-    public removeUser(socketId: string) {
+    public removeUser(socketId: string): string | null {
         let userId = ''; // userId is the value provided from session storage
         for (const [id, socket] of this.connectedUsers) {
             if (socket.id === socketId) {
@@ -180,7 +185,9 @@ export class NewRoom {
             console.info(`user with socket id ${socketId} and user id ${userId} was removed`)
             this.connectedUsers.delete(userId);
             this.usersWhoVoted = this.usersWhoVoted.filter(x => x !== userId);
+            return this.id;
         }
+        return null
     }
 
     public clearQueue() {
