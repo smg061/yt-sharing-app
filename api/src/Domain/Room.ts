@@ -19,14 +19,14 @@ export class RoomsManager {
         return this.rooms.size;
     }
 
-    private getId() {
+    private getId(): string{
         return `room-${this.maxId++}`;
     }
-    public getRoomById(id: string) {
-        const room = this.rooms.get(id);
-        return room;
+    public getRoomById(id: string): Room | undefined {
+        return this.rooms.get(id);
     }
-    private checkForEmptyRooms() {
+
+    private checkForEmptyRooms(): void {
         setInterval(()=> {
             for (const [roomId, room] of this.rooms) {
                 if(room.length === 0) {
@@ -36,7 +36,7 @@ export class RoomsManager {
             }
         }, 60_000)
     }
-    public listenForEvents() {
+    public listenForEvents(): void {
         this.io.on(CONNECT, (socket: Socket) => {
             socket.on(JOIN_ROOM, ({ roomId }: { userId: string, roomId: string }) => {
                 console.log(`${socket.id} joined ${roomId}`)
@@ -81,20 +81,21 @@ export class RoomsManager {
                     this.io.to(roomId).emit(VIDEO_ENDED, video);
                 }
             });
-            this.handleSkipEvents(socket)
+            this.handleSkipEvents(socket);
             socket.on("disconnect", () => {
                 const roomId = this.userRoomsMap.get(socket.id);
                 if(!roomId) return;
                 const room = this.rooms.get(roomId);
                 if(!room) return;
                 room.removeUser(socket.id);
-                this.io.to(roomId).emit(USER_DISCONNECTED, room.connectedUsers.size)
-                this.userRoomsMap.delete(socket.id)
+                
+                this.io.to(roomId).emit(USER_DISCONNECTED, room.connectedUsers.size);
+                this.userRoomsMap.delete(socket.id);
             });
         })
 
     }
-    private handleSkipEvents(socket: Socket) {
+    private handleSkipEvents(socket: Socket): void {
         socket.on(VOTE_TO_SKIP, (data: {userId: string, roomId: string}) => {
             const {roomId, userId} = data;
             const room = this.rooms.get(roomId);
@@ -104,7 +105,6 @@ export class RoomsManager {
             if (!room.videoQueue.currentVideo) {
                 return;
             }
-     
             if (room.usersWhoVoted.includes(userId)) {
                 return;
             }
@@ -146,7 +146,7 @@ export class RoomsManager {
         })
     }
 
-    public addRoom(roomName: string) {
+    public addRoom(roomName: string): Room {
         const id = this.getId();
         const room = new Room(roomName, id,);
         this.rooms.set(id, room);
@@ -159,6 +159,18 @@ export class RoomsManager {
             roomRepr.push({ id, name: room.name, numberOfUsers: room.length, currentlyPlaying: room.currentlyPlaying?.title ?? '' })
         }
         return roomRepr;
+    }
+    public getUsersByRoom(): Map<string, Array<string>> {
+        const usersByRoom: Map<string, Array<string>> = new Map();
+
+        for (const [userId, roomId] of this.userRoomsMap) {
+            if(!usersByRoom.get(roomId)) {
+                usersByRoom.set(roomId, [userId])
+            } else {
+                usersByRoom.get(roomId)?.push(userId)
+            }
+        }
+        return usersByRoom;
     }
 }
 
@@ -192,9 +204,14 @@ export class Room {
             }
         }
         if (userId.length) {
-            console.info(`user with socket id ${socketId} and user id ${userId} was removed`)
+            const prevLength = this.usersWhoVoted.length;
             this.connectedUsers.delete(userId);
             this.usersWhoVoted = this.usersWhoVoted.filter(x => x !== userId);
+            const newLength = this.usersWhoVoted.length;
+            // if we removed a user, we remove their vote from the current vote amount
+            if (newLength < prevLength) {
+                this.skipCurrentVideoVotes--;
+            }
             return this.id;
         }
         return null
