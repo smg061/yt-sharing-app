@@ -13,11 +13,12 @@ export class RoomsManager {
     private userRoomsMap: Map<string, string> = new Map();
     constructor(io: Server) {
         this.io = io;
+        this.checkForEmptyRooms();
     }
     get length() {
         return this.rooms.size;
     }
-    
+
     private getId() {
         return `room-${this.maxId++}`;
     }
@@ -25,13 +26,22 @@ export class RoomsManager {
         const room = this.rooms.get(id);
         return room;
     }
+    private checkForEmptyRooms() {
+        setInterval(()=> {
+            for (const [roomId, room] of this.rooms) {
+                if(room.length === 0) {
+                   console.log(`${roomId} has no users! Target for deletion!!`)
+                    this.rooms.delete(roomId);
+                } 
+            }
+        }, 60_000)
+    }
     public listenForEvents() {
         this.io.on(CONNECT, (socket: Socket) => {
             socket.on(JOIN_ROOM, ({ roomId }: { userId: string, roomId: string }) => {
                 console.log(`${socket.id} joined ${roomId}`)
                 socket.join(roomId);
                 this.userRoomsMap.set(socket.id, roomId)
-                console.log(this.userRoomsMap)
             })
             socket.on(USER_CONNECT, (data: { userId: string, roomId: string }) => {
                 const room = this.rooms.get(data.roomId);
