@@ -1,5 +1,5 @@
 import { VideoInfo } from "../types";
-import { Queue } from "./Queue";
+import { Queue } from "../utils/Queue";
 
 export class VideoQueue extends Queue<VideoInfo> {
   private _currentVideo: VideoInfo | null | undefined = null;

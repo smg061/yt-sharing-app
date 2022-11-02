@@ -14,13 +14,13 @@ export class RoomsManager {
     constructor(io: Server) {
         this.io = io;
     }
-    private getId() {
-        return `room-${this.maxId++}`;
-    }
     get length() {
         return this.rooms.size;
     }
-
+    
+    private getId() {
+        return `room-${this.maxId++}`;
+    }
     public getRoomById(id: string) {
         const room = this.rooms.get(id);
         return room;
@@ -44,7 +44,7 @@ export class RoomsManager {
                     this.io.to(data.roomId).emit(VIDEO_ENDED, room.videoQueue.currentVideo, data.roomId)
                 }
                 room.connectedUsers.set(data.userId, socket);
-                this.io.to(data.roomId).emit(USER_CONNECT, room.connectedUsers.size, data.roomId);
+                this.io.to(data.roomId).emit(USER_CONNECT, room.connectedUsers.size);
             })
             socket.on(NEW_MESSAGE, (data: { payload: Message, roomId: string }) => {
                 this.io.to(data.roomId).emit(NEW_MESSAGE, { payload: data.payload });
