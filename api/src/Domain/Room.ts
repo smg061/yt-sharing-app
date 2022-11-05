@@ -28,8 +28,8 @@ export class RoomsManager {
 
     private checkForEmptyRooms(): void {
         setInterval(()=> {
-            for (const [roomId, room] of this.rooms) {
-                if(room.length === 0) {
+            for (const [roomId, users] of this.getUsersByRoom()) {
+                if(users.length === 0) {
                    console.log(`${roomId} has no users! Target for deletion!!`)
                     this.rooms.delete(roomId);
                 } 
@@ -88,7 +88,7 @@ export class RoomsManager {
                 const room = this.rooms.get(roomId);
                 if(!room) return;
                 room.removeUser(socket.id);
-                
+                console.log(`${socket.id} has disconnected! Removing from room ${room.id}...`)
                 this.io.to(roomId).emit(USER_DISCONNECTED, room.connectedUsers.size);
                 this.userRoomsMap.delete(socket.id);
             });
@@ -162,7 +162,6 @@ export class RoomsManager {
     }
     public getUsersByRoom(): Map<string, Array<string>> {
         const usersByRoom: Map<string, Array<string>> = new Map();
-
         for (const [userId, roomId] of this.userRoomsMap) {
             if(!usersByRoom.get(roomId)) {
                 usersByRoom.set(roomId, [userId])
