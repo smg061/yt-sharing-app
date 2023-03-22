@@ -25,6 +25,10 @@ const Header = () => {
             Rooms <span className='text-xs'></span>
           </a>
         </div>
+        <div className="">
+
+          <a href="/draw" className='hover:bg-violet-400 rounded'> Draw Together</a>
+        </div>
       </div>
       <div className=''>
         <h1 className='text-xl'></h1>

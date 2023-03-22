@@ -6,6 +6,7 @@ import Room from "./routes/Room";
 import "./App.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Home from "./routes/Home";
+import Draw from "./routes/Draw";
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -14,11 +15,9 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <Header />
         <Routes>
-          <Route path='/rooms'>
-            <Route index element={<Room />} />
-          </Route>
-          <Route index element={<Home />} />
-          <Route path='*' element={<Home />} />
+          <Route path="/" element={<Home/>}/>
+          <Route path="/rooms" element={<Room/>}/>
+          <Route path="/draw" element={<Draw/>}/>
         </Routes>
       </QueryClientProvider>
     </>

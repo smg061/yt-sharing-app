@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
@@ -7,10 +7,11 @@ import YTSearchService  from "./Services/VideoSearchService";
 import { RoomsManager } from "./Domain/Room";
 import { CreateRoomRequest } from "./types";
 
+
 dotenv.config()
 
 const port = process.env.PORT || "3000";
-const app: Express = express();
+const app = express();
 const server = http.createServer(app);
 
 app.use(cors({
@@ -27,9 +28,10 @@ const io = new Server(server, {
 });
 
 const roomManager = new RoomsManager(io);
+
 roomManager.listenForEvents();
 
-app.get("/", (_: Request, res: Response) => {
+app.get("/", (_, res) => {
   res.send("Hello world from ts server!");
 });
 
@@ -38,7 +40,6 @@ app.get("/health", (_, res) => {
 });
 
 app.get("/clearQueue", (_, res) => {
-  // room.clearQueue();
   res.status(200).send("Queue cleared!");
 });
 
