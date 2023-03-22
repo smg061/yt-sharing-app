@@ -33,7 +33,7 @@ const Home = () => {
               <p>Create room</p>
               <div className=''>
                 <input
-                  className='w-full'
+                  className='w-full text-center text-sm h-6'
                   placeholder='room name'
                   defaultValue={roomName.current}
                   onChange={(e) => (roomName.current = e.target.value)}

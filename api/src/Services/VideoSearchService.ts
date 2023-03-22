@@ -1,21 +1,21 @@
 import { VideoInfo, VideoSearchResult } from "../types"
 import fetch from 'node-fetch'
-import { youtube as youtubeSearch } from 'scrape-youtube';
+import { youtube, youtube as youtubeSearch } from 'scrape-youtube';
 import { Video } from 'scrape-youtube/lib/interface'
 
 export type VideoSearchService = {
     searchVideos: (query: string) => Promise<VideoInfo[]>
-    searchVideoDetails: (videoId: string) => Promise<any>
+    searchVideoDetails: (videoId: string) => Promise<VideoInfo>
 }
 
-export class YTScrapeVideoSearchService   {
+export class YTScrapeVideoSearchService {
     constructor(private youtube: typeof youtubeSearch) { }
 
     public toString() {
         return 'YTScrapeVideoSearchService'
     }
-    toVideoResponse(videos?: Video[]): VideoInfo[] {
-        if(!videos) return [];
+    private toVideoResponse(videos?: Video[]): VideoInfo[] {
+        if (!videos) return [];
         return videos.map((video) => {
             return {
                 id: video.id,
@@ -31,13 +31,13 @@ export class YTScrapeVideoSearchService   {
         })
     }
 
-
     public async searchVideos(query: string) {
         const result = await this.youtube.search(query);
         return this.toVideoResponse(result.videos);
     }
 
     public async searchVideoDetails(video: string): Promise<VideoInfo> {
+        // not implemented
         return await Promise.resolve().then(() => {
 
             const res: VideoInfo = {
@@ -56,7 +56,7 @@ export class YTScrapeVideoSearchService   {
     }
 }
 
-export class YTAPIVideoSearchService  {
+export class YTAPIVideoSearchService {
 
     private baseSearchURL: string;
 
@@ -83,7 +83,7 @@ export class YTAPIVideoSearchService  {
         })
     }
     public async searchVideos(query: string): Promise<VideoInfo[]> {
-        const searchUrl =`${this.baseSearchURL}${query}`
+        const searchUrl = `${this.baseSearchURL}${query}`
         const result = await fetch(searchUrl)
         const data = await result.json() as { items: VideoSearchResult[], error: any }
         if (data.error) {
@@ -93,6 +93,7 @@ export class YTAPIVideoSearchService  {
 
     }
     public async searchVideoDetails(video: string): Promise<VideoInfo> {
+        // not implemented
         return await Promise.resolve().then(() => {
             const res: VideoInfo = {
                 id: "",
@@ -111,128 +112,37 @@ export class YTAPIVideoSearchService  {
 
 }
 
+export default new YTScrapeVideoSearchService(youtube) as VideoSearchService;
 
 const testData = [
     {
-        "id": {
+        id: {
             kind: "",
             videoId: "7lCDEYXw3mM"
         },
-        "snippet": {
-            "publishedAt": "2012-06-20T22:45:24.000Z",
-            "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
-            "title": "Google I/O 101: Q&A On Using Google APIs",
-            "description": "Antonio Fuentes speaks to us and takes questions on working with Google APIs and OAuth 2.0.",
-            "thumbnails": {
-                "default": {
+        snippet: {
+            publishedAt: "2012-06-20T22:45:24.000Z",
+            channelId: "UC_x5XG1OV2P6uZZ5FSM9Ttw",
+            title: "Google I/O 101: Q&A On Using Google APIs",
+            description: "Antonio Fuentes speaks to us and takes questions on working with Google APIs and OAuth 2.0.",
+            thumbnails: {
+                default: {
                     "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/default.jpg",
                     "width": 0,
                     height: 0,
                 },
-                "medium": {
+                medium: {
                     "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/mqdefault.jpg",
                     "width": 0,
                     height: 0,
                 },
-                "high": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/hqdefault.jpg",
-                    "width": 0,
+                high: {
+                    url: "https://i.ytimg.com/vi/7lCDEYXw3mM/hqdefault.jpg",
+                    width: 0,
                     height: 0,
                 }
             },
             channelTitle: "Test Title"
         }
     },
-    {
-        "id": {
-            kind: "",
-            videoId: "7lCDEYXw3mM"
-        },
-        "snippet": {
-            "publishedAt": "2012-06-20T22:45:24.000Z",
-            "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
-            "title": "Google I/O 101: Q&A On Using Google APIs",
-            "description": "Antonio Fuentes speaks to us and takes questions on working with Google APIs and OAuth 2.0.",
-            "thumbnails": {
-                "default": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/default.jpg",
-                    "width": 0,
-                    height: 0,
-
-                },
-                "medium": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/mqdefault.jpg",
-                    "width": 0,
-                    height: 0,
-                },
-                "high": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/hqdefault.jpg",
-                    "width": 0,
-                    height: 0,
-                }
-            },
-            channelTitle: "Test Title"
-        }
-    },
-    {
-        "id": {
-            kind: "",
-            videoId: "7lCDEYXw3mM"
-        },
-        "snippet": {
-            "publishedAt": "2012-06-20T22:45:24.000Z",
-            "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
-            "title": "Google I/O 101: Q&A On Using Google APIs",
-            "description": "Antonio Fuentes speaks to us and takes questions on working with Google APIs and OAuth 2.0.",
-            "thumbnails": {
-                "default": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/default.jpg",
-                    "width": 0,
-                    height: 0,
-
-                },
-                "medium": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/mqdefault.jpg",
-                    "width": 0,
-                    height: 0,
-                },
-                "high": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/hqdefault.jpg",
-                    "width": 0,
-                    height: 0,
-                }
-            },
-            channelTitle: "Test Title"
-        }
-    }, {
-        "id": {
-            kind: "",
-            videoId: "7lCDEYXw3mM"
-        },
-        "snippet": {
-            "publishedAt": "2012-06-20T22:45:24.000Z",
-            "channelId": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
-            "title": "Google I/O 101: Q&A On Using Google APIs",
-            "description": "Antonio Fuentes speaks to us and takes questions on working with Google APIs and OAuth 2.0.",
-            "thumbnails": {
-                "default": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/default.jpg",
-                    "width": 0,
-                    height: 0,
-
-                },
-                "medium": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/mqdefault.jpg",
-                    "width": 0,
-                    height: 0,
-                },
-                "high": {
-                    "url": "https://i.ytimg.com/vi/7lCDEYXw3mM/hqdefault.jpg",
-                    "width": 0,
-                    height: 0,
-                }
-            },
-            channelTitle: "Test Title"
-        }
-    }
 ]

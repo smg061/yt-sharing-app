@@ -19,7 +19,7 @@ export class RoomsManager {
         return this.rooms.size;
     }
 
-    private getId(): string{
+    private getId(): string {
         return `room-${this.maxId++}`;
     }
     public getRoomById(id: string): Room | undefined {
@@ -27,12 +27,12 @@ export class RoomsManager {
     }
 
     private checkForEmptyRooms(): void {
-        setInterval(()=> {
+        setInterval(() => {
             for (const [roomId, room] of this.rooms) {
-                if(room.length === 0) {
-                   console.log(`${roomId} has no users! Target for deletion!!`)
+                if (room.length === 0) {
+                    console.log(`${roomId} has no users! Target for deletion!!`)
                     this.rooms.delete(roomId);
-                } 
+                }
             }
         }, 60_000)
     }
@@ -63,7 +63,7 @@ export class RoomsManager {
             socket.on(VIDEO_QUEUED, (data: { payload: VideoInfo, roomId: string }) => {
                 const room = this.rooms.get(data.roomId);
                 if (!room) return;
-                const {roomId, payload} = data;
+                const { roomId, payload } = data;
                 if (room.videoQueue.currentVideo === null || room.videoQueue.currentVideo === undefined) {
                     this.io.to(roomId).emit(VIDEO_ENDED, (payload));
                     room.videoQueue.currentVideo = payload;
@@ -72,7 +72,7 @@ export class RoomsManager {
                 room.videoQueue.enqueue(data.payload);
                 this.io.to(roomId).emit(VIDEO_QUEUED, room.videoQueue.getItems());
             });
-            socket.on(VIDEO_ENDED, (roomId : string ) => {
+            socket.on(VIDEO_ENDED, (roomId: string) => {
                 const room = this.rooms.get(roomId)
                 if (!room) return;
                 const video = room.videoQueue.dequeue();
@@ -84,11 +84,11 @@ export class RoomsManager {
             this.handleSkipEvents(socket);
             socket.on("disconnect", () => {
                 const roomId = this.userRoomsMap.get(socket.id);
-                if(!roomId) return;
+                if (!roomId) return;
                 const room = this.rooms.get(roomId);
-                if(!room) return;
+                if (!room) return;
                 room.removeUser(socket.id);
-                
+
                 this.io.to(roomId).emit(USER_DISCONNECTED, room.connectedUsers.size);
                 this.userRoomsMap.delete(socket.id);
             });
@@ -96,10 +96,10 @@ export class RoomsManager {
 
     }
     private handleSkipEvents(socket: Socket): void {
-        socket.on(VOTE_TO_SKIP, (data: {userId: string, roomId: string}) => {
-            const {roomId, userId} = data;
+        socket.on(VOTE_TO_SKIP, (data: { userId: string, roomId: string }) => {
+            const { roomId, userId } = data;
             const room = this.rooms.get(roomId);
-            if(!room) return;
+            if (!room) return;
             // if there's no video or if the user already voted (is there a better way to track this?)
             // do not continue
             if (!room.videoQueue.currentVideo) {
@@ -136,7 +136,7 @@ export class RoomsManager {
         socket.on(SKIP_VIDEO, (roomId: string) => {
             // if(!socket.rooms.has(this.id)) return
             const room = this.rooms.get(roomId)
-            if(!room) return;
+            if (!room) return;
 
             const newVideo = room.videoQueue.dequeue();
             if (typeof newVideo !== 'undefined') {
@@ -154,17 +154,17 @@ export class RoomsManager {
     }
 
     public listRooms() {
-        const roomRepr = [];
+        const roomViews = [];
         for (let [id, room] of this.rooms) {
-            roomRepr.push({ id, name: room.name, numberOfUsers: room.length, currentlyPlaying: room.currentlyPlaying?.title ?? '' })
+            roomViews.push({ id, name: room.name, numberOfUsers: room.length, currentlyPlaying: room.currentlyPlaying?.title ?? '' })
         }
-        return roomRepr;
+        return roomViews;
     }
     public getUsersByRoom(): Map<string, Array<string>> {
         const usersByRoom: Map<string, Array<string>> = new Map();
 
         for (const [userId, roomId] of this.userRoomsMap) {
-            if(!usersByRoom.get(roomId)) {
+            if (!usersByRoom.get(roomId)) {
                 usersByRoom.set(roomId, [userId])
             } else {
                 usersByRoom.get(roomId)?.push(userId)
