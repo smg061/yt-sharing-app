@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Canvas from "../components/Canvas/Canvas";
+import { DrawHistory } from "../components/Canvas/History";
 import { Toolbar } from "../components/Canvas/ToolBar";
 import { getCanvasAndContext } from "../components/Canvas/utils";
 
 export default function DrawTogether() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const history =  useMemo(() => new DrawHistory(), []);
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -28,8 +31,8 @@ export default function DrawTogether() {
         </p>
         <div className="flex flex-col items-center justify-center h-screen">
 
-          <Canvas  canvasRef={canvasRef} width={canvasWidth} height={canvasHeight}/>
-          <Toolbar canvasRef={canvasRef} width={canvasWidth} height={canvasHeight}/>
+          <Canvas history={history}  canvasRef={canvasRef} width={canvasWidth} height={canvasHeight}/>
+          <Toolbar history={history} canvasRef={canvasRef} width={canvasWidth} height={canvasHeight}/>
         </div>
       </div>
     </>

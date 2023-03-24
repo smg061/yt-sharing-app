@@ -13,3 +13,11 @@ export function getCanvasAndContext(canvasRef: React.MutableRefObject<HTMLCanvas
     }
     return {canvas, ctx};
 }
+
+export function clearCanvas(canvasRef: React.MutableRefObject<HTMLCanvasElement | null>) {
+    const {canvas, ctx} = getCanvasAndContext(canvasRef);
+    if (!canvas || !ctx) 
+    return;
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}

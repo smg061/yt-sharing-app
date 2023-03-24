@@ -1,21 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { DrawHistory } from "./History";
 import { getCanvasAndContext } from "./utils";
 
 type props = {
     canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
+    history: DrawHistory;
     width: number;
     height: number;
-    
 }
+
 
 
 export default function Canvas(props: props) {
 
-    const {canvasRef, width, height} = props;
+    const {canvasRef, width, height, history} = props;
 
     const contextRef= useRef<CanvasRenderingContext2D | null>(null);  
 
     const [drawing, setDrawing] = useState(false);
+
     
     const starDraw = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
 
@@ -25,6 +28,8 @@ export default function Canvas(props: props) {
         const {offsetX: x, offsetY: y} = e.nativeEvent;
         ctx.beginPath();
         ctx.moveTo(x, y);
+        history.addPoint({x, y});
+
     }
     const stopDraw = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
         const canvas = canvasRef.current;
@@ -33,6 +38,7 @@ export default function Canvas(props: props) {
         if (!ctx) return;
         setDrawing(false);
         ctx.closePath();
+        history.addStroke();
     }
     const draw = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
         const {canvas, ctx} = getCanvasAndContext(canvasRef);
@@ -42,7 +48,10 @@ export default function Canvas(props: props) {
         const y = e.clientY - rect.top;
         ctx.lineTo(x, y);
         ctx.stroke();
+        history.addPoint({x, y});
     }
+
+
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;

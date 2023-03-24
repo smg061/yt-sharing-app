@@ -2,13 +2,16 @@
 
 import React, {useEffect, useRef} from 'react';
 import { FaSave, FaPaintBrush} from "react-icons/fa";
-import { getCanvasAndContext } from './utils';
+import { DrawHistory } from './History';
+import { clearCanvas, getCanvasAndContext } from './utils';
 
 type props = {
     canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
     width: number;
     height: number;
+    history: DrawHistory;
 }
+
 
 export function Toolbar(props: props) {
 
@@ -43,9 +46,30 @@ export function Toolbar(props: props) {
     const handleClearCanvas = () => {
         const {canvas, ctx} = getCanvasAndContext(canvasRef);
         if (!canvas || !ctx) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        clearCanvas(canvasRef);
     }
+    const replayHistory = () => {
+        const {canvas, ctx} = getCanvasAndContext(canvasRef);
+        if (!canvas || !ctx) return;
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const history = props.history;
+        const strokes = history.getStrokes();
+        for (let i = 0; i < strokes.length; i++) {
+            const stroke = strokes[i];
+            for (let j = 0; j < stroke.length; j++) {
+                const point = stroke[j];
+                if (j === 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            }
+            ctx.stroke();
+        }
 
+    }
     return (
         <div className="flex absolute top-24 left-0 rounded-lg bg-slate-500 h-[90%] flex-col items-center justify-center">
             <div className="flex flex-col items-center justify-center">
@@ -78,6 +102,8 @@ export function Toolbar(props: props) {
                 link.click();
             }}
             ><FaSave/></button>
+
+            <button onClick={replayHistory}>Replay History</button>
         </div>
 
 
