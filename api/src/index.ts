@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import YTSearchService  from "./Services/VideoSearchService";
 import { RoomsManager } from "./Domain/Room";
 import { CreateRoomRequest } from "./types";
+import { DrawingRoomsManager } from "./Domain/Drawing/Draw";
 
 
 dotenv.config()
@@ -28,6 +29,7 @@ const io = new Server(server, {
 });
 
 const roomManager = new RoomsManager(io);
+const drawingRoomsManager = new DrawingRoomsManager(io);
 
 roomManager.listenForEvents();
 
@@ -79,6 +81,15 @@ app.post('/createRoom', (req: CreateRoomRequest, res) => {
   res.status(200).json({
     roomId: room.id,
   })
+})
+
+app.post('/draw/createRoom', (req: CreateRoomRequest, res) => {
+  const { roomName } = req.body;
+  if (typeof roomName !== 'string') res.sendStatus(400);
+  // const room = drawingRoomsManager.addRoom(roomName);
+  // res.status(200).json({
+  //   roomId: room.id,
+  // })
 })
 server.listen(port, () => {
   console.log(`Listening on ${port}`);

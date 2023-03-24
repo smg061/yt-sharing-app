@@ -1,4 +1,4 @@
-import { Server, Socket } from "socket.io";
+import { Namespace, Server, Socket } from "socket.io";
 import { Room } from "../Room";
 
 export enum DrawEvents {
@@ -9,11 +9,20 @@ export enum DrawEvents {
 
 const { DRAW, CLEAR, UNDO } = DrawEvents;
 
+type DrawEvent = {
+    type : typeof DRAW | typeof CLEAR | typeof UNDO,
+    data: {
+        x: number,
+        y: number,
+        color: string,
+        size: number,
+    }
+}
 export class DrawHistory {
     // class to sync drawing between clients
-    private history: Array<any> = [];
+    private history: Array<DrawEvent> = [];
 
-    public add(data: any) {
+    public add(data: DrawEvent) {
         this.history.push(data);
     }
 
@@ -22,39 +31,59 @@ export class DrawHistory {
     }
 }
 
-export class Draw {
+export class DrawingRoom {
 
     // class to sync drawing between clients
     private drawHistory: DrawHistory = new DrawHistory();
-    private io: Server;
-    private roomId: string;
-    private userId: string;
-    private socket: Socket;
-    private room: Room;
-
-    constructor(io: Server, roomId: string, userId: string, socket: Socket, room: Room) {
-        this.io = io;
-        this.roomId = roomId;
-        this.userId = userId;
-        this.socket = socket;
-        this.room = room;
+    public name: string;
+    public id: string;
+    constructor(name: string, id: string) {
+        this.name = name;
+        this.id = id;
     }
-
-    public listenForEvents() {
-        this.socket.on(DRAW, (data: any) => {
-            this.drawHistory.add(data);
-            this.io.to(this.roomId).emit('draw', data);
-        });
-
-        this.socket.on(CLEAR, () => {
-            this.drawHistory = new DrawHistory();
-            this.io.to(this.roomId).emit('clear');
-        });
-
-        this.socket.on(UNDO, () => {
-            this.drawHistory.get().pop();
-            this.io.to(this.roomId).emit('undo');
-        });
-    }
+   
     
+
+    public addDrawEvent(data: DrawEvent) {
+        this.drawHistory.add(data);
+    }
+
+
+}
+
+export class DrawingRoomsManager {
+    private rooms: Map<string, DrawingRoom> = new Map();
+    private io: Namespace;
+    private maxId: number = 0;
+
+    constructor(io: Server) { 
+        this.io = io.of('/draw');
+    }
+    private getId() {
+        return `room-${this.maxId++}`;
+    }
+    public listenForEvents() {
+            this.io.on(DRAW, (data: {roomId: string, payload: DrawEvent}) => {
+                const { roomId, payload } = data;
+                const room = this.getRoom(roomId);
+                if (!room) return;
+                room.addDrawEvent(payload);
+                this.io.to(room.id).emit('draw', data);
+            });
+
+    }
+
+    public addRoom(name:string) {
+        const id = this.getId();
+        const drawingRoom = new DrawingRoom(name,id);
+        this.rooms.set(id, drawingRoom);
+    }
+
+    public removeRoom(roomId: string) {
+        this.rooms.delete(roomId);
+    }
+
+    public getRoom(roomId: string) {
+        return this.rooms.get(roomId);
+    }
 }

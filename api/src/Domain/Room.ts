@@ -39,7 +39,6 @@ export class RoomsManager {
     public listenForEvents(): void {
         this.io.on(CONNECT, (socket: Socket) => {
             socket.on(JOIN_ROOM, ({ roomId }: { userId: string, roomId: string }) => {
-                console.log(`${socket.id} joined ${roomId}`)
                 socket.join(roomId);
                 this.userRoomsMap.set(socket.id, roomId)
             })
