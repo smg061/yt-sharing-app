@@ -1,7 +1,7 @@
 // this toolbar is used to change the canvas size, brush color, brush size, and brush type
 
 import React, {useEffect, useRef} from 'react';
-import { FaSave, FaPaintBrush} from "react-icons/fa";
+import { FaSave, FaPaintBrush, FaEraser} from "react-icons/fa";
 import { DrawHistory } from './History';
 import { clearCanvas, getCanvasAndContext } from './utils';
 
@@ -47,6 +47,11 @@ export function Toolbar(props: props) {
         const {canvas, ctx} = getCanvasAndContext(canvasRef);
         if (!canvas || !ctx) return;
         clearCanvas(canvasRef);
+    }
+    const handleErase = () => {
+        const {canvas, ctx} = getCanvasAndContext(canvasRef);
+        if (!canvas || !ctx) return;
+        ctx.strokeStyle = "white";
     }
     const replayHistory = () => {
         const {canvas, ctx} = getCanvasAndContext(canvasRef);
@@ -104,6 +109,7 @@ export function Toolbar(props: props) {
             ><FaSave/></button>
 
             <button onClick={replayHistory}>Replay History</button>
+            <button onClick={handleErase}><FaEraser/></button>
         </div>
 
 
