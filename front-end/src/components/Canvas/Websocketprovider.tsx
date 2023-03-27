@@ -4,7 +4,7 @@ import {createContext, useContext} from "react";
 type State = {
     socket: WebSocket | null;
 }
-const connection = new WebSocket(process.env.VITE_WS_API_URL || "ws://localhost:3000/ws");
+const connection = new WebSocket(import.meta.env.VITE_WS_API_URL || "ws://localhost:3001/ws");
 
 const initialState: State = {
     socket: connection
