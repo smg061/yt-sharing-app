@@ -37,6 +37,8 @@ export default function Canvas(props: props) {
 
   function createLine({ ctx, previousPoint, currentPoint }: Draw) {
     const socket = getClient();
+    if (!socket|| ! isSocketConnected()) return;
+
     socket?.send(
       JSON.stringify({
         type: "stroke",
@@ -49,7 +51,7 @@ export default function Canvas(props: props) {
   }
   useEffect(() => {
     const socket = getClient();
-    if (!socket) return;
+    if (!socket || !isSocketConnected()) return;
     socket.send(
       JSON.stringify({
         type: "join",
@@ -58,7 +60,7 @@ export default function Canvas(props: props) {
         room_id: "default",
       })
     );
-  }, [getClient()]);
+  }, [isSocketConnected()]);
   useEffect(() => {
     const socket = getClient();
     if (!socket) return;
@@ -91,7 +93,7 @@ export default function Canvas(props: props) {
 
   useEffect(() => {
     return onStateChange(setIsConnected)
-    }, [isSocketConnected]);
+    }, [isSocketConnected()]);
   return (
     <div id='drawingBoard' className='w-[900px]  h-[700px]'>
       <canvas  onTouchStart={onMouseDown} onTouchEnd={onMouseUp} onMouseDown={onMouseDown} onMouseUp={onMouseUp} className='canvas z-50 rounded-lg bg-white shadow-lg' ref={canvasRef} width={width} height={height} />
