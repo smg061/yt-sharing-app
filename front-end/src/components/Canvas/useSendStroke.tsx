@@ -27,11 +27,21 @@ export default function useSendStroke(ctx: React.MutableRefObject<CanvasRenderin
       const message: Message = JSON.parse(e.data);
       if (message.type === "stroke") {
         const stroke: Stroke = JSON.parse(message.body);
-
         setCurrentStroke(stroke);
       }
     };
     socket.addEventListener("message", onMessage);
+    
+    socket.onclose = () => {
+        setTimeout(() => {
+            socket.send(
+                JSON.stringify({
+                    type: "reconnect",
+                    body: JSON.stringify({}),
+                })
+            );
+        }, 1000);
+    };
     return () => {
       socket.removeEventListener("message", onMessage);
     };
