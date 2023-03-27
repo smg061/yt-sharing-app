@@ -10,11 +10,11 @@ export function useDraw(onDraw: ({ ctx, previousPoint, currentPoint }: Draw) => 
 
   const history = useMemo(() => new DrawHistory(), []);
 
-  const onMouseDown = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const onMouseDown = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>) => {
     setDrawing(true);
   };
 
-  const onMouseUp = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const onMouseUp = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent> | React.TouchEvent<HTMLCanvasElement>) => {
     setDrawing(false);
     history.addStroke();
     prevPoint.current = null;
