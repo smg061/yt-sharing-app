@@ -32,6 +32,8 @@ export default function Canvas(props: props) {
   const { width, height } = props;
   const { getClient, isConnected: isSocketConnected, onStateChange } = useSocket();
   const { canvasRef, onMouseDown, onMouseUp, history } = useDraw(createLine);
+  const [connectedUsers, setConnectedUsers] = useState<string[]>([]);
+
 
   function createLine({ ctx, previousPoint, currentPoint }: Draw) {
     const socket = getClient();
@@ -48,13 +50,35 @@ export default function Canvas(props: props) {
   useEffect(() => {
     const socket = getClient();
     if (!socket) return;
+    socket.send(
+      JSON.stringify({
+        type: "join",
+        body: "",
+        userId:"non-chan",
+        room_id: "default",
+      })
+    );
+  }, [getClient()]);
+  useEffect(() => {
+    const socket = getClient();
+    if (!socket) return;
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
     const onMessage = (e: MessageEvent) => {
       const message: Message = JSON.parse(e.data);
-      if (message.type === "stroke") {
-        const stroke: Stroke = JSON.parse(message.body);
-        drawLine({ ctx, previousPoint: stroke.previousPoint, currentPoint: stroke.currentPoint });
+      switch (message.type) {
+        case "stroke":
+          const stroke: Stroke = JSON.parse(message.body);
+          drawLine({ ctx, previousPoint: stroke.previousPoint, currentPoint: stroke.currentPoint });
+          break;
+        case "clear":
+          ctx.clearRect(0, 0, width, height);
+          break;
+        case "join":
+          setConnectedUsers((prev) => [...prev, message.user]);
+          break;
+        default:
+          break;
       }
     };
     socket.addEventListener("message", onMessage);
@@ -72,6 +96,7 @@ export default function Canvas(props: props) {
     <div id='drawingBoard' className='w-[900px]  h-[700px]'>
       <canvas  onTouchStart={onMouseDown} onTouchEnd={onMouseUp} onMouseDown={onMouseDown} onMouseUp={onMouseUp} className='canvas z-50 rounded-lg bg-white shadow-lg' ref={canvasRef} width={width} height={height} />
       {isConnected ? <div className='text-green-500'>Connected</div> : <div className='text-red-500'>Disconnected</div>}
+      <div className='text-gray-500'>{connectedUsers.length} Connected Users: {connectedUsers.join(", ")}</div>
       <Toolbar history={history} canvasRef={canvasRef} width={width} height={height} />
     </div>
   );
