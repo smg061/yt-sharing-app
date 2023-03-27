@@ -1,21 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useMessages } from "../../lib/ws";
 import { DrawHistory } from "./History";
 import { Toolbar } from "./ToolBar";
 import { useDraw } from "./useDraw";
 import { useSocket } from "./Websocketprovider";
-
 type props = {
   width: number;
   height: number;
 };
 
 type Message = {
-    type: string;
-    body: string;
-    user: string;
-    room_id: string;
-  };
-  
+  type: string;
+  body: string;
+  user: string;
+  room_id: string;
+};
 
 function drawLine({ ctx, previousPoint, currentPoint }: Draw) {
   const { x: currX, y: currY } = currentPoint;
@@ -31,7 +30,7 @@ function drawLine({ ctx, previousPoint, currentPoint }: Draw) {
 
 export default function Canvas(props: props) {
   const { width, height } = props;
-  const { socket } = useSocket();
+  const { socket, isConnected: connected, onStateChange } = useSocket();
   const { canvasRef, onMouseDown, onMouseUp, history } = useDraw(createLine);
 
   function createLine({ ctx, previousPoint, currentPoint }: Draw) {
@@ -50,22 +49,27 @@ export default function Canvas(props: props) {
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
     const onMessage = (e: MessageEvent) => {
-        const message: Message = JSON.parse(e.data);
-        if (message.type === "stroke") {
-            const stroke: Stroke = JSON.parse(message.body);
-            drawLine({ ctx, previousPoint: stroke.previousPoint, currentPoint: stroke.currentPoint });
-        }
+      const message: Message = JSON.parse(e.data);
+      if (message.type === "stroke") {
+        const stroke: Stroke = JSON.parse(message.body);
+        drawLine({ ctx, previousPoint: stroke.previousPoint, currentPoint: stroke.currentPoint });
+      }
     };
     socket.addEventListener("message", onMessage);
     return () => {
-        socket.removeEventListener("message", onMessage);
-        }
+      socket.removeEventListener("message", onMessage);
+    };
+  }, [socket, canvasRef.current]);
 
-}, [socket, canvasRef.current]);
+  const [isConnected, setIsConnected] = useState(connected);
 
+  useEffect(() => {
+    return onStateChange(setIsConnected)
+    }, [connected]);
   return (
     <div id='drawingBoard' className='w-[900px]  h-[700px]'>
       <canvas onMouseDown={onMouseDown} onMouseUp={onMouseUp} className='canvas rounded-lg bg-white shadow-lg' ref={canvasRef} width={width} height={height} />
+      {isConnected ? <div className='text-green-500'>Connected</div> : <div className='text-red-500'>Disconnected</div>}
       <Toolbar history={history} canvasRef={canvasRef} width={width} height={height} />
     </div>
   );
