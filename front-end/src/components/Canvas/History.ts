@@ -11,8 +11,10 @@ export type Point = {
     color?: string;
     size?: number;
 }
+export type Stroke = Array<Point>;
 export class DrawHistory {
 
+    
     private history: Array<Array<Point>> = [];
     private current: Array<Point> = [];
 
@@ -26,8 +28,10 @@ export class DrawHistory {
     }
 
     addStroke() {
+        const temp = [...this.current];
         this.history.push(this.current);
         this.current = [];
+        return temp;
     }
 
     getHistory() {

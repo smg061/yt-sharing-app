@@ -3,6 +3,7 @@ import Canvas from "../components/Canvas/Canvas";
 import { DrawHistory } from "../components/Canvas/History";
 import { Toolbar } from "../components/Canvas/ToolBar";
 import { getCanvasAndContext } from "../components/Canvas/utils";
+import SocketProvider from "../components/Canvas/Websocketprovider";
 
 export default function DrawTogether() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -16,6 +17,7 @@ export default function DrawTogether() {
     if (!ctx) return;
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(0.5, 0.5);
 
   }, [canvasRef]);
 
@@ -23,7 +25,7 @@ export default function DrawTogether() {
   const [canvasHeight, setCanvasHeight] = useState<number>(700);
 
   return (
-    <>
+    <SocketProvider>
       <div className="flex flex-col items-center justify-center h-screen">
         <h1 className="text-4xl font-bold text-center">Draw Together</h1>
         <p className="text-xl font-bold text-center">
@@ -35,6 +37,6 @@ export default function DrawTogether() {
           <Toolbar history={history} canvasRef={canvasRef} width={canvasWidth} height={canvasHeight}/>
         </div>
       </div>
-    </>
+    </SocketProvider>
   );
 }
