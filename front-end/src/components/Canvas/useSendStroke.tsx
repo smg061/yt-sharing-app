@@ -18,10 +18,11 @@ const onMessage = (e: MessageEvent) => {
 };
 
 export default function useSendStroke(ctx: React.MutableRefObject<CanvasRenderingContext2D | null>) {
-  const { socket } = useSocket();
+  const { getClient } = useSocket();
   const [currentStroke, setCurrentStroke] = useState<Stroke | null>(null);
 
   useEffect(() => {
+    const socket = getClient();
     if (!socket) return;
     const onMessage = (e: MessageEvent) => {
       const message: Message = JSON.parse(e.data);
@@ -31,7 +32,7 @@ export default function useSendStroke(ctx: React.MutableRefObject<CanvasRenderin
       }
     };
     socket.addEventListener("message", onMessage);
-    
+
     socket.onclose = () => {
         setTimeout(() => {
             socket.send(
@@ -45,7 +46,7 @@ export default function useSendStroke(ctx: React.MutableRefObject<CanvasRenderin
     return () => {
       socket.removeEventListener("message", onMessage);
     };
-  }, [socket]);
+  }, [getClient()]);
 
   useEffect(() => {
     if (!currentStroke) return;
@@ -66,6 +67,7 @@ export default function useSendStroke(ctx: React.MutableRefObject<CanvasRenderin
   }, [currentStroke]);
 
   return (stroke: Stroke) => {
+    const socket = getClient();
     if (socket) {
       socket.send(
         JSON.stringify({

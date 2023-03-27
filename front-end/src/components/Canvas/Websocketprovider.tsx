@@ -3,8 +3,8 @@ import {  client } from "../../lib/ws";
 
 
 type State = {
-    socket: WebSocket | null;
-    isConnected: boolean;
+    getClient: ()=>  WebSocket | null;
+    isConnected: ()=> boolean;
     onStateChange: (cb: React.Dispatch<React.SetStateAction<any>>) => void;
 }
 
@@ -47,8 +47,8 @@ type State = {
 
 
 const initialState: State = {
-    socket: client.getClient(),
-    isConnected: client.isConnected(),
+    getClient: client.getClient,
+    isConnected: client.isConnected,
     onStateChange: client.onStateChange,
 }
 

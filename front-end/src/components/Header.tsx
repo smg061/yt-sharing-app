@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import useVoting from "../hooks/useVoteToSkip";
 
 const Header = () => {
@@ -16,18 +17,18 @@ const Header = () => {
           </div>
         </div>
         <div className='mx-2 flex items-center h-full rounded '>
-          <a className=' hover:bg-violet-400 rounded' href='/'>
+          <Link className=' hover:bg-violet-400 rounded' to='/'>
             Home
-          </a>
+          </Link>
         </div>
         <div className='mx-2 flex items-center h-full rounded '>
-          <a className='hover:bg-violet-400 rounded' href=''>
+          <Link className='hover:bg-violet-400 rounded' to=''>
             Rooms <span className='text-xs'></span>
-          </a>
+          </Link>
         </div>
         <div className="">
 
-          <a href="/draw" className='hover:bg-violet-400 rounded'> Draw Together</a>
+          <Link to="/draw" className='hover:bg-violet-400 rounded'> Draw Together</Link>
         </div>
       </div>
       <div className=''>

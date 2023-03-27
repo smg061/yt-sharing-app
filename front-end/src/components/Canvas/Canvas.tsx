@@ -30,10 +30,11 @@ function drawLine({ ctx, previousPoint, currentPoint }: Draw) {
 
 export default function Canvas(props: props) {
   const { width, height } = props;
-  const { socket, isConnected: connected, onStateChange } = useSocket();
+  const { getClient, isConnected: isSocketConnected, onStateChange } = useSocket();
   const { canvasRef, onMouseDown, onMouseUp, history } = useDraw(createLine);
 
   function createLine({ ctx, previousPoint, currentPoint }: Draw) {
+    const socket = getClient();
     socket?.send(
       JSON.stringify({
         type: "stroke",
@@ -45,6 +46,7 @@ export default function Canvas(props: props) {
     drawLine({ ctx, previousPoint, currentPoint });
   }
   useEffect(() => {
+    const socket = getClient();
     if (!socket) return;
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
@@ -59,13 +61,13 @@ export default function Canvas(props: props) {
     return () => {
       socket.removeEventListener("message", onMessage);
     };
-  }, [socket, canvasRef.current]);
+  }, [getClient(), canvasRef.current]);
 
-  const [isConnected, setIsConnected] = useState(connected);
+  const [isConnected, setIsConnected] = useState(isSocketConnected());
 
   useEffect(() => {
     return onStateChange(setIsConnected)
-    }, [connected]);
+    }, [isSocketConnected]);
   return (
     <div id='drawingBoard' className='w-[900px]  h-[700px]'>
       <canvas onTouchStart={onMouseDown} onTouchEnd={onMouseUp} onMouseDown={onMouseDown} onMouseUp={onMouseUp} className='canvas rounded-lg bg-white shadow-lg' ref={canvasRef} width={width} height={height} />
