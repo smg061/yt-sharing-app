@@ -70,7 +70,7 @@ export default function Canvas(props: props) {
     }, [isSocketConnected]);
   return (
     <div id='drawingBoard' className='w-[900px]  h-[700px]'>
-      <canvas onTouchStart={onMouseDown} onTouchEnd={onMouseUp} onMouseDown={onMouseDown} onMouseUp={onMouseUp} className='canvas rounded-lg bg-white shadow-lg' ref={canvasRef} width={width} height={height} />
+      <canvas  onTouchStart={onMouseDown} onTouchEnd={onMouseUp} onMouseDown={onMouseDown} onMouseUp={onMouseUp} className='canvas z-50 rounded-lg bg-white shadow-lg' ref={canvasRef} width={width} height={height} />
       {isConnected ? <div className='text-green-500'>Connected</div> : <div className='text-red-500'>Disconnected</div>}
       <Toolbar history={history} canvasRef={canvasRef} width={width} height={height} />
     </div>
