@@ -27,27 +27,33 @@ export default function useSendStroke(ctx: React.MutableRefObject<CanvasRenderin
       const message: Message = JSON.parse(e.data);
       if (message.type === "stroke") {
         const stroke: Stroke = JSON.parse(message.body);
+
         setCurrentStroke(stroke);
       }
     };
     socket.addEventListener("message", onMessage);
     return () => {
       socket.removeEventListener("message", onMessage);
-    }
+    };
   }, [socket]);
-  
+
   useEffect(() => {
     if (!currentStroke) return;
-    
+
     if (!ctx.current) return;
+
+    if (!currentStroke[0].x || !currentStroke[0].y) return;
+
     ctx.current.beginPath();
+
     ctx.current.moveTo(currentStroke[0].x, currentStroke[0].y);
     currentStroke.forEach((point) => {
+      const { x, y } = point;
+      if (!x || !y) return;
       ctx.current?.lineTo(point.x, point.y);
     });
     ctx.current.stroke();
   }, [currentStroke]);
-
 
   return (stroke: Stroke) => {
     if (socket) {
