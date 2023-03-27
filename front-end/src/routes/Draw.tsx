@@ -6,20 +6,6 @@ import { getCanvasAndContext } from "../components/Canvas/utils";
 import SocketProvider from "../components/Canvas/Websocketprovider";
 
 export default function DrawTogether() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const history =  useMemo(() => new DrawHistory(), []);
-
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(0.5, 0.5);
-
-  }, [canvasRef]);
 
   const [canvasWidth, setCanvasWidth] = useState<number>(1000);
   const [canvasHeight, setCanvasHeight] = useState<number>(700);
@@ -33,8 +19,7 @@ export default function DrawTogether() {
         </p>
         <div className="flex flex-col items-center justify-center h-screen">
 
-          <Canvas history={history}  canvasRef={canvasRef} width={canvasWidth} height={canvasHeight}/>
-          <Toolbar history={history} canvasRef={canvasRef} width={canvasWidth} height={canvasHeight}/>
+          <Canvas   width={canvasWidth} height={canvasHeight}/>
         </div>
       </div>
     </SocketProvider>

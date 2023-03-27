@@ -1,104 +1,72 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DrawHistory } from "./History";
-import useSendStroke from "./useSendStroke";
-import { getCanvasAndContext } from "./utils";
+import { Toolbar } from "./ToolBar";
+import { useDraw } from "./useDraw";
+import { useSocket } from "./Websocketprovider";
 
 type props = {
-    canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
-    history: DrawHistory;
-    width: number;
-    height: number;
+  width: number;
+  height: number;
+};
+
+type Message = {
+    type: string;
+    body: string;
+    user: string;
+    room_id: string;
+  };
+  
+
+function drawLine({ ctx, previousPoint, currentPoint }: Draw) {
+  const { x: currX, y: currY } = currentPoint;
+  let startPoint = previousPoint ?? currentPoint;
+  ctx.beginPath();
+  ctx.moveTo(startPoint.x, startPoint.y);
+  ctx.lineTo(currX, currY);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(startPoint.x, startPoint.y, ctx.lineWidth / 2, 0, Math.PI * 2);
+  ctx.fill();
 }
 
-
-
 export default function Canvas(props: props) {
+  const { width, height } = props;
+  const { socket } = useSocket();
+  const { canvasRef, onMouseDown, onMouseUp, history } = useDraw(createLine);
 
-    const {canvasRef, width, height, history} = props;
-
-    const contextRef= useRef<CanvasRenderingContext2D | null>(null);  
-
-    const sendStroke = useSendStroke(contextRef);
-
-    // const tempCanvas = useMemo(() => {
-    //     const canvas = document.createElement("canvas");
-    //     canvas.width = width;
-    //     canvas.height = height;
-    //     return canvas;
-    // }, [width, height]);
-
-    // const tempCtx = useMemo(() => {
-    //     const ctx = tempCanvas.getContext("2d");
-    //     if (!ctx) return;
-    //     ctx.lineWidth = 5;
-    //     ctx.lineCap = "round";
-    //     ctx.strokeStyle = "black";
-    //     return ctx;
-    // }, [tempCanvas]);
-
-
-
-
-    const [drawing, setDrawing] = useState(false);
-    
-    
-    const starDraw = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-
-        const {canvas, ctx} = getCanvasAndContext(canvasRef);
-        if (!canvas || !ctx) return;
-        ctx.translate(0.5, 0.5);
-
-        setDrawing(true);
-        const {offsetX: x, offsetY: y} = e.nativeEvent;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        history.addPoint({x, y});
-
-    }
-    const stopDraw = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-        setDrawing(false);
-        ctx.closePath();
-        const stroke = history.addStroke();
-        sendStroke(stroke);
-    }
-    const draw = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-        const {canvas, ctx} = getCanvasAndContext(canvasRef);
-        if (!canvas || !ctx|| !drawing) return;
-        const {offsetX: x, offsetY: y} = e.nativeEvent;
-
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        history.addPoint({x, y});
-    }
-
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-        contextRef.current = ctx;
-        contextRef.current.lineCap = "round";
-    }, [canvasRef]);
-
-
-
-    
-    return (
-        <div id="drawingBoard"  className="w-[900px]  h-[700px]">
-            <canvas
-            className="canvas rounded-lg bg-white shadow-lg"
-            
-            onMouseDown={starDraw}
-            onMouseUp={stopDraw}
-            onMouseMove={draw}
-            ref={canvasRef} width={width} height={height}
-            />
-  
-        </div>
+  function createLine({ ctx, previousPoint, currentPoint }: Draw) {
+    socket?.send(
+      JSON.stringify({
+        type: "stroke",
+        user: "non-chan",
+        room_id: "default",
+        body: JSON.stringify({ currentPoint, previousPoint }),
+      })
     );
+    drawLine({ ctx, previousPoint, currentPoint });
+  }
+  useEffect(() => {
+    if (!socket) return;
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+    const onMessage = (e: MessageEvent) => {
+        const message: Message = JSON.parse(e.data);
+        if (message.type === "stroke") {
+            const stroke: Stroke = JSON.parse(message.body);
+            drawLine({ ctx, previousPoint: stroke.previousPoint, currentPoint: stroke.currentPoint });
+        }
+    };
+    socket.addEventListener("message", onMessage);
+    return () => {
+        socket.removeEventListener("message", onMessage);
+        }
+
+}, [socket, canvasRef.current]);
+
+  return (
+    <div id='drawingBoard' className='w-[900px]  h-[700px]'>
+      <canvas onMouseDown={onMouseDown} onMouseUp={onMouseUp} className='canvas rounded-lg bg-white shadow-lg' ref={canvasRef} width={width} height={height} />
+      <Toolbar history={history} canvasRef={canvasRef} width={width} height={height} />
+    </div>
+  );
 }

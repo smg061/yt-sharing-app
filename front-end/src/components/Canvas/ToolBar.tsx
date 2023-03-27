@@ -29,6 +29,7 @@ export function Toolbar(props: props) {
         const {canvas, ctx} = getCanvasAndContext(canvasRef);
         if (!canvas || !ctx) return;
         ctx.strokeStyle = e.target.value;
+        ctx.fillStyle = e.target.value;
     }
 
     const handleBrushSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +53,7 @@ export function Toolbar(props: props) {
         const {canvas, ctx} = getCanvasAndContext(canvasRef);
         if (!canvas || !ctx) return;
         ctx.strokeStyle = "white";
+        ctx.fillStyle = "white";
     }
     const replayHistory = () => {
         const {canvas, ctx} = getCanvasAndContext(canvasRef);
