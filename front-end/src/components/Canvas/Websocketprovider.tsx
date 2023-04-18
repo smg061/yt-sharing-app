@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect} from "react";
-import {  client } from "../../lib/ws";
+import { client } from "../../lib/ws";
 
 
 type State = {
@@ -26,8 +26,8 @@ export default function SocketProvider ({children}: {children?: React.ReactNode}
 }
 
 export function useSocket() {
-
-    return useContext(SocketContext);
-
+    const ctx = useContext(SocketContext);
+    if (!ctx) throw new Error("useSocket must be used within a SocketProvider");
+    return ctx;
 }
 

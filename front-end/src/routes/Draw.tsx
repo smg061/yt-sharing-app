@@ -4,6 +4,7 @@ import { DrawHistory } from "../components/Canvas/History";
 import { Toolbar } from "../components/Canvas/ToolBar";
 import { getCanvasAndContext } from "../components/Canvas/utils";
 import SocketProvider from "../components/Canvas/Websocketprovider";
+import ToolbarProvider from "../components/Canvas/ToolbarContext";
 
 export default function DrawTogether() {
 
@@ -12,16 +13,19 @@ export default function DrawTogether() {
 
   return (
     <SocketProvider>
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-4xl font-bold text-center">Draw Together</h1>
-        <p className="text-xl font-bold text-center">
-          Draw together with your friends
-        </p>
+      <ToolbarProvider>
         <div className="flex flex-col items-center justify-center h-screen">
+          <h1 className="text-4xl font-bold text-center">Draw Together</h1>
+          <p className="text-xl font-bold text-center">
+            Draw together with your friends
+          </p>
+          <div className="flex flex-col items-center justify-center h-screen">
 
-          <Canvas   width={canvasWidth} height={canvasHeight}/>
+            <Canvas   width={canvasWidth} height={canvasHeight}/>
+          </div>
         </div>
-      </div>
+
+      </ToolbarProvider>
     </SocketProvider>
   );
 }

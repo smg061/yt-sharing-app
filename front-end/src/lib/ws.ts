@@ -70,6 +70,7 @@ export function reconnectingSocket(url: string) {
     start();
 
     return {
+        start,
         on,
         off,
         onStateChange,
