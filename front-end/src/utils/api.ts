@@ -1,3 +1,5 @@
+import { supabase } from "../lib/supabase";
+
 const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 type Thumbnail = {
@@ -18,6 +20,8 @@ type Api = {
     queueVideo: (videoId: string) => Promise<any>,
     createRoom: (roomName: string) => Promise<{ roomId: string }>,
     listRooms: () => Promise<{ id: string, name: string, numberOfUsers: number, currentlyPlaying: string }[]>
+    setSession: (session: any | null) => Promise<any>,
+    proompt: (prompt: string) => Promise<{response:string}>,
 }
 
 
@@ -47,6 +51,31 @@ const api: Api = {
         const response = await fetch(`${baseUrl}/listRooms`)
         return await response.json();
     },
+
+    setSession: async (session) => {
+        const response = await fetch(`${baseUrl}/set-session`, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }, method: "POST", body: JSON.stringify({ session: session })
+        });
+        return await response.json();
+    },
+    proompt: async (prompt) => {
+        const {data: {session}} = await supabase.auth.getSession();
+        if (!session) {
+            throw new Error('Error: session not found')
+        }
+        console.log(session)
+        const response = await fetch(`${baseUrl}/proompt`, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session?.access_token}`
+            }, method: "POST", body: JSON.stringify({ query: prompt })
+        });
+        return await response.json();
+    }
 
 }
 

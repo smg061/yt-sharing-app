@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useVoting from "../hooks/useVoteToSkip";
+import { useAuth } from "../auth/AuthContext";
 
 const Header = () => {
+
+  const {logout} = useAuth();
   const { showMessage, currentVotes, timer } = useVoting();
   const [uwu, setUwu] = useState<boolean>(true);
   return (
@@ -27,12 +30,21 @@ const Header = () => {
           </Link>
         </div>
         <div className="">
-
           <Link to="/draw" className='hover:bg-violet-400 rounded'> Draw Together</Link>
+        </div>
+        <div>
+          <Link to="/write" className='hover:bg-violet-400 rounded'> Write Together</Link>
         </div>
       </div>
       <div className=''>
-        <h1 className='text-xl'></h1>
+        <div className='flex items-center justify-center'>
+          <Link to="/login" className='hover:bg-violet-400 rounded'> Login</Link>
+      </div>
+      </div>
+      <div className='flex items-center justify-end'>
+        <div className='flex items-center justify-center'>
+          <button onClick={logout}>Logout</button>
+        </div>
       </div>
       <div>
         {showMessage && <div>One user has voted to skip the current video. Total votes: {currentVotes}</div>}

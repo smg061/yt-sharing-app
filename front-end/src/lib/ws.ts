@@ -67,7 +67,7 @@ export function reconnectingSocket(url: string) {
         }
     }
 
-    start();
+  //  start();
 
     return {
         start,
