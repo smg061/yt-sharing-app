@@ -20,9 +20,5 @@
   "homepage": "https://github.com/smg061/yt-sharing-app#readme",
   "devDependencies": {
     "concurrently": "^7.4.0"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.21.0",
-    "openai": "^3.2.1"
   }
 }
