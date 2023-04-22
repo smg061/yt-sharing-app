@@ -18,6 +18,13 @@ const initialState: State = {
 export const SocketContext = createContext<State>(initialState);
 
 export default function SocketProvider ({children}: {children?: React.ReactNode}) {
+    useEffect(() => {
+        client.start();
+        return () => {
+            client.close();
+        }
+    }, []);
+
     return (
         <SocketContext.Provider value={initialState}>
             {children}
