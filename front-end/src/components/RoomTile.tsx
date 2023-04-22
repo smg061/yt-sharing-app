@@ -27,6 +27,9 @@ const RoomTile = ({ name, id, currentlyPlaying, numberOfUsers }: props) => {
       <div className=''>
         <Link
           to={`/rooms?roomId=${id}`}
+          state={{
+            roomId: id,
+          }}
           type='button'
           className=' bg-violet-400 hover:bg-violet-500 text-white font-bold py-2 px-4 rounded'
         >

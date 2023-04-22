@@ -16,7 +16,9 @@ const Home = () => {
 
   const createRoom = async (roomName: string) => {
     const res = await api.createRoom(roomName);
-    navigate(`/rooms?roomId=${res.roomId}`);
+    navigate(`/rooms?roomId=${res.roomId}`, {
+      state: { roomId: res.roomId },
+    });
   };
   if (isLoading) {
     return <></>;

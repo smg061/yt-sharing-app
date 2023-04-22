@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import api from "../utils/api";
+
+
+
 export function Write() {
   const { user } = useAuth();
   const [text, setText] = useState<string>("");
- const [proomptText, setProomptText] = useState<string[]>([]);
+  const [proomptText, setProomptText] = useState<string[]>([]);
+
   const handleSubmit = async () => {
     if (!text.trim().length) return;
     const res = await api.proompt(text);
-    if(!res) return;
+    if (!res) return;
     console.log(res);
     setProomptText([...proomptText, res.response]);
   };
@@ -35,15 +39,16 @@ export function Write() {
           >
             Submit
           </button>
-     
-        {proomptText.map((text) => {
-            return <div>
+
+          {proomptText.map((text) => {
+            return (
+              <div>
                 <p className="text-xl text-white font-bold text-center">
-                    {text}
+                  {text}
                 </p>
-            </div>;
-          })
-          }
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

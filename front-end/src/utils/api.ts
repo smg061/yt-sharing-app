@@ -21,7 +21,7 @@ type Api = {
     createRoom: (roomName: string) => Promise<{ roomId: string }>,
     listRooms: () => Promise<{ id: string, name: string, numberOfUsers: number, currentlyPlaying: string }[]>
     setSession: (session: any | null) => Promise<any>,
-    proompt: (prompt: string) => Promise<{response:string}>,
+    proompt: (prompt: string) => Promise<{ response: string }>,
 }
 
 
@@ -62,12 +62,12 @@ const api: Api = {
         return await response.json();
     },
     proompt: async (prompt) => {
-        const {data: {session}} = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
             throw new Error('Error: session not found')
         }
         console.log(session)
-        const response = await fetch(`${baseUrl}/proompt`, {
+        const response = await fetch(`${baseUrl}/prompt`, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',

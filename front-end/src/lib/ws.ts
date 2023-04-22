@@ -66,9 +66,6 @@ export function reconnectingSocket(url: string) {
             setTimeout(start, 3000);
         }
     }
-
-  //  start();
-
     return {
         start,
         on,
