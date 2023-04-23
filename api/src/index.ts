@@ -1,4 +1,3 @@
-
 import { loadConfig } from "./config/loadconfig";
 loadConfig();
 import express from "express";
@@ -15,23 +14,21 @@ const port = process.env.PORT || "3000";
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors({
-  origin: process.env.CLIENT_URI || "*",
-})
+app.use(
+  cors({
+    origin: process.env.CLIENT_URI || "*",
+  })
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/prompt', authMiddleWare, promptRouter);
-
+app.use("/prompt", authMiddleWare, promptRouter);
 
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URI || "*",
   },
 });
-
-
 
 const roomManager = new RoomsManager(io);
 
@@ -49,24 +46,23 @@ app.get("/clearQueue", (_, res) => {
   res.status(200).send("Queue cleared!");
 });
 
-
 app.get("/videoSearch", async (req, res) => {
   const searchTerm = req.query?.video;
-  if (typeof searchTerm !== 'string') {
-    res.status(400).send("Bad request")
+  if (typeof searchTerm !== "string") {
+    res.status(400).send("Bad request");
     return;
   }
-  const results = await YTSearchService.searchVideos(searchTerm)
-  res.status(200).json(results)
-})
+  const results = await YTSearchService.searchVideos(searchTerm);
+  res.status(200).json(results);
+});
 
-app.get('/listRooms', (_, res) => {
-  res.status(200).json(roomManager.listRooms())
-})
+app.get("/listRooms", (_, res) => {
+  res.status(200).json(roomManager.listRooms());
+});
 
-app.get('/listUsers', (req, res) => {
+app.get("/listUsers", (req, res) => {
   const roomId = req.query.roomId;
-  if (typeof roomId !== 'string') {
+  if (typeof roomId !== "string") {
     res.sendStatus(400);
     return;
   }
@@ -77,22 +73,21 @@ app.get('/listUsers', (req, res) => {
   } else {
     res.sendStatus(404);
   }
-})
+});
 
-app.post('/createRoom', (req: CreateRoomRequest, res) => {
+app.post("/createRoom", (req: CreateRoomRequest, res) => {
   const { roomName } = req.body;
-  if (typeof roomName !== 'string') res.sendStatus(400);
+  if (typeof roomName !== "string") res.sendStatus(400);
   const room = roomManager.addRoom(roomName);
   res.status(200).json({
     roomId: room.id,
-  })
-})
+  });
+});
 
-app.post('/draw/createRoom', (req: CreateRoomRequest, res) => {
+app.post("/draw/createRoom", (req: CreateRoomRequest, res) => {
   const { roomName } = req.body;
-  if (typeof roomName !== 'string') res.sendStatus(400);
-})
-
+  if (typeof roomName !== "string") res.sendStatus(400);
+});
 
 server.listen(port, async () => {
   console.log(`Listening on ${port}`);

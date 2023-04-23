@@ -145,7 +145,6 @@ router.post('/', async (req, res) => {
 
     const [{ embedding }] = embeddingResponse.data.data
 
-    // In production we should handle possible errors
 
     const { data: documents, error } = await supabase
         .rpc('match_documents', {
@@ -178,16 +177,13 @@ router.post('/', async (req, res) => {
     }
     const prompt = `${`
   "`}
-        You are a writing assistant that helps people stories. The genre is Japanese visual novel. You suggestions should align with the genre.
-        You are to assist in writing compelling stories and characters. There is a database of previous conversations 
-        that may be used to help you. If the context section is empty, you are to preface your response with "No previous context was found". 
+        You are a writing assistant that helps people stories. The genre is visual novel, mainly Japanese. You suggestions should align with the genre, but suggesting elements from different genres is not out of the question.
+        You are to assist in writing compelling stories and characters. You are free to be adversarial against the user if the suggestions they give are not very good. There is a database of previous conversations 
+        that may be used to help you. If the context section is empty, you will preface your response with "No previous context was found". 
 
       Context sections:
       ${contextText}
   
-      Question: """
-      ${query}
-      """
     `
     previousPrompts.push({ role: "user", content: prompt }, { role: "user", content: query })
 
