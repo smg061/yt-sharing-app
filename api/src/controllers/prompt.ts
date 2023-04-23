@@ -1,11 +1,41 @@
 import express from 'express';
 import supabase from '../supabase/client';
-import { authMiddleWare } from '../middleware/auth';
 import openai from '../openai';
-import { ChatCompletionRequestMessage } from 'openai';
+import { ChatCompletionRequestMessage, CreateChatCompletionResponse } from 'openai';
 import GPT3Tokenizer from 'gpt3-tokenizer';
 
 const router = express.Router();
+
+async function* chunksToLines(chunksAsync: any) {
+    let previous = "";
+    for await (const chunk of chunksAsync) {
+        const bufferChunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+        previous += bufferChunk;
+        let eolIndex;
+        while ((eolIndex = previous.indexOf("\n")) >= 0) {
+            // line includes the EOL
+            const line = previous.slice(0, eolIndex + 1).trimEnd();
+            if (line === "data: [DONE]") break;
+            if (line.startsWith("data: ")) yield line;
+            previous = previous.slice(eolIndex + 1);
+        }
+    }
+}
+
+async function* linesToMessages(linesAsync: any) {
+    for await (const line of linesAsync) {
+        const message = line.substring("data :".length);
+
+        yield message;
+    }
+}
+
+async function* streamCompletion(data: any) {
+    yield* linesToMessages(chunksToLines(data));
+}
+
+
+
 
 async function getDocuments() {
     return [
@@ -75,30 +105,34 @@ interface ProomptRequest extends Request {
 
 const previousPrompts: ChatCompletionRequestMessage[] = [];
 
+
 router.post('/prompt-stream', async (req, res) => {
     console.log('prompt-stream')
-    const { query } = await req.body as ProomptRequest;
-    const prompt = query.replace(/\n/g, ' ');
-    console.log(prompt)
-    res.set({
-      'Cache-Control': 'no-cache',
-      'Content-Type': 'text/event-stream',
-      'Connection': 'keep-alive'
-    });
-    res.flushHeaders();
-    res.write('retry: 10000\n\n');
+    res.setHeader('Content-Type', 'text/event-stream');
+    try {
+        const completionResponse = await openai.createCompletion({
+            model: "text-davinci-002",
+            prompt: "It was the best of times",
+            max_tokens: 100,
+            temperature: 0,
+            stream: true,
+        }, { responseType: 'stream' });
 
+        for await (const chunk of streamCompletion(completionResponse.data)) {
+            const parsed = JSON.parse(chunk);
+            console.log(parsed);
+            console.log(parsed.choices?.[0]?.delta)
 
-    const data = `data: ${prompt}
-
-    `;
-    res.write(data);
+            res.write(`${parsed.choices?.[0]?.text}\n\n`);
+        }
+    } catch (error) {
+        console.log(error)
+    }
     res.end();
 })
 router.post('/', async (req, res) => {
     // Search query is passed in request payload
     const { query } = await req.body as ProomptRequest;
-
 
     // OpenAI recommends replacing newlines with spaces for best results
     const input = query.replace(/\n/g, ' ')
@@ -163,22 +197,33 @@ router.post('/', async (req, res) => {
         model: "gpt-3.5-turbo",
         messages: previousPrompts,
         temperature: 0.4, // Set to 0 for deterministic results
+        stream: true,
+    }, {
+        responseType: 'stream'
     })
 
-    const response = completionResponse.data?.choices[0]?.message?.content;
-    if(!response) {
-        return res.status(500).json({
-            error: "No response was generated"
-        })
+    for await (const chunk of streamCompletion(completionResponse.data)) {
+        const parsed = JSON.parse(chunk);
+        const text = parsed.choices?.[0]?.delta?.content
+        if(!text) continue;
+        res.write(`${parsed.choices?.[0]?.delta?.content}`);
     }
+    res.end();
 
-    previousPrompts.push({ role: "assistant", content: response })
+    // const response = completionResponse.data?.choices[0]?.message?.content;
+    // if (!response) {
+    //     return res.status(300).json({
+    //         error: "No response was generated"
+    //     })
+    // }
 
-    console.log(previousPrompts);
-    
-    return res.status(200).json({
-        response
-    })
+    // previousPrompts.push({ role: "assistant", content: response })
+
+    // console.log(previousPrompts);
+
+    // res.status(200).json({
+    //     response
+    // })
 })
 
 

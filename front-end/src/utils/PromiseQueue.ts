@@ -9,6 +9,7 @@ export class PromiseQueue {
     constructor(private queue: QueuedPromise[] = []) { }
 
     enqueue(promise: () => Promise<any>) {
+
         return new Promise<any>((resolve, reject) => {
             this.queue.push({
                 resolve,
@@ -45,6 +46,10 @@ export class PromiseQueue {
             item.reject(error);
             this.dequeue();
         }
+    }
+
+    get length() {
+        return this.queue.length;
     }
 
 }
