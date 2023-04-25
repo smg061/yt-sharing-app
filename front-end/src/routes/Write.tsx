@@ -5,7 +5,7 @@ import { Textarea } from "../components/Textarea";
 import { ScrollArea } from "../components/scrollarea/scroll-area";
 import { PromiseQueue, delayFunc } from "../utils/PromiseQueue";
 import { X, Bot, User } from "lucide-react";
-import { Avatar, AvatarImage } from "@/components/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 
 type ChatMessage = {
   role: "user" | "bot";
@@ -15,11 +15,12 @@ type ChatMessage = {
 function ChatIcon({ role }: { role: "user" | "bot" }) {
   return (
     <span className={`${role === "bot" ? "" : ""} pt-1`}>
-      <Avatar className="">
+      <Avatar className="" >
         <AvatarImage 
-   
+          src={role === "bot" ? "/images/bot.jpg" : "/images/user.jpg"}
         />
-      
+        <AvatarFallback>{role}</AvatarFallback>
+
       </Avatar>
     </span>
   );
