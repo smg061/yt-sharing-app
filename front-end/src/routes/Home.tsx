@@ -25,9 +25,9 @@ const Home = () => {
   }
   return (
     <>
-      <section id='rooms-screen' className='flex h-[93vh] justify-center'>
+      <section id='rooms-screen' className='dark flex h-[93vh] justify-center'>
         {rooms && (
-          <div className='flex flex-wrap flex-row w-1/2 mb-4 my-12 items-center gap-3 justify-between'>
+          <div className=' flex flex-wrap flex-row w-1/2 mb-4 my-12 items-center gap-3 justify-between'>
             {rooms.map((room) => (
               <RoomTile key={room.id + room.name} {...room} />
             ))}
