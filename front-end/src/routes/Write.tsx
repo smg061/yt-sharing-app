@@ -5,7 +5,7 @@ import { Textarea } from "../components/Textarea";
 import { ScrollArea } from "../components/scrollarea/scroll-area";
 import { PromiseQueue, delayFunc } from "../utils/PromiseQueue";
 import { X, Bot, User } from "lucide-react";
-import { useChatScroll } from "../hooks/useChatScroll";
+import { Avatar, AvatarImage } from "@/components/avatar";
 
 type ChatMessage = {
   role: "user" | "bot";
@@ -15,13 +15,12 @@ type ChatMessage = {
 function ChatIcon({ role }: { role: "user" | "bot" }) {
   return (
     <span className={`${role === "bot" ? "" : ""} pt-1`}>
-      <i className="">
-        {role === "bot" ? (
-          <Bot className="h-6 w-6 bg-slate-500 rounded-[3px]" />
-        ) : (
-          <User className="h-6 w-6" />
-        )}
-      </i>
+      <Avatar className="">
+        <AvatarImage 
+   
+        />
+      
+      </Avatar>
     </span>
   );
 }
@@ -41,23 +40,7 @@ function Chatmessage(props: { currentMessage: ChatMessage }) {
   );
 }
 
-function ChatMessageCurrent(props: {
-  currentMessage: ChatMessage;
-  currentTextRef: React.RefObject<HTMLParagraphElement>;
-}) {
-  return (
-    <div className="" ref={props.currentTextRef}>
-      <div
-        className={`flex text-lg rounded-[8px] p-6 gap-x-1 text-white text-center ${
-          props.currentMessage.role === "bot" ? "bg-slate-600" : ""
-        }`}
-      >
-        <ChatIcon role={props.currentMessage.role} />
-        {`${props.currentMessage.text}`}
-      </div>
-    </div>
-  );
-}
+
 export function Write() {
   const { user, loading } = useAuth();
   const [text, setText] = useState<string>("");
@@ -68,21 +51,19 @@ export function Write() {
   });
   const currentTextRef = useRef<HTMLParagraphElement>(null);
   const queue = useMemo(() => new PromiseQueue(), []);
-
   const mockPromptText = async (
     input: string,
     cb: (val: string) => void,
     onEnd?: () => void
   ) => {
-    for (let i = 0; i < 1000; i++) {
-      queue.enqueue(delayFunc(cb, "aaaaaa\n", i * 2));
+    for (let i = 0; i <  200; i++) {
+      queue.enqueue(delayFunc(cb, "aaaaaa\n", i * 3 + (i+100)));
     }
   };
 
-  const chatRef = useChatScroll(currentMessage.text);
-
   const handleSubmit = async () => {
     if (!text.trim().length) return;
+    setText("");
     const scrollRef = currentTextRef.current;
     setProomptHistory((prev) => [
       ...prev,
@@ -94,19 +75,16 @@ export function Write() {
       text: "",
     });
     if (scrollRef) {
-      scrollRef.scrollIntoView({ behavior: "smooth" });
-      scrollRef.classList.add("text-cursor");
+      currentTextRef.current?.scrollIntoView({ behavior: "smooth" });
     }
     await api.proompt(text, (res) => {
       setCurrentMessage((prev) => ({
         role: "bot",
         text: prev.text + res,
       }));
-      scrollRef?.scrollIntoView({ behavior: "smooth" });
-      scrollRef?.classList.add("text-cursor");
+      currentTextRef.current?.scrollIntoView({ behavior: "smooth" });
     });
   };
-
   useEffect(() => {
     // the first time we load the page, we want to get some text to get started
     // but if we are loading, the promises will be queued up twice and we will get
@@ -114,14 +92,12 @@ export function Write() {
     if (loading) return;
     mockPromptText(text, (res) => {
       if (currentTextRef.current) {
-        currentTextRef.current.scrollIntoView({ behavior: "smooth" });
-        currentTextRef.current.classList.add("text-cursor");
+        currentTextRef.current.scrollIntoView({ behavior: "auto" });
       }
       setCurrentMessage((prev) => ({
         role: "bot",
         text: prev.text + res,
       }));
-      currentTextRef.current?.scrollIntoView({ behavior: "smooth" });
     });
   }, [loading]);
 
@@ -137,7 +113,7 @@ export function Write() {
       <h1 className="text-4xl font-bold text-center">Writing assistant</h1>
       <p className="text-xl font-bold text-center">Write with the help of AI</p>
       <div className="grid items-center justify-center w-screen max-w-screen">
-        <ScrollArea className="border border-solid  w-[40vw] h-[400px]    rounded-[5px] p-4">
+        <ScrollArea className="border  w-screen p-8  md:w-[40vw] h-[700px]  rounded-[5px]">
           {proomptHistory.map(({ role, text }) => {
             if (!text.trim().length) return null;
             return (
@@ -148,18 +124,24 @@ export function Write() {
             );
           })}
           {currentMessage.text && (
-            <ChatMessageCurrent
+            <Chatmessage
               currentMessage={currentMessage}
-              currentTextRef={currentTextRef}
-            ></ChatMessageCurrent>
+            ></Chatmessage>
           )}
+          <div className="h-10" ref={currentTextRef}></div>
         </ScrollArea>
         <div className="">
           <div className="flex flex-col items-center justify-center ">
             <Textarea
-              className=" resize-none border border-white border-solid  rounded-[2px] h-12"
+              className=" resize-none border    rounded-[2px] h-12"
               value={text}
               onChange={(e) => setText(e.target.value)}
+              placeholder="Write here"
+              onKeyDown={async (e) => {
+                if (e.key === "Enter") {
+                  await handleSubmit();
+                }
+              }}
             />
             <button
               onClick={async () => {
