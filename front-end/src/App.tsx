@@ -9,7 +9,7 @@ import Home from "./routes/Home";
 import Draw from "./routes/Draw";
 import { Write } from "./routes/Write";
 import { AuthProvider } from "./auth/AuthContext";
-import LoginPage from "./routes/Login";
+import LoginPage from "@routes/Login";
 const queryClient = new QueryClient();
 
 const App = () => {

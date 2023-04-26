@@ -39,7 +39,7 @@ const api: Api = {
     },
     createRoom: async (roomName) => {
         if (!roomName.trim().length) {
-            throw new Error('Error: tried making a room with an empty name');
+            return Promise.reject('Room name cannot be empty');
         }
         const response = await fetch(`${baseUrl}/createroom`, {
             headers: {

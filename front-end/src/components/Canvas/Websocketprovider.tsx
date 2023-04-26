@@ -1,5 +1,6 @@
 import {createContext, useContext, useEffect} from "react";
-import { client } from "../../lib/ws";
+import {  reconnectingSocket } from "../../lib/ws";
+const URL = import.meta.env.VITE_WS_API_URL || "ws://localhost:3001/ws"
 
 
 type State = {
@@ -8,6 +9,7 @@ type State = {
     onStateChange: (cb: React.Dispatch<React.SetStateAction<any>>) => void;
 }
 
+const client = reconnectingSocket(URL)
 
 const initialState: State = {
     getClient: client.getClient,
@@ -18,12 +20,6 @@ const initialState: State = {
 export const SocketContext = createContext<State>(initialState);
 
 export default function SocketProvider ({children}: {children?: React.ReactNode}) {
-    useEffect(() => {
-        client.start();
-        return () => {
-            client.close();
-        }
-    }, []);
 
     return (
         <SocketContext.Provider value={initialState}>

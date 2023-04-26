@@ -15,6 +15,9 @@ const Home = () => {
   const roomName = useRef<string>("");
 
   const createRoom = async (roomName: string) => {
+    if (!roomName) {
+      return;
+    }
     const res = await api.createRoom(roomName);
     navigate(`/rooms?roomId=${res.roomId}`, {
       state: { roomId: res.roomId },

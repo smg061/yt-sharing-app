@@ -65,7 +65,9 @@ export function reconnectingSocket(url: string) {
 
             setTimeout(start, 3000);
         }
+        
     }
+    start();
     return {
         start,
         on,
@@ -78,9 +80,8 @@ export function reconnectingSocket(url: string) {
 }
 
 
-export const client = reconnectingSocket(URL);
 
-export function useMessages<T>() {
+export function useMessages<T>(client: ReturnType<typeof reconnectingSocket>) {
     const [messages, setMessages] = useState<any[]>([]);
 
     useEffect(() => {
