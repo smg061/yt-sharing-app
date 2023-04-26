@@ -11,17 +11,14 @@ export default function LoginPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log("submit");
     const res = await login(
       emailRef.current?.value || "",
       passwordRef.current?.value || ""
     );
     if(!res.data.session || !res.data.session.user) {
-        console.log("error");
         return;
     }
     navigate("/write");
-    console.log(res);
   }
 
   return (

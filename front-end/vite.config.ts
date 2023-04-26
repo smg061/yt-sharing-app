@@ -4,7 +4,6 @@ import path from 'path'
 
 /** @type {import('vite').UserConfig} */
 export default ({ mode }) => {
-  console.log(process.cwd())
   return defineConfig({
     envDir: process.cwd(),
     plugins: [react()],

@@ -104,7 +104,6 @@ export const useEmitSocketEvents = () => {
     socket.emit(VIDEO_QUEUED, { payload: payload, roomId: roomId });
   };
   const onVideoEnd = () => {
-    console.log(roomId)
     socket.emit(VIDEO_ENDED, roomId);
   };
 

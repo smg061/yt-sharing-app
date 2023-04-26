@@ -6,7 +6,6 @@ const Room = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-  console.log(location.state);
   if(!location.state?.roomId) {
     return <Navigate to="/" />
   }
