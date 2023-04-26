@@ -21,6 +21,5 @@ jobs:
       - uses: supabase/setup-cli@v1
 
       - run: |
-          echo $PRODUCTION_PROJECT_ID
           supabase link --project-ref $PRODUCTION_PROJECT_ID
           supabase db push
