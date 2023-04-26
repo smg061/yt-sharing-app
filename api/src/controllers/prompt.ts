@@ -197,13 +197,11 @@ router.post('/', async (req, res) => {
         for await (const chunk of streamCompletion(completionResponse.data)) {
             const parsed = JSON.parse(chunk);
             const text = parsed.choices?.[0]?.delta?.content
-            console.log(text);
             if (!text) continue;
             res.write(`${parsed.choices?.[0]?.delta?.content}`);
         }
         res.end();
     } catch (error) {
-        console.log(error)
         res.send('error generating response')
         res.end()
     }
