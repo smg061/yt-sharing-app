@@ -249,7 +249,15 @@ function MouseCursor({
     };
   }, [canvasRef.current]);
 
-  // if(positionInCanvas.x < 0 || positionInCanvas.y < 0) return null;
+  const brushSize = useToolbarCtx().state.brushSize;
+  console.log(brushSize);
+  console.log(`w-[${brushSize}px] h-[${brushSize}px] text-gray-500`);
+  const showCursor =
+    canvasRect &&
+    positionInCanvas.x > 0 &&
+    positionInCanvas.y > 0 &&
+    positionInCanvas.x < canvasRect?.width &&
+    positionInCanvas.y < canvasRect?.height;
   return (
     <div
       className="absolute flex cursor-none cursor-follow pointer-events-none "
@@ -257,13 +265,13 @@ function MouseCursor({
       style={{
         left: x,
         top: y,
-        transform: "translate(-50%, -45%)",
+        transform: "translate(-50%, -50%)",
       }}
     >
-      {positionInCanvas.x > 0 && positionInCanvas.y > 0 ? (
+      {showCursor ? (
         <>
           <svg
-            className="w-24 h-24 text-gray-500"
+            className={`w-[${brushSize}px] h-24 text-gray-500`}
             viewBox="0 0 20 20"
             fill="currentColor"
             opacity={0.4}
