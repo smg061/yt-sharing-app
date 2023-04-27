@@ -255,7 +255,7 @@ function MouseCursor({
       style={{
         left: x,
         top: y,
-        transform: "translate(-50%, 45%)",
+        transform: "translate(-50%, -45%)",
       }}
     >
       <svg
