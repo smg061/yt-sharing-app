@@ -57,7 +57,7 @@ const Header = () => {
   const [uwu, setUwu] = useState<boolean>(true);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   return (
-    <div className="rounded-lg flex flex-row flex-wrap md:flex-nowrap w-screen bg-slate-600 h-max md:h-16 items-center">
+    <div className="rounded-lg flex flex-row flex-wrap md:flex-nowrap w-full bg-slate-600 h-max md:h-16 items-center">
       <div className=" gap-4 items-center justify-start rows-span-1 rounded ">
         <Link to="/" className="w-42  flex justify-center  px-2 hover:bg-violet-400   transition-colors duration-500 ease-in-out rounded-md ">
           <div

@@ -40,7 +40,7 @@ export default function LoginPage() {
     : "Pwease wogin to continue";
   console.log(comesFrom);
   return (
-    <div className="flex w-screen py-24 items-center justify-center  ">
+    <div className="flex w-full  py-24 items-center justify-center  ">
       <form onSubmit={handleSubmit}>
         <Card>
           <Card className={cn("w-[380px] bg-muted")}>

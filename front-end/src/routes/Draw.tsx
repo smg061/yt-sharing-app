@@ -10,7 +10,7 @@ export default function DrawTogether() {
   return (
     <SocketProvider>
       <ToolbarProvider>
-        <div className="flex flex-col items-center justify-center h-full overflow-hidden scroll-">
+        <div className="flex flex-col items-center justify-center h-full">
           <h1 className="text-4xl font-bold text-center">Draw Together</h1>
           <p className="text-xl font-bold text-center">
             Draw together with your friends

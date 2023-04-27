@@ -113,7 +113,7 @@ export function Write() {
     <div>
       <h1 className="text-4xl font-bold text-center">Writing assistant</h1>
       <p className="text-xl font-bold text-center">Write with the help of AI</p>
-      <div className="grid items-center justify-center w-screen max-w-screen">
+      <div className="grid items-center justify-center  max-w-screen">
         <ScrollArea className="border  w-screen p-8  md:w-[40vw] h-[700px]  rounded-[5px]">
           {proomptHistory.map(({ role, text }) => {
             if (!text.trim().length) return null;
