@@ -248,6 +248,8 @@ function MouseCursor({
       window.removeEventListener("mousemove", onMouseMove);
     };
   }, [canvasRef.current]);
+
+  // if(positionInCanvas.x < 0 || positionInCanvas.y < 0) return null;
   return (
     <div
       className="absolute flex cursor-none cursor-follow pointer-events-none "
@@ -258,17 +260,21 @@ function MouseCursor({
         transform: "translate(-50%, -45%)",
       }}
     >
-      <svg
-        className=" w-24 h-24 text-gray-500"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        opacity={0.4}
-      >
-        <circle cx="10" cy="10" r="10" />
-      </svg>
-      <div className="absolute top-0  left-full text-xs text-gray-500 bg-slate-200 rounded-lg">
-        {positionInCanvas.x}, {positionInCanvas.y}
-      </div>
+      {positionInCanvas.x > 0 && positionInCanvas.y > 0 ? (
+        <>
+          <svg
+            className="w-24 h-24 text-gray-500"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            opacity={0.4}
+          >
+            <circle cx="10" cy="10" r="10" />
+          </svg>
+          <div className="absolute top-0  left-full text-xs text-gray-500 bg-slate-200 rounded-lg">
+            {positionInCanvas.x}, {positionInCanvas.y}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }
