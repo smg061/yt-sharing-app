@@ -69,7 +69,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const logoutandRedirect = async () => {
     await logout();
-    navigate("/");
+    // we want a hard refresh here to clear the cache
+    window.location.href = "/";
   }
   return (
     <AuthContext.Provider value={{ loading, user, login, logout: logoutandRedirect }}>

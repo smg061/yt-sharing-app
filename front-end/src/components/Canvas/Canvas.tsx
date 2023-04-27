@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { useMessages } from "@/lib/ws";
 import { DrawHistory } from "./History";
 import { Toolbar } from "./ToolBar";
@@ -6,7 +6,6 @@ import { useDraw } from "./useDraw";
 import { useSocket } from "./Websocketprovider";
 import { useToolbarCtx } from "./ToolbarContext";
 import useMousePosition from "@hooks/useMousePosition";
-import { MousePointerDot } from "./MousePointerDot";
 type props = {
   width: number;
   height: number;
@@ -101,7 +100,6 @@ export default function Canvas(props: props) {
   const { state } = useToolbarCtx();
   const [isConnected, setIsConnected] = useState(isSocketConnected());
 
-
   function createLine({ ctx, previousPoint, currentPoint }: Draw) {
     const socket = getClient();
     if (!socket || !isSocketConnected()) return;
@@ -179,7 +177,6 @@ export default function Canvas(props: props) {
     return onStateChange(setIsConnected);
   }, [isSocketConnected()]);
 
-
   return (
     <div id="drawingBoard" className="w-[900px]  h-[700px]">
       <canvas
@@ -207,44 +204,71 @@ export default function Canvas(props: props) {
         width={width}
         height={height}
       />
-      <MouseCursor
-        canvasRef={canvasRef}
-      />
+      <MouseCursor canvasRef={canvasRef} />
     </div>
   );
 }
 
-function MouseCursor({canvasRef}: {
+function MouseCursor({
+  canvasRef,
+}: {
   canvasRef: React.RefObject<HTMLCanvasElement>;
 }) {
-  const [{ x, y }, handleCursorMovement] = useMousePosition();
+  const mouseCoords = useRef({ x: 0, y: 0 });
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const [canvasRect, setCanvasRect] = useState<DOMRect>();
+  const [positionInCanvas, setPositionInCanvas] = useState({ x: 0, y: 0 });
+  const { x, y } = mouseCoords.current;
+
   useEffect(() => {
-    if (!canvasRef.current) return;
-    canvasRef.current.addEventListener("mousemove", handleCursorMovement);
-    return () => {
-      canvasRef.current?.removeEventListener("mousemove", handleCursorMovement);
-    };
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    setCanvasRect(rect);
   }, [canvasRef.current]);
 
-
+  useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      mouseCoords.current = {
+        x: clientX,
+        y: clientY,
+      };
+      const el = cursorRef.current;
+      if (!el) return;
+      el.style.left = `${clientX}px`;
+      el.style.top = `${clientY}px`;
+      if (!canvasRect) return;
+      const x = clientX - canvasRect.x;
+      const y = clientY - canvasRect.y;
+      setPositionInCanvas({ x, y });
+    };
+    window.addEventListener("mousemove", onMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+    };
+  }, [canvasRef.current]);
   return (
     <div
-      className="absolute z-50 rounded-lg opacity-40 "
+      className="absolute flex cursor-none cursor-follow pointer-events-none "
+      ref={cursorRef}
       style={{
         left: x,
         top: y,
-        translate: "transform(-50%, -150%) scale(2)",
+        transform: "translate(-50%, 45%)",
       }}
     >
-      <div>{x}</div>
-      <div>{y}</div>
       <svg
-        className="w-4 h-4 text-gray-500"
+        className=" w-24 h-24 text-gray-500"
         viewBox="0 0 20 20"
         fill="currentColor"
+        opacity={0.4}
       >
         <circle cx="10" cy="10" r="10" />
       </svg>
+      <div className="absolute top-0  left-full text-xs text-gray-500 bg-slate-200 rounded-lg">
+        {positionInCanvas.x}, {positionInCanvas.y}
+      </div>
     </div>
   );
 }

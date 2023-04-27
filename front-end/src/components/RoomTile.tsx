@@ -26,7 +26,7 @@ const RoomTile = ({ name, id, currentlyPlaying, numberOfUsers }: props) => {
       </div>
       <div className=''>
         <Link
-          to={`/rooms?roomId=${id}`}
+          to={`/room/${id}?roomId=${id}`}
           state={{
             roomId: id,
           }}
