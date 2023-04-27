@@ -3,15 +3,17 @@ import { useState } from "react";
 const UwuWelcome = () => (
   <div
     className="w-full h-full flex items-center justify-center  terminal-background"
-    style={{
-      // backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='10' fill='%237368D6'/%3E%3C/svg%3E\")",
-      // backgroundSize: "40px 40px",
-    }}
+    style={
+      {
+        // backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='10' fill='%237368D6'/%3E%3C/svg%3E\")",
+        // backgroundSize: "40px 40px",
+      }
+    }
   >
     {/* <div className="bg-gradient-to-r from-violet-900 via-purple-800 to-indigo-700 min-h-screen text-white p-8 terminal-background">  */}
-    <div className="">
+    <div className="max-w-full">
       <div className="container mx-auto max-w-4xl py-8 px-6 bg-purple-900 bg-opacity-70 rounded-xl shadow-lg text-lg terminal-background  bg-gradient-to-r from-violet-900 via-purple-800 to-indigo-700">
-        <PixelArtText className="mb-4">
+        <PixelArtText className="mb-4 flex bg-purple-500 items-center h-12  flex-wrap">
           Hewwo, and wewcome to uwu-owo.io! 💻✨
         </PixelArtText>
         <p className="mb-4">
@@ -153,7 +155,9 @@ export const PixelArtText: React.FC<PixelArtTextProps> = ({
   children,
 }) => {
   return (
-    <p className={twMerge("pixel-art-text css-typing", className)}>{children}</p>
+    <p className={twMerge("pixel-art-text md:animate-type css-typing", className)}>
+      {children}
+    </p>
   );
 };
 

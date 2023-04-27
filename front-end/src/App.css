@@ -128,6 +128,7 @@
   padding: 1rem;
   color: #ffffff;
   font-family: "Press Start 2P", cursive;
+  
 }
 
 .purple-gradient {
@@ -136,14 +137,14 @@
 }
 
 .css-typing {
-  border-right: 0.15em solid orange;
-  white-space: nowrap;
-  overflow: hidden;
+
 }
 .css-typing {
+    border-right: 0.15em solid orange;
+  white-space: nowrap;
+  overflow: hidden;
   width: 100%;
   -webkit-animation: type 1s steps(40, end);
-  animation: type 2s steps(40, end);
   -webkit-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
