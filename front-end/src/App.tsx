@@ -10,23 +10,26 @@ import Draw from "./routes/Draw";
 import { Write } from "./routes/Write";
 import { AuthProvider } from "./auth/AuthContext";
 import LoginPage from "@routes/Login";
+import { RequireAuth } from "./auth/RequireAuth";
 const queryClient = new QueryClient();
 
 const App = () => {
   return (
     <>
-    <AuthProvider>
+      <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <Header />
           <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="/rooms" element={<Room/>}/>
-            <Route path="/draw" element={<Draw/>}/>
-            <Route path="/write" element={<Write/>}/>
-            <Route path="login" element={<LoginPage/>}/>
+            <Route path="/" element={<Home />} />
+            <Route path="/rooms" element={<Room />} />
+            <Route path="/draw" element={<Draw />} />
+            <Route element={<RequireAuth />}>
+              <Route path="/write" element={<Write />} />
+            </Route>
+            <Route path="login" element={<LoginPage />} />
           </Routes>
         </QueryClientProvider>
-    </AuthProvider>
+      </AuthProvider>
     </>
   );
 };
