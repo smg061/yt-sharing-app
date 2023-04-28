@@ -19,7 +19,13 @@
   },
   "homepage": "https://github.com/smg061/yt-sharing-app#readme",
   "devDependencies": {
+    "@types/three": "^0.151.0",
     "concurrently": "^7.4.0",
     "supabase": "^1.50.11"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.66.1",
+    "@react-three/fiber": "^8.13.0",
+    "three": "^0.152.1"
   }
 }
