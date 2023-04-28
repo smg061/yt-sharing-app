@@ -13,8 +13,16 @@ const UwuWelcome = () => (
     {/* <div className="bg-gradient-to-r from-violet-900 via-purple-800 to-indigo-700 min-h-screen text-white p-8 terminal-background">  */}
     <div className="max-w-full">
       <div className="container mx-auto max-w-4xl py-8 px-6 bg-purple-900 bg-opacity-70 rounded-xl shadow-lg text-lg terminal-background  bg-gradient-to-r from-violet-900 via-purple-800 to-indigo-700">
-        <PixelArtText className="mb-4 flex bg-purple-500 items-center h-12  flex-wrap">
-          Hewwo, and wewcome to uwu-owo.io! 💻✨
+        <PixelArtText className="mb-4  bg-purple-500 items-center h-16 hidden md:flex animate-type css-typing text-[1.4rem]">
+          Hewwo, and wewcome to uwu-owo.io!  💻✨
+        </PixelArtText>
+
+        {/* split into multiple lines for mobile */}
+        <PixelArtText className="mb-4  bg-purple-500 items-center h-12 flex md:hidden animate-type css-typing text-lg">
+          Hewwo, and wewcome
+        </PixelArtText>
+        <PixelArtText className="mb-4  bg-purple-500 items-center h-12 flex md:hidden delay animate-type css-typing text-lg">
+          to uwu-owo.io! 💻✨
         </PixelArtText>
         <p className="mb-4">
           Dis is da pwace whewe I, Non-chan, shawe aww my supew cwool and
@@ -154,11 +162,7 @@ export const PixelArtText: React.FC<PixelArtTextProps> = ({
   className,
   children,
 }) => {
-  return (
-    <p className={twMerge("pixel-art-text md:animate-type css-typing", className)}>
-      {children}
-    </p>
-  );
+  return <p className={twMerge("pixel-art-text 	", className)}>{children}</p>;
 };
 
 export default UwuWelcome;

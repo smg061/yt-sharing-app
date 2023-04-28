@@ -118,7 +118,6 @@
 
 .pixel-art-text {
   font-family: "Press Start 2P", cursive;
-  font-size: 1.5rem;
   line-height: 1.2;
 }
 
@@ -140,10 +139,11 @@
 
 }
 .css-typing {
-    border-right: 0.15em solid orange;
+  border-right: 0.15em solid orange;
   white-space: nowrap;
   overflow: hidden;
-  width: 100%;
+  width: 0;
+  animation: type 1s steps(40, end);
   -webkit-animation: type 1s steps(40, end);
   -webkit-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
@@ -155,9 +155,11 @@
   }
   99.9% {
     border-right: 0.15em solid orange;
+    width: 99%;
   }
   100% {
     border: none;
+    width: 100%;
   }
 }
 
@@ -187,4 +189,8 @@
   50% {
     border-color: tranparent;
   }
+}
+
+.delay {
+  animation-delay: 1s;
 }

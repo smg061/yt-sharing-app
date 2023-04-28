@@ -67,19 +67,11 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
-        "type" : {
-          from: {
-            width: "0"
-          },
-          to: {
-            border: "none"
-          }
-        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "type": "type 2s steps(40, end)"
+        type: "type 2s steps(40, end)",
       },
     },
   },
