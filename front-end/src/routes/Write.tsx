@@ -42,7 +42,7 @@ function Chatmessage(props: { currentMessage: ChatMessage }) {
 }
 
 
-export function Write() {
+export default function Write() {
   const { user, loading } = useAuth();
   const [text, setText] = useState<string>("");
   const [proomptHistory, setProomptHistory] = useState<ChatMessage[]>([]);
