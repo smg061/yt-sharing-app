@@ -16,7 +16,7 @@ const UwuWelcome = () => (
         <PixelArtText className="mb-4  bg-purple-500 items-center h-16 hidden md:flex animate-type css-typing text-[1.4rem]">
           Hewwo, and wewcome to uwu-owo.io!  💻✨
         </PixelArtText>
-
+        <RetroLoader loadingText="Loading..." duration={12}/>
         {/* split into multiple lines for mobile */}
         <PixelArtText className="mb-4  bg-purple-500 items-center h-12 flex md:hidden animate-type css-typing text-lg">
           Hewwo, and wewcome
@@ -152,6 +152,7 @@ const UwuForm = () => {
 
 import React from "react";
 import { twMerge } from "tailwind-merge";
+import RetroLoader from "./loaders/RetroLoader";
 
 interface PixelArtTextProps {
   className?: string;
