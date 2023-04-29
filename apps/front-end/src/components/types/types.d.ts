@@ -27,3 +27,4 @@ type Draw = {
     brushSize?: number;
     brushType?: CanvasLineCap;
 }
+
