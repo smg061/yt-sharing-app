@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"cd api && npm run watch\" \"cd front-end && npm run dev\""
+    "dev": "pnpm --stream -r run dev"
   },
   "repository": {
     "type": "git",
@@ -19,11 +19,7 @@
   },
   "homepage": "https://github.com/smg061/yt-sharing-app#readme",
   "devDependencies": {
-    "@types/three": "^0.151.0",
-    "concurrently": "^7.4.0",
     "supabase": "^1.50.11"
-  },
-  "dependencies": {
-
   }
 }
+

@@ -12,16 +12,7 @@ import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 
 import { extend } from "@react-three/fiber";
 
-const fontLoader = new FontLoader().load(
-  "https://fonts.googleapis.com/css2?family=Roboto&display=swap"
-);
-
 extend({ TextGeometry });
-declare module "@react-three/fiber" {
-  interface ThreeElements {
-    textGeometry: Object3DNode<TextGeometry, typeof TextGeometry>;
-  }
-}
 
 function Box(props: { position?: [number, number, number] }) {
   // This reference will give us direct access to the mesh
@@ -68,7 +59,12 @@ export default function Canvas3D({
   };
 }) {
   return (
-    <Canvas>
+    <Canvas
+      camera={{ position: [0, 0, 5] }}
+      style={{
+
+      }}
+    >
       <Text3D
         font={
           "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json"
