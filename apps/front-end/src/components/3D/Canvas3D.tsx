@@ -15,6 +15,7 @@ import { Heart } from "lucide-react";
 import { SpinningHeart } from "./Heart";
 import RainbowParticles from "./Rainbox";
 import RetroLoader from "../loaders/RetroLoader";
+import { IslandModel } from "./IslandModel";
 
 extend({ TextGeometry });
 
@@ -90,6 +91,8 @@ export function Canvas3D({
       <Box position={[-1.2, 0, 0]} />
       <Box position={[1.2, 0, 0]} />
       <SpinningHeart />
+      <IslandModel />
+
     </Canvas>
   );
 }

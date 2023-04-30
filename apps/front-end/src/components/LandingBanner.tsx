@@ -143,7 +143,7 @@ const UwuForm = () => {
           type="submit"
           className="w-full py-2 bg-indigo-800 hover:bg-indigo-700 text-white rounded"
         >
-          Send UwU-suggestion 🌈✨
+          Send suggestion 🌈✨
         </button>
       </form>
     </div>

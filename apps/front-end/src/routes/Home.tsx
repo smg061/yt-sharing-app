@@ -8,17 +8,48 @@ const Canvas3D = lazy(() => import("@/components/3D/Canvas3D"));
 import {} from "lucide-react";
 const CanvasWithSuspense = WithSuspenseHOC(Canvas3D);
 
+function BlueBar() {
+  return (
+    <div
+      className={"flex flex-col items-center retro-loader-font"}
+      style={{
+        fontFamily: "Press Start 2P, cursive",
+        fontSize: "1.5rem",
+      }}
+    >
+      <div className="mb-4"></div>
+      <div className="relative w-full h-8 bg-gray-300 border-2 border-black">
+        <div
+          className="absolute top-0 left-0 h-full bg-blue-500 transition-width duration-500 ease-in"
+          style={{ width: `${100}%` }}
+        ></div>
+      </div>
+      <div className="absolute  top-2 terminal-background h-12 w-full"></div>
+    </div>
+  );
+}
 export function Home() {
   const [zIndex, setZIndex] = useState(0);
   return (
     <div className="relative ">
       {/** This is all background stuff */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <RetroLoader
-          className="absolute top-0 left-0 w-full h-full pointer-events-none"
-          loadingText=""
-          duration={0}
-        />
+        {/* <div
+          className={"flex flex-col items-center retro-loader-font"}
+          style={{
+            fontFamily: "Press Start 2P, cursive",
+            fontSize: "1.5rem",
+          }}
+        >
+          <div className="mb-4"></div>
+          <div className="relative w-full h-8 bg-gray-300 border-2 border-black">
+            <div
+              className="absolute top-0 left-0 h-full bg-blue-500 transition-width duration-500 ease-in"
+              style={{ width: `${100}%` }}
+            ></div>
+          </div>
+        </div> */}
+        <BlueBar />
       </div>
 
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
