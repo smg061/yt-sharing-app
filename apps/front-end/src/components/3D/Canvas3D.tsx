@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Canvas,
-  Object3DNode,
-  useFrame,
-  useThree,
-} from "@react-three/fiber";
+import { Canvas, Object3DNode, useFrame, useThree } from "@react-three/fiber";
 import { BufferGeometry, Mesh } from "three";
 import { OrbitControls, Text3D, useGLTF } from "@react-three/drei";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
@@ -18,9 +13,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import Petal from "./Sakura";
 
 extend({ TextGeometry });
-
-
-
 
 function Box(props: { position?: [number, number, number] }) {
   // This reference will give us direct access to the mesh
@@ -51,6 +43,8 @@ function Box(props: { position?: [number, number, number] }) {
   );
 }
 
+const forestPositions = [];
+
 type TextProps = {
   text: {
     body: string;
@@ -77,6 +71,23 @@ export function Canvas3D({
     });
   }, []);
 
+  const forest = useMemo(() => {
+    return Array.from({ length: 20 }, (_, i) => {
+      const x = Math.random() * 40 - 20;
+      const y = Math.random() * 40 - 20;
+      const z = Math.random() * 40 - 20;
+      const scale = (Math.random() * 0.05) % 0.4;
+      return (
+        <LoadModel
+          key={i}
+          modelPath="/models/lowpoly_tree/scene.gltf"
+          rotation={[0, i, 0]}
+          position={[i * 10, -2, z]}
+          scale={[scale, scale, scale]}
+        />
+      );
+    });
+  }, []);
   return (
     <Canvas
       ref={canvasRef}
@@ -91,7 +102,7 @@ export function Canvas3D({
         position={[-45, -2, -50]}
         scale={[0.05, 0.05, 0.05]}
       />
-
+      <>{forest}</>
       <Text3D
         font={
           "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json"
@@ -121,7 +132,7 @@ export default function CanvasWithLoading({ text }: TextProps) {
   useEffect(() => {
     const x = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 1100);
     return () => {
       clearTimeout(x);
     };
@@ -147,17 +158,18 @@ export function LoadModel({
   modelPath: string;
   rotation?: [number, number, number];
   position?: [number, number, number];
-
   scale?: [number, number, number];
 }) {
-
   const gltf = useGLTF(modelPath);
+  const object = useMemo(() => {
+    return gltf.scene.clone();
+  }, [gltf.scene]);
   return (
     <primitive
       rotation={rotation}
       position={position}
       scale={scale}
-      object={gltf.scene}
+      object={object}
     />
   );
 }
