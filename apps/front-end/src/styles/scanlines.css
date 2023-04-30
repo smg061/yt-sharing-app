@@ -1,0 +1,26 @@
+.crt-scanlines::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 1px, transparent 1px, transparent 3px);
+    animation: scanlines 2s linear infinite;
+    pointer-events: none;
+  }
+  
+
+
+  @keyframes scanlines {
+    0% {
+      background-position: 0 0;
+    }
+    50% {
+      background-position: 0 2px;
+    }
+    100% {
+      background-position: 0 3px;
+    }
+  }

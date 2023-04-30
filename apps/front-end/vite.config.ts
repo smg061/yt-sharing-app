@@ -14,6 +14,7 @@ export default ({ mode }) => {
         "@hooks": path.resolve(__dirname, "./src/hooks"),
         "@lib": path.resolve(__dirname, "./src/lib"),
         "@routes": path.resolve(__dirname, "./src/routes"),
+        "@styles": path.resolve(__dirname, "./src/styles"),
       },
     }
   })

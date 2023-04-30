@@ -7,6 +7,7 @@ import { lazy, useState } from "react";
 const Canvas3D = lazy(() => import("@/components/3D/Canvas3D"));
 import { X } from "lucide-react";
 const CanvasWithSuspense = WithSuspenseHOC(Canvas3D);
+import "@styles/scanlines.css";
 
 function BlueBar() {
   return (
@@ -31,7 +32,7 @@ function BlueBar() {
 export function Home() {
   const [zIndex, setZIndex] = useState(0);
   return (
-    <div className="relative ">
+    <div className="relative  ">
       {/** This is all background stuff */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
         {/* <div className="absolute top-12 terminal-background bg-gray-600 h-1 w-full"></div> */}
@@ -40,14 +41,12 @@ export function Home() {
 
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 opacity-75"></div>
-     
       </div>
       {/* End of bg stuff */}
 
-      
       <div className="flex justify-center col-span-2 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 h-full  z-10">
         <div
-          className="absolute top-0 left-0 w-full h-full "
+          className="absolute top-0 left-0 w-full h-full crt-scanlines "
           style={{
             zIndex: zIndex,
           }}
@@ -64,10 +63,13 @@ export function Home() {
         <div className="">
           <RetroButton
             text="Awesome 3D graphics?? 🌈✨"
-            className=" z-10"
+            className="z-20 w-full py-2 bg-indigo-800 hover:bg-indigo-700 text-white rounded"
             onClick={() => setZIndex(zIndex === 0 ? 1 : 0)}
+            
           />
+     
           <UwuWelcome />
+
         </div>
       </div>
     </div>
