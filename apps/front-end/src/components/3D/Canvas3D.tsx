@@ -46,23 +46,6 @@ function Box(props: { position?: [number, number, number] }) {
     </mesh>
   );
 }
-export function CanvasThreeD(props: { children: JSX.Element | JSX.Element[] }) {
-  return (
-    <Canvas camera={{ position: [0, 0, 5] }} style={{}}>
-      {props.children}
-      <OrbitControls
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={true}
-        enableDamping={true}
-      />
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
-      <Box position={[-1.2, 0, 0]} />
-      <Box position={[1.2, 0, 0]} />
-    </Canvas>
-  );
-}
 
 type TextProps = {
   text: {
@@ -80,8 +63,12 @@ export function Canvas3D({
     rotation: [0, 0, 0],
   },
 }: TextProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   return (
-    <Canvas camera={{ position: [0, 0, 15] }} style={{}}>
+    <Canvas ref={canvasRef} camera={{ position: [0, 0, 15] }} style={{
+      position: "absolute",
+    }}>
       <Text3D
         font={
           "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json"
@@ -121,7 +108,7 @@ export default function CanvasWithLoading({ text }: TextProps) {
 
   if (loading) {
     return (
-      <div className="h-screen flex justify-center items-center">
+      <div className="h-screen relative flex justify-center items-center">
         <RetroLoader loadingText="Loading..." duration={1}></RetroLoader>
       </div>
     );
