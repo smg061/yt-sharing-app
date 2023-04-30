@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const UwuWelcome = () => (
   <div
@@ -14,9 +14,8 @@ const UwuWelcome = () => (
     <div className="max-w-full">
       <div className="container mx-auto max-w-4xl py-8 px-6 bg-purple-900 bg-opacity-70 rounded-xl shadow-lg text-lg terminal-background  bg-gradient-to-r from-violet-900 via-purple-800 to-indigo-700">
         <PixelArtText className="mb-4  bg-purple-500 items-center h-16 hidden md:flex animate-type css-typing text-[1.4rem]">
-          Hewwo, and wewcome to uwu-owo.io!  💻✨
+          Hewwo, and wewcome to uwu-owo.io! 💻✨
         </PixelArtText>
-        <RetroLoader loadingText="Loading..." duration={12}/>
         {/* split into multiple lines for mobile */}
         <PixelArtText className="mb-4  bg-purple-500 items-center h-12 flex md:hidden animate-type css-typing text-lg">
           Hewwo, and wewcome
@@ -164,6 +163,38 @@ export const PixelArtText: React.FC<PixelArtTextProps> = ({
   children,
 }) => {
   return <p className={twMerge("pixel-art-text 	", className)}>{children}</p>;
+};
+
+// bad idea 
+// kill your darlings
+const WelcomeWithLoader = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const x = setTimeout(() => {
+      setLoading(false);
+    }, 200);
+    return () => {
+      clearTimeout(x);
+    };
+  }, []);
+
+  return loading ? (
+    <div className="w-full h-full flex items-center justify-center z-1 terminal-background">
+      <div className="max-w-full">
+        <div className="container h-screen mx-auto max-w-4xl py-8 px-6  bg-opacity-70 rounded-xl shadow-lg text-lg    ">
+          <RetroLoader
+            loadingText={"Lwoading lwoading..."}
+            duration={12}
+            className="w-full flex items-center  bg-purple-900  shadow-lg"
+          />
+        </div>
+        <UwuForm />
+      </div>
+    </div>
+  ) : (
+    <UwuWelcome />
+  );
 };
 
 export default UwuWelcome;

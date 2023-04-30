@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Canvas,
   Object3DNode,
@@ -11,6 +11,10 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 
 import { extend } from "@react-three/fiber";
+import { Heart } from "lucide-react";
+import { SpinningHeart } from "./Heart";
+import RainbowParticles from "./Rainbox";
+import RetroLoader from "../loaders/RetroLoader";
 
 extend({ TextGeometry });
 
@@ -42,29 +46,42 @@ function Box(props: { position?: [number, number, number] }) {
     </mesh>
   );
 }
+export function CanvasThreeD(props: { children: JSX.Element | JSX.Element[] }) {
+  return (
+    <Canvas camera={{ position: [0, 0, 5] }} style={{}}>
+      {props.children}
+      <OrbitControls
+        enablePan={true}
+        enableZoom={true}
+        enableRotate={true}
+        enableDamping={true}
+      />
+      <ambientLight />
+      <pointLight position={[10, 10, 10]} />
+      <Box position={[-1.2, 0, 0]} />
+      <Box position={[1.2, 0, 0]} />
+    </Canvas>
+  );
+}
 
-export default function Canvas3D({
-  text = {
-    body: "Hello World",
-    title: "Hello World",
-    position: [0, 0, 0],
-    rotation: [0, 0, 0],
-  },
-}: {
+type TextProps = {
   text: {
     body: string;
     title: string;
     position: [number, number, number];
     rotation: [number, number, number];
   };
-}) {
+};
+export function Canvas3D({
+  text = {
+    body: "Hello World",
+    title: "Hello World",
+    position: [0, 0, 0],
+    rotation: [0, 0, 0],
+  },
+}: TextProps) {
   return (
-    <Canvas
-      camera={{ position: [0, 0, 5] }}
-      style={{
-
-      }}
-    >
+    <Canvas camera={{ position: [0, 0, 15] }} style={{}}>
       <Text3D
         font={
           "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json"
@@ -81,24 +98,34 @@ export default function Canvas3D({
         enableDamping={true}
       />
       <ambientLight />
+      <RainbowParticles />
       <pointLight position={[10, 10, 10]} />
       <Box position={[-1.2, 0, 0]} />
       <Box position={[1.2, 0, 0]} />
+      <SpinningHeart />
     </Canvas>
   );
 }
 
-function ThreeDText(props: { text: string }) {
-  return (
-    <Text3D
-      font={
-        "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json"
-      }
-      position={[0, 1, 0]}
-      rotation={[0, -1, 0]}
-    >
-      {props.text}
-      <meshNormalMaterial />
-    </Text3D>
-  );
+export default function CanvasWithLoading({ text }: TextProps) {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const x = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => {
+      clearTimeout(x);
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <RetroLoader loadingText="Loading..." duration={1}></RetroLoader>
+      </div>
+    );
+  }
+
+  return <Canvas3D text={text} />;
 }
