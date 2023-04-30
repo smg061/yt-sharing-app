@@ -24,7 +24,7 @@ function NavLink({
     >
       <Link
         {...props}
-        className="  hover:bg-violet-400 rounded  h-1/2 pt-1"
+        className="  hover:bg-violet-400 rounded text-center  w-full h-1/2 pt-1"
         to={props.to}
       >
         {children}
@@ -57,9 +57,12 @@ const Header = () => {
   const [uwu, setUwu] = useState<boolean>(true);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   return (
-    <div className="rounded-lg flex flex-row flex-wrap md:flex-nowrap w-full bg-slate-600 h-max md:h-16 items-center">
+    <div className="relative rounded-lg flex flex-row flex-wrap md:flex-nowrap w-full bg-slate-600 h-max md:h-16 items-center">
       <div className=" gap-4 items-center justify-start rows-span-1 rounded ">
-        <Link to="/" className="w-42  flex justify-center  px-2 hover:bg-violet-400   transition-colors duration-500 ease-in-out rounded-md ">
+        <Link
+          to="/"
+          className="w-42  flex justify-center  px-2 hover:bg-violet-400   transition-colors duration-500 ease-in-out rounded-md "
+        >
           <div
             className="flex align-center justify-center "
             onMouseOver={() => setUwu(false)}
@@ -99,18 +102,18 @@ const Header = () => {
         </div>
       </div>
       <div className="md:hidden w-screen border bg-muted">
-          <div className="md:hidden w-24">
-            <Button
-              variant={"ghost"}
-              className="hover:bg-violet-500 rounded"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              <HamburgerMenuIcon />
-            </Button>
-      </div>
+        <div className="md:hidden w-24">
+          <Button
+            variant={"ghost"}
+            className="hover:bg-violet-500 rounded"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <HamburgerMenuIcon />
+          </Button>
+        </div>
       </div>
       {menuOpen === true && (
-        <div className={`flex flex-col w-full md:hidden `}>
+        <div className={`flex flex-col w-full md:hidden   `}>
           {links.map((link) => (
             <NavLink
               key={link.label}
