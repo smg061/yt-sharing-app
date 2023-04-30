@@ -55,8 +55,8 @@ export function Home() {
             text={{
               body: "Hewwo everynyan [^._.^]ﾉ彡",
               title: "Hello World",
-              position: [0, 0, 0],
-              rotation: [0, 0, 0],
+              position: [-7, 11.9, -2],
+              rotation: [0, 0.1, 0.05],
             }}
           />
         </div>

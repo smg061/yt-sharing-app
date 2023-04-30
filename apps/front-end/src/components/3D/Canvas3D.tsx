@@ -1,23 +1,26 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Canvas,
   Object3DNode,
-  ThreeElements,
   useFrame,
+  useThree,
 } from "@react-three/fiber";
 import { BufferGeometry, Mesh } from "three";
-import { OrbitControls, Text3D } from "@react-three/drei";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import { OrbitControls, Text3D, useGLTF } from "@react-three/drei";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 
 import { extend } from "@react-three/fiber";
-import { Heart } from "lucide-react";
 import { SpinningHeart } from "./Heart";
 import RainbowParticles from "./Rainbox";
 import RetroLoader from "../loaders/RetroLoader";
 import { IslandModel } from "./IslandModel";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import Petal from "./Sakura";
 
 extend({ TextGeometry });
+
+
+
 
 function Box(props: { position?: [number, number, number] }) {
   // This reference will give us direct access to the mesh
@@ -65,11 +68,30 @@ export function Canvas3D({
   },
 }: TextProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const petals = useMemo(() => {
+    return Array.from({ length: 500 }, () => {
+      const x = Math.random() * 40 - 20;
+      const y = Math.random() * 40 - 20;
+      const z = Math.random() * 40 - 20;
+      return <Petal position={[x, y, z]} />;
+    });
+  }, []);
 
   return (
-    <Canvas ref={canvasRef} camera={{ position: [0, 0, 15] }} style={{
-      position: "absolute",
-    }}>
+    <Canvas
+      ref={canvasRef}
+      camera={{ position: [0, 0, 15] }}
+      style={{
+        position: "absolute",
+      }}
+    >
+      <LoadModel
+        modelPath="/models/lowpoly_tree/scene.gltf"
+        rotation={[0, 1, 0]}
+        position={[-45, -2, -50]}
+        scale={[0.05, 0.05, 0.05]}
+      />
+
       <Text3D
         font={
           "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json"
@@ -86,13 +108,9 @@ export function Canvas3D({
         enableDamping={true}
       />
       <ambientLight />
-      <RainbowParticles />
+      {/* <RainbowParticles /> */}
       <pointLight position={[10, 10, 10]} />
-      <Box position={[-1.2, 0, 0]} />
-      <Box position={[1.2, 0, 0]} />
-      <SpinningHeart />
-      <IslandModel />
-
+      <>{petals}</>
     </Canvas>
   );
 }
@@ -118,4 +136,28 @@ export default function CanvasWithLoading({ text }: TextProps) {
   }
 
   return <Canvas3D text={text} />;
+}
+
+export function LoadModel({
+  modelPath,
+  rotation,
+  position,
+  scale,
+}: {
+  modelPath: string;
+  rotation?: [number, number, number];
+  position?: [number, number, number];
+
+  scale?: [number, number, number];
+}) {
+
+  const gltf = useGLTF(modelPath);
+  return (
+    <primitive
+      rotation={rotation}
+      position={position}
+      scale={scale}
+      object={gltf.scene}
+    />
+  );
 }
