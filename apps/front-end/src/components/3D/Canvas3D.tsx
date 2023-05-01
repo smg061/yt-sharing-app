@@ -1,18 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, Object3DNode, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { BufferGeometry, Mesh } from "three";
-import { OrbitControls, Text3D, useGLTF } from "@react-three/drei";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
-
-import { extend } from "@react-three/fiber";
-import { SpinningHeart } from "./Heart";
-import RainbowParticles from "./Rainbox";
+import {
+  OrbitControls,
+  PointerLockControls,
+  Stars,
+  Text3D,
+  useGLTF,
+} from "@react-three/drei";
 import RetroLoader from "../loaders/RetroLoader";
-import { IslandModel } from "./IslandModel";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import Petal from "./Sakura";
-
-extend({ TextGeometry });
+import { Effects } from "./Effects";
 
 function Box(props: { position?: [number, number, number] }) {
   // This reference will give us direct access to the mesh
@@ -42,8 +40,6 @@ function Box(props: { position?: [number, number, number] }) {
     </mesh>
   );
 }
-
-const forestPositions = [];
 
 type TextProps = {
   text: {
@@ -92,6 +88,7 @@ export function Canvas3D({
     <Canvas
       ref={canvasRef}
       camera={{ position: [0, 0, 15] }}
+      shadows
       style={{
         position: "absolute",
       }}
@@ -118,7 +115,19 @@ export function Canvas3D({
         enableRotate={true}
         enableDamping={true}
       />
+      <Stars
+        radius={100}
+        depth={50}
+        count={10000}
+        factor={4}
+        saturation={10}
+        fade
+        speed={1}
+      />
       <ambientLight />
+      
+      <directionalLight position={[10, 10, 5]} intensity={1} />
+      <Effects/>
       {/* <RainbowParticles /> */}
       <pointLight position={[10, 10, 10]} />
       <>{petals}</>

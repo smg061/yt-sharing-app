@@ -24,9 +24,9 @@ const Petal: React.FC<PetalProps> = ({ position }) => {
     meshRef.current.position.z =
       initialPosition[2] +
       Math.sin(time * speed.current + phaseOffset.current) * 2; // Adjust waving motion in Z direction
-    meshRef.current.rotation.x += delta * 0.5; // Adjust rotation speed
+    meshRef.current.rotation.x += delta *  speed.current * 0.5  // Adjust rotation speed
     meshRef.current.rotation.y += delta * 0.5; // Adjust rotation speed
-
+    meshRef.current.rotation.z += delta * 0.5; // Adjust rotation speed
     if (meshRef.current.position.y < -5) {
       meshRef.current.position.y = 5;
     }
