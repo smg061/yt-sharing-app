@@ -178,33 +178,38 @@ export default function Canvas(props: props) {
   }, [isSocketConnected()]);
 
   return (
-    <div id="drawingBoard" className="w-[900px]  h-[700px]">
-      <canvas
-        onTouchStart={onMouseDown}
-        onTouchEnd={onMouseUp}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        className="canvas z-50 rounded-lg bg-white shadow-lg"
-        ref={canvasRef}
-        width={width}
-        height={height}
-      ></canvas>
-
-      {isConnected ? (
-        <div className="text-green-500">Connected</div>
-      ) : (
-        <div className="text-red-500">Disconnected</div>
-      )}
-      <div className="text-gray-500">
-        {connectedUsers.length} Connected Users: {connectedUsers.join(", ")}
+    <div id="drawingBoard" className="flex flex-wrap flex-row w-full h-full">
+      <div className="col-span-1 justify-self-start w-full md:w-[7.5%] md:mr-24 py-2">
+        <Toolbar
+          history={history}
+          canvasRef={canvasRef}
+          width={width}
+          height={height}
+        />
       </div>
-      <Toolbar
-        history={history}
-        canvasRef={canvasRef}
-        width={width}
-        height={height}
-      />
       <MouseCursor canvasRef={canvasRef} />
+      <div className="w-[75%] flex justify-center">
+        <canvas
+          onTouchStart={onMouseDown}
+          onTouchEnd={onMouseUp}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+          className="canvas rounded-lg bg-white shadow-lg w-[900px]  h-[700px] justify-self-center self-center"
+          ref={canvasRef}
+          width={width}
+          height={height}
+        ></canvas>
+      </div>
+      <div className=" flex w-full flex-col items-center justify-center">
+        {isConnected ? (
+          <p className="text-green-500 ">Connected</p>
+        ) : (
+          <p className="text-red-500 ">Disconnected</p>
+        )}
+        <div className="text-gray-500">
+          {connectedUsers.length} Connected Users: {connectedUsers.join(", ")}
+        </div>
+      </div>
     </div>
   );
 }
@@ -250,8 +255,7 @@ function MouseCursor({
   }, [canvasRef.current]);
 
   const brushSize = useToolbarCtx().state.brushSize;
-  console.log(brushSize);
-  console.log(`w-[${brushSize}px] h-[${brushSize}px] text-gray-500`);
+
   const showCursor =
     canvasRect &&
     positionInCanvas.x > 0 &&

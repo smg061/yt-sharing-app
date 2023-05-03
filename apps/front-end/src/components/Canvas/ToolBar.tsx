@@ -85,7 +85,7 @@ export function Toolbar(props: props) {
     }
   };
   return (
-    <div className="flex absolute top-24 left-0 rounded-lg bg-slate-500 h-[90%] flex-col items-center justify-center">
+    <div className="flex  top-24 left-0 rounded-lg bg-slate-500 h-full flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center">
         <div className="flex flex-row">
           <label htmlFor="brush-color">
