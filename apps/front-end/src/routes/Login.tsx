@@ -38,7 +38,6 @@ export default function LoginPage() {
   const message = comesFrom  !== "/" ?
      "You mwust be wogged in to use twis fweature"
     : "Pwease wogin to continue";
-  console.log(comesFrom);
   return (
     <div className="flex w-full  py-24 items-center justify-center  ">
       <form onSubmit={handleSubmit}>

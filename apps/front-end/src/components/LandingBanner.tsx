@@ -81,7 +81,6 @@ const UwuForm = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Submit form data here
-    console.log(formData);
     setFormData({
       name: "",
       email: "",
